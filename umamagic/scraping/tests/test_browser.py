@@ -25,5 +25,6 @@ class EventScheduleModelTest(TestCase):
         category.need_driver = True
         schedule = EventSchedule(title="GoogleHtml取得", category=category)
         schedule["url"] = "http://google.com"
+        schedule["htmlpath"] = "test/google.html"
         self.assertEqual(schedule.doevent(), "GoogleHtml取得のイベントを実行しました。")
 
