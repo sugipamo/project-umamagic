@@ -1,5 +1,7 @@
 [scripts]
-start = "python manage.py runserver"
+start = "python manage.py runserver 0.0.0.0:8001"
+migrate = "bash -c 'python manage.py makemigrations && python manage.py migrate'"
+test = "python manage.py test"
 
 [[source]]
 url = "https://pypi.org/simple"
@@ -9,6 +11,7 @@ name = "pypi"
 [packages]
 django = "*"
 mysqlclient = "*"
+selenium = "*"
 
 [dev-packages]
 

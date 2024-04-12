@@ -1,5 +1,5 @@
 from django.test import TestCase
-from scraping.models import ScrapeCategory, CrawlSchedule
+from scraping.models import ScrapeCategory, EventSchedule, EventArgs
 from django.utils import timezone
 
 class ScrapeCategoryModelTest(TestCase):
@@ -7,15 +7,22 @@ class ScrapeCategoryModelTest(TestCase):
         category = ScrapeCategory(name="テストカテゴリー")
         self.assertEqual(str(category), "テストカテゴリー")
 
-class CrawlScheduleModelTest(TestCase):
+class EventScheduleModelTest(TestCase):
+    def setUp(self):
+        pass
+
     def test_str(self):
-        category = ScrapeCategory(name="テストカテゴリー")
-        schedule = CrawlSchedule(title="テストスケジュール", url="http://example.com", category=category)
+        schedule = EventSchedule(title="テストスケジュール", category=ScrapeCategory(name="テストカテゴリー"))
         self.assertEqual(str(schedule), "テストスケジュール")
 
-    def test_str_with_deleted_at(self):
-        category = ScrapeCategory(name="テストカテゴリー")
-        schedule = CrawlSchedule(title="テストスケジュール", url="http://example.com", category=category, deleted_at=timezone.now())
-        self.assertEqual(str(schedule), "テストスケジュール")
+    def test_doevent_default_method(self):
+        schedule = EventSchedule(title="テストスケジュール", category=ScrapeCategory(name="テストカテゴリー"))
+        self.assertEqual(schedule.doevent(), "テストカテゴリーのイベントを実行しました。")
 
-
+    def test_doevent_access_google(self):
+        category = ScrapeCategory(name="Googleアクセス")
+        category.use_method = "access_google"
+        category.need_driver = True
+        schedule = EventSchedule(title="Googleアクセス", category=category)
+        schedule["url"] = "http://google.com"
+        self.assertEqual(schedule.doevent(), "Googleアクセスのイベントを実行しました。")
