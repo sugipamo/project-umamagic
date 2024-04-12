@@ -1,26 +1,9 @@
 from django.db import models
 import importlib
-from selenium import webdriver
-import os
-# Create your models here.
+from django.utils import timezone
+from .src.selenium import WebDriver
 
-class WebDriver():
-    def __init__(self):
-        self.driver = webdriver.Remote(
-            command_executor = os.environ["SELENIUM_URL"],
-            options = webdriver.ChromeOptions()
-        )
-    
-    def __enter__(self):
-        return self.driver
-    
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.driver.quit()
-        if exc_type:
-            raise exc_value
-        return True
-
-class ScrapeCategory(models.Model):
+class EventCategory(models.Model):
     name = models.CharField(max_length=255)
     use_method = models.CharField(max_length=255, default="default_methods")
     need_driver = models.BooleanField(default=False)
@@ -48,8 +31,12 @@ class ScrapeCategory(models.Model):
 class EventSchedule(models.Model):
     title = models.CharField(max_length=255)
     status = models.IntegerField(choices=[(i+1, s) for i, s in enumerate(["待機", "実行中", "完了", "エラー"])], default=1)
+    startdatetime = models.DateTimeField(default=timezone.now)
+    enddatetime = models.DateTimeField(null=True, blank=True)
+    durationtime = models.IntegerField(null=True, blank=True)
+    latestexecuted_at = models.DateTimeField(auto_now_add=True)
     errormessage = models.TextField(null=True, blank=True)
-    category = models.ForeignKey(ScrapeCategory, on_delete=models.PROTECT)
+    category = models.ForeignKey(EventCategory, on_delete=models.PROTECT)
     memo = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -75,12 +62,25 @@ class EventSchedule(models.Model):
             return None
         
     def doevent(self):
+        if self.status == 2:
+            return f"{self.title}は実行中です。"
+        elif self.status == 3:
+            return f"{self.title}は既に実行済みです。"
+        elif self.status == 4:
+            return f"{self.title}はエラーが発生しています。"
+        elif self.startdatetime > timezone.now():
+            return f"{self.title}はまだ実行できません。"
+        elif self.enddatetime and self.enddatetime < timezone.now():
+            return f"{self.title}は既に終了しています。"
+
+        self.status = 2
+        self.save()
+
         ret = self.category.doevent(**{d["key"]: d["value"] for d in self.eventargs_set.all().values()} if self.pk else {})
         if isinstance(ret, Exception):
             self.status = 4
             self.errormessage = str(ret)
             self.save()
-            print(ret)
             return f"{self.category.name}のイベントを実行できませんでした。"
         
         if not self.category.repeat:
