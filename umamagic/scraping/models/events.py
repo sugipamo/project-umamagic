@@ -1,7 +1,7 @@
 from django.db import models
-import importlib
 from django.utils import timezone
-from .src.selenium import WebDriver
+from .webdriver import WebDriver
+from . import event_methods
 
 class EventCategory(models.Model):
     name = models.CharField(max_length=255)
@@ -12,10 +12,9 @@ class EventCategory(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def doevent(self, **kwargs):
-        module = importlib.import_module(f"scraping.methods.{self.use_method}")
-        method = getattr(module, "main")
+        method = getattr(event_methods, self.use_method)
         try:
-            if self.need_driver:
+            if self.need_driver:                
                 with WebDriver() as driver:
                     kwargs["driver"] = driver
                     method(**kwargs)
@@ -70,9 +69,12 @@ class EventSchedule(models.Model):
             return f"{self.title}はエラーが発生しています。"
         elif self.startdatetime > timezone.now():
             return f"{self.title}はまだ実行できません。"
+        elif self.durationtime and self.latestexecuted_at and self.latestexecuted_at + timezone.timedelta(seconds=self.durationtime) > timezone.now():
+            return f"{self.title}はまだ実行できません。"
         elif self.enddatetime and self.enddatetime < timezone.now():
             return f"{self.title}は既に終了しています。"
 
+        self.latestexecuted_at = timezone.now()
         self.status = 2
         self.save()
 
@@ -101,3 +103,5 @@ class EventArgs(models.Model):
 
     def __str__(self):
         return f"{self.key}: {self.value}"
+    
+

@@ -1,5 +1,7 @@
 from django.test import TestCase
-from scraping.models import EventCategory, EventSchedule, EventArgs
+import sys
+import pathlib
+from scraping.models.events import EventCategory, EventSchedule, EventArgs
 from unittest import mock
 from datetime import datetime
 from django.utils import timezone
