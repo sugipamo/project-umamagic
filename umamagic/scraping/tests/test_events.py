@@ -1,10 +1,8 @@
 from django.test import TestCase
-import sys
-import pathlib
 from scraping.models.events import EventCategory, EventSchedule, EventArgs
-from unittest import mock
-from datetime import datetime
 from django.utils import timezone
+from django.urls import reverse
+
 
 class ScrapeCategoryModelTest(TestCase):
     def test_str(self):
@@ -69,3 +67,20 @@ class EventScheduleModelTest(TestCase):
         schedule = EventSchedule.objects.create(title="過去時間", category=category)
         schedule.enddatetime = timezone.now() - timezone.timedelta(days=1)
         self.assertEqual(schedule.doevent(), "過去時間は既に終了しています。")
+
+
+class EventScheduleListViewTest(TestCase):
+    def test_event_schedule_list_view(self):
+        response = self.client.get(reverse('scraping:event_schedule_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'scraping/event_schedule_list.html')
+        self.assertContains(response, 'スケジュール')   
+        self.assertQuerysetEqual(response.context['eventschedule_list'], [])
+
+    def test_event_schedule_list_view_with_data(self):
+        category = EventCategory.objects.create(name="テストカテゴリー")
+        EventSchedule.objects.create(title="テストスケジュール", category=category)
+        response = self.client.get(reverse('scraping:event_schedule_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'テストスケジュール')
+        self.assertQuerysetEqual(response.context['eventschedule_list'], ['<EventSchedule: テストスケジュール>'])

@@ -4,6 +4,10 @@ from django.contrib import admin
 
 
 from .models.events import EventCategory, EventSchedule
+from .models.login_required import LoginRequired
 
 admin.site.register(EventCategory)
 admin.site.register(EventSchedule)
+admin.site.register(LoginRequired)
+
+

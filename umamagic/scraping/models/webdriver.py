@@ -3,7 +3,7 @@ import pickle
 import os
 import pathlib
 
-def login_required(domain):
+def cookie_required(domain):
     def decorator(func):
         def wrapper(*args, **kwargs):
             cookies = {}

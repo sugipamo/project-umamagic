@@ -44,7 +44,7 @@ class EventSchedule(models.Model):
             self.category.save()
         super().save(*args, **kwargs)
 
-    def __setitem__(self, key, value):
+    def set_args(self, key, value):
         self.save()
         try:
             eventargs = self.eventargs_set.get(key=key)
@@ -53,7 +53,7 @@ class EventSchedule(models.Model):
         except:
             self.eventargs_set.create(key=key, value=value).save()
 
-    def __getitem__(self, key):
+    def get_args(self, key):
         try:
             return self.eventargs_set.get(key=key).value
         except:
@@ -84,7 +84,6 @@ class EventSchedule(models.Model):
             self.errormessage = str(e)
             self.save()
             raise e
-            # return f"{self.category.name}のイベントを実行できませんでした。"
         
         if not self.category.repeat:
             self.status = 3
