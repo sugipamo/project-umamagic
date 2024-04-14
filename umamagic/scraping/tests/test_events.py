@@ -13,13 +13,18 @@ class ScrapeCategoryModelTest(TestCase):
 
     def test_default_values(self):
         category = EventCategory(name="テストカテゴリー")
-        self.assertEqual(category.use_method, "default_methods")
+        self.assertEqual(category.use_method, "Test.default_methods")
         self.assertEqual(category.need_driver, False)
 
     def test_doevent_default_method(self):
         category = EventCategory(name="テストカテゴリー")
         self.assertEqual(category.doevent(), "テストカテゴリーのイベントを実行しました。")
 
+    def test_doevent_error(self):
+        category = EventCategory(name="エラー")
+        category.use_method = "Test.error_methods"
+        with self.assertRaises(Exception):
+            category.doevent()
 
 
 class EventArgsModelTest(TestCase):

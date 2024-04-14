@@ -5,23 +5,22 @@ from . import event_methods
 
 class EventCategory(models.Model):
     name = models.CharField(max_length=255)
-    use_method = models.CharField(max_length=255, default="default_methods")
+    use_method = models.CharField(max_length=255, default="Test.default_methods")
     need_driver = models.BooleanField(default=False)
     repeat = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def doevent(self, **kwargs):
-        method = getattr(event_methods, self.use_method)
-        try:
-            if self.need_driver:                
-                with WebDriver() as driver:
-                    kwargs["driver"] = driver
-                    method(**kwargs)
-            else:
+        method = event_methods
+        for s in self.use_method.split("."):
+            method = getattr(method, s)
+        if self.need_driver:                
+            with WebDriver() as driver:
+                kwargs["driver"] = driver
                 method(**kwargs)
-        except Exception as e:
-            return e
+        else:
+            method(**kwargs)
         return f"{self.name}のイベントを実行しました。"
 
     def __str__(self):
@@ -78,16 +77,19 @@ class EventSchedule(models.Model):
         self.status = 2
         self.save()
 
-        ret = self.category.doevent(**{d["key"]: d["value"] for d in self.eventargs_set.all().values()} if self.pk else {})
-        if isinstance(ret, Exception):
+        try:
+            ret = self.category.doevent(**{d["key"]: d["value"] for d in self.eventargs_set.all().values()} if self.pk else {})
+        except Exception as e:
             self.status = 4
-            self.errormessage = str(ret)
+            self.errormessage = str(e)
             self.save()
-            return f"{self.category.name}のイベントを実行できませんでした。"
+            raise e
+            # return f"{self.category.name}のイベントを実行できませんでした。"
         
         if not self.category.repeat:
             self.status = 3
             self.save()
+
         return ret
 
     def __str__(self):
