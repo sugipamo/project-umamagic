@@ -1,0 +1,32 @@
+# 当サイトへのログインではなく、スクレイピングのためのログイン
+
+from django.test import TestCase
+from django.utils import timezone
+from ..models import LoginRequired
+
+class LoginRequiredModelTest(TestCase):
+    def test_str(self):
+        login_required = LoginRequired.objects.create(domain='.example.com')
+        self.assertEqual(str(login_required), 'ログインが必要なページ')
+
+
+    def test_default_value(self):
+        login_required = LoginRequired.objects.create(domain='.example.com')
+        self.assertEqual(login_required.loggined, False)
+
+    def test_loggined(self):
+        login_required = LoginRequired.objects.create(domain='.example.com')
+        login_required.loggined = True
+        login_required.save()
+        self.assertEqual(login_required.loggined, True)
+
+class LoginRequiredViewTest(TestCase):
+    def test_login_required(self):
+        response = self.client.get('/login_required/')
+        self.assertRedirects(response, '/accounts/login/?next=/login_required/')
+
+    def test_login_required_loggined(self):
+        LoginRequired.objects.create(domain='.example.com')
+        response = self.client.get('/login_required/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '.example.com')
