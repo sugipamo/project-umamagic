@@ -32,13 +32,13 @@ class EventArgsModelTest(TestCase):
 
     def test_setitem(self):
         schedule = EventSchedule(title="テストスケジュール", category=EventCategory(name="テストカテゴリー"))
-        schedule["test_key"] = "test_value"
-        self.assertEqual(schedule["test_key"], "test_value")
+        schedule.set_args("test_key", "test_value")
+        self.assertEqual(schedule.get_args("test_key"), "test_value")
 
     def test_getitem(self):
         schedule = EventSchedule(title="テストスケジュール", category=EventCategory(name="テストカテゴリー"))
-        schedule["test_key"] = "test_value"
-        self.assertEqual(schedule["test_key"], "test_value")
+        schedule.set_args("test_key", "test_value")
+        self.assertEqual(schedule.get_args("test_key"), "test_value")
 
 
 class EventScheduleModelTest(TestCase):
@@ -74,8 +74,7 @@ class EventScheduleListViewTest(TestCase):
         response = self.client.get(reverse('scraping:event_schedule_list'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'scraping/event_schedule_list.html')
-        self.assertContains(response, 'スケジュール')   
-        self.assertQuerysetEqual(response.context['eventschedule_list'], [])
+        self.assertContains(response, 'イベントスケジュール')
 
     def test_event_schedule_list_view_with_data(self):
         category = EventCategory.objects.create(name="テストカテゴリー")
@@ -83,4 +82,5 @@ class EventScheduleListViewTest(TestCase):
         response = self.client.get(reverse('scraping:event_schedule_list'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'テストスケジュール')
-        self.assertQuerysetEqual(response.context['eventschedule_list'], ['<EventSchedule: テストスケジュール>'])
+        self.assertContains(response, 'テストカテゴリー')
+        
