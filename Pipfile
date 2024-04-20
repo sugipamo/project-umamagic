@@ -13,6 +13,8 @@ name = "pypi"
 django = "*"
 mysqlclient = "*"
 selenium = "*"
+uwsgi = "*"
+django-environ = "*"
 
 [dev-packages]
 

@@ -11,19 +11,26 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import environ
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+env = environ.Env()
 
+READ_ENV_FILE = env.bool('DJANGO_READ_ENV_FILE', default=False)
+if READ_ENV_FILE:
+    env_file = str(BASE_DIR.path('.env.develop'))
+    env.read_env(env_file)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-3y#jpw!-aj439oysf5iwktn_8&zw(j24v)6d5(3+%!gu3w6s-9'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG', default=False)
 
 ALLOWED_HOSTS = []
 
@@ -83,7 +90,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'umamagic',
         'USER': 'root',
-        'PASSWORD': 'D6eLnC4z',
+        'PASSWORD': os.environ.get('MYSQL_ROOT_PASSWORD'),
         'HOST': 'db',
         'PORT': '3306',
     }
