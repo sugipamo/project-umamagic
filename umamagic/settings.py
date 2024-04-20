@@ -25,8 +25,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEVELOP', 'True').lower() != 'true'
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 # SECURE_SSL_REDIRECT=True
 # SECURE_PROXY_SSL_HEADER=('HTTP_X_FORWARDED_PROTO', 'https')
@@ -84,11 +83,18 @@ DATABASES = {
         'NAME': 'umamagic',
         'USER': 'root',
         'PASSWORD': os.environ.get('MYSQL_ROOT_PASSWORD'),
-        'HOST': 'db',
+        'HOST': 'mysql',
         'PORT': '3306',
     }
 }
 
+# set static files directory and url path
+STATIC_URL = '/staticfiles/'
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+# set upload files directory and url path
+MEDIA_URL = "/mediafiles/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "mediafiles")
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
