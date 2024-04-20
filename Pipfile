@@ -1,5 +1,5 @@
 [scripts]
-start = "python manage.py runserver 0.0.0.0:8001"
+start = "gunicorn umamagic.wsgi:application --bind 0.0.0.0:8001"
 migrate = "bash -c 'python manage.py makemigrations && python manage.py migrate'"
 migrate_reset = "bash -c 'python manage.py migrate --fake && python manage.py migrate'"
 test = "python manage.py test"
@@ -13,6 +13,8 @@ name = "pypi"
 django = "*"
 mysqlclient = "*"
 selenium = "*"
+gunicorn = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 

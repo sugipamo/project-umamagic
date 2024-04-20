@@ -11,25 +11,24 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-3y#jpw!-aj439oysf5iwktn_8&zw(j24v)6d5(3+%!gu3w6s-9'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEVELOP', 'True').lower() != 'true'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
-
-SECURE_SSL_REDIRECT=True
-SECURE_PROXY_SSL_HEADER=('HTTP_X_FORWARDED_PROTO', 'https')
+# SECURE_SSL_REDIRECT=True
+# SECURE_PROXY_SSL_HEADER=('HTTP_X_FORWARDED_PROTO', 'https')
 # https://ikukyuuzinzinia.com/detail/22
 
 # Application definition
@@ -83,12 +82,19 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'umamagic',
         'USER': 'root',
-        'PASSWORD': 'D6eLnC4z',
-        'HOST': 'db',
+        'PASSWORD': os.environ.get('MYSQL_ROOT_PASSWORD'),
+        'HOST': 'mysql',
         'PORT': '3306',
     }
 }
 
+# set static files directory and url path
+STATIC_URL = '/staticfiles/'
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+# set upload files directory and url path
+MEDIA_URL = "/mediafiles/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "mediafiles")
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
