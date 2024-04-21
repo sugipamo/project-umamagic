@@ -1,0 +1,32 @@
+# 当サイトへのログインではなく、スクレイピングのためのログイン
+
+from django.test import TestCase
+from django.utils import timezone
+from ..models import loginForScraping
+
+class loginForScrapingModelTest(TestCase):
+    def test_str(self):
+        login_for_scraping = loginForScraping.objects.create(domain='.example.com')
+        self.assertEqual(str(login_for_scraping), 'ログインが必要なページ')
+
+
+    def test_default_value(self):
+        login_for_scraping = loginForScraping.objects.create(domain='.example.com')
+        self.assertEqual(login_for_scraping.loggined, False)
+
+    def test_loggined(self):
+        login_for_scraping = loginForScraping.objects.create(domain='.example.com')
+        login_for_scraping.loggined = True
+        login_for_scraping.save()
+        self.assertEqual(login_for_scraping.loggined, True)
+
+class loginForScrapingViewTest(TestCase):
+    def test_login_for_scraping(self):
+        response = self.client.get('/login_for_scraping/')
+        self.assertRedirects(response, '/accounts/login/?next=/login_for_scraping/')
+
+    def test_login_for_scraping_loggined(self):
+        loginForScraping.objects.create(domain='.example.com')
+        response = self.client.get('/login_for_scraping/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '.example.com')

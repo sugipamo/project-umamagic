@@ -3,10 +3,10 @@ up = 'docker compose -f "compose.yml" up -d --build'
 down = 'docker compose -f "compose.yml" down'
 logs = 'docker compose logs'
 exec = 'docker compose exec'
-migrate = 'docker compose exec django bash -c "pipenv run migrate"' 
+migrate = 'docker compose exec django bash -c "python manage.py makemigrations && python manage.py migrate"'
+migrate_reset = 'docker compose exec django bash -c "python manage.py migrate --fake && python manage.py migrate"'
 start = 'gunicorn umamagic.wsgi:application --bind 0.0.0.0:8001'
-migrate_reset = 'bash -c "python manage.py migrate --fake && python manage.py migrate"'
-test = 'python manage.py test'
+test = 'docker compose exec django bash -c "python manage.py test"'
 
 
 [[source]]

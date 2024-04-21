@@ -14,7 +14,7 @@ class LoginMethods():
             raise Exception("ログインに失敗しました。")
     
 
-class LoginRequired(models.Model):
+class LoginForScraping(models.Model):
     domain = models.CharField(max_length=255)
     loggined = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
