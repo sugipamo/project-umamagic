@@ -3,6 +3,9 @@ up = 'docker compose -f "compose.yml" up -d --build'
 down = 'docker compose -f "compose.yml" down'
 logs = 'docker compose logs'
 
+
+migrate = 'docker compose exec django bash -c "pipenv run migrate"' 
+
 [[source]]
 url = "https://pypi.org/simple"
 verify_ssl = true

@@ -1,5 +1,6 @@
 FROM python:3.10
-
+ENV PATH $PATH:/home/user/.local/lib/python3.10/Scripts
+# ENV PIPENV_VENV_IN_PROJECT=1
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONIOENCODING utf-8
@@ -23,4 +24,3 @@ WORKDIR /home/$USERNAME/sources
 RUN pip install --upgrade pip && \ 
     pip install pipenv
 
-ENV PATH $PATH:/home/user/.local/lib/python3.10/Scripts
