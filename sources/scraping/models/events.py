@@ -3,6 +3,28 @@ from django.utils import timezone
 from .webdriver import WebDriver
 from . import event_methods
 
+from apscheduler.schedulers.background import BackgroundScheduler
+
+def doevents():
+    events = EventSchedule.objects.filter(status=1)
+    from collections import defaultdict
+    d = defaultdict(list)
+    for event in events:
+        d[event.category].append(event)
+    d = {k: sorted(v, key=lambda x: x.latestexecuted_at) for k, v in d.items()}
+    d = {k: v[:k.parallel_limit] for k, v in d.items()}
+    for _, events in d.items():
+        for event in events:
+            try:
+                event.doevent()
+            except Exception as e:
+                pass
+
+def doevents_scheduler():
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(doevents, 'interval', seconds=1)
+    scheduler.start()
+
 class EventCategory(models.Model):
     name = models.CharField(max_length=255)
     use_method = models.CharField(max_length=255, default="Test.default_methods")
@@ -33,7 +55,7 @@ class EventSchedule(models.Model):
     startdatetime = models.DateTimeField(default=timezone.now)
     enddatetime = models.DateTimeField(null=True, blank=True)
     durationtime = models.IntegerField(null=True, blank=True)
-    latestexecuted_at = models.DateTimeField(auto_now_add=True)
+    latestexecuted_at = models.DateTimeField(auto_now=True)
     errormessage = models.TextField(null=True, blank=True)
     category = models.ForeignKey(EventCategory, on_delete=models.PROTECT)
     memo = models.TextField(null=True, blank=True)

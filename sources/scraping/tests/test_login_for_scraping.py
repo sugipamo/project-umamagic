@@ -31,6 +31,5 @@ class LoginForScrapingListViewTest(TestCase):
         LoginForScraping.objects.create(domain='.example.com')
         response = self.client.get(reverse('scraping:login_for_scraping_list'))
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'scraping/login_for_scraping_list.html')
         self.assertContains(response, '.example.com')
-
-        
