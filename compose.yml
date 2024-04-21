@@ -11,6 +11,7 @@ services:
     # ports:
     #   - '8001:8001'
     tty: true
+    command: "gunicorn umamagic.wsgi:application --bind 0.0.0.0:8001"
     environment:
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
       DEVELOP: ${DEVELOP}
@@ -28,9 +29,6 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     environment:
-      TZ: Asia/Tokyo
-      LANG: C.UTF-8
-      LANGUAGE: en_US:en_US
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin

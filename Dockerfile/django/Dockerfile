@@ -22,4 +22,3 @@ USER $USERNAME
 WORKDIR /home/$USERNAME
 RUN mkdir sources
 WORKDIR /home/$USERNAME/sources
-
