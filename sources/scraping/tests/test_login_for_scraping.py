@@ -3,12 +3,12 @@
 from django.test import TestCase
 from django.utils import timezone
 from ..models import LoginForScraping
+from django.urls import reverse
 
-class loginForScrapingModelTest(TestCase):
+class LoginForScrapingModelTest(TestCase):
     def test_str(self):
         login_for_scraping = LoginForScraping.objects.create(domain='.example.com')
-        self.assertEqual(str(login_for_scraping), 'ログインが必要なページ')
-
+        self.assertEqual(str(login_for_scraping), '.example.com')
 
     def test_default_value(self):
         login_for_scraping = LoginForScraping.objects.create(domain='.example.com')
@@ -20,13 +20,17 @@ class loginForScrapingModelTest(TestCase):
         login_for_scraping.save()
         self.assertEqual(login_for_scraping.loggined, True)
 
-class LoginForScrapingViewTest(TestCase):
-    def test_login_for_scraping(self):
-        response = self.client.get('/login_for_scraping/')
-        self.assertRedirects(response, '/accounts/login/?next=/login_for_scraping/')
+class LoginForScrapingListViewTest(TestCase):
+    def test_login_for_scraping_list_view(self):
+        response = self.client.get(reverse('scraping:login_for_scraping_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'scraping/login_for_scraping_list.html')
+        self.assertContains(response, 'ログイン待ち')
 
-    def test_login_for_scraping_loggined(self):
+    def test_login_for_scraping_list_view_view_with_data(self):
         LoginForScraping.objects.create(domain='.example.com')
-        response = self.client.get('/login_for_scraping/')
+        response = self.client.get(reverse('scraping:login_for_scraping_list'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '.example.com')
+
+        

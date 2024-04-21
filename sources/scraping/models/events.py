@@ -8,6 +8,7 @@ class EventCategory(models.Model):
     use_method = models.CharField(max_length=255, default="Test.default_methods")
     need_driver = models.BooleanField(default=False)
     repeat = models.BooleanField(default=False)
+    parallel_limit = models.IntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -59,12 +60,17 @@ class EventSchedule(models.Model):
         except:
             return None
         
+    def done(self):
+        self.status = 3
+        self.enddatetime = timezone.now()
+        self.save()
+
     def doevent(self):
         if self.status == 2:
             return f"{self.title}は実行中です。"
-        elif self.status == 3:
-            return f"{self.title}は既に実行済みです。"
-        elif self.status == 4:
+        if self.status == 3:
+            return f"{self.title}は既に完了しています。"
+        if self.status == 4:
             return f"{self.title}はエラーが発生しています。"
         elif self.startdatetime > timezone.now():
             return f"{self.title}はまだ実行できません。"
@@ -85,10 +91,12 @@ class EventSchedule(models.Model):
             self.save()
             raise e
         
-        if not self.category.repeat:
+        if self.category.repeat:
+            self.status = 1
+        else:
             self.status = 3
-            self.save()
 
+        self.save()
         return ret
 
     def __str__(self):

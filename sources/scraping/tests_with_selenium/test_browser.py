@@ -27,26 +27,3 @@ class EventScheduleModelTest(TestCase):
         schedule = EventSchedule(title="GoogleHtml取得", category=category)
         schedule.set_args("url", "http://google.com")
         self.assertEqual(schedule.doevent(), "GoogleHtml取得のイベントを実行しました。")
-
-
-# class EventScheduleModelLoginTest(TestCase):
-#     def test_doevent_login_netkeiba(self):
-#         category = EventCategory(name="Netkeibaログイン")
-#         category.use_method = "LoginInfo.netkeiba"
-#         category.need_driver = True
-#         schedule = EventSchedule(title="Netkeibaログイン", category=category)
-        # schedule.set_args("url", "https://regist.netkeiba.com/account/?pid=login")
-#         schedule.set_args("username", "")
-#         schedule.set_args("password", "")
-#         self.assertEqual(schedule.doevent(), "Netkeibaログインのイベントを実行しました。")
-
-    # def test_doevent_login_netkeiba_invalid_datas(self):
-    #     category = EventCategory(name="Netkeibaログイン")
-    #     category.use_method = "LoginInfo.netkeiba"
-    #     category.need_driver = True
-    #     schedule = EventSchedule(title="Netkeibaログイン", category=category)
-    #     schedule.set_args("url", "https://regist.netkeiba.com/account/?pid=login")
-#         schedule.set_args("username", "test")
-#         schedule.set_args("password", "test")
-    #     self.assertEqual(schedule.doevent(), "Netkeibaログインのイベントを実行できませんでした。")
-
