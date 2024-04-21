@@ -1,6 +1,4 @@
 FROM python:3.10
-ENV PATH $PATH:/home/user/.local/lib/python3.10/Scripts
-# ENV PIPENV_VENV_IN_PROJECT=1
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONIOENCODING utf-8
@@ -14,13 +12,14 @@ ARG GROUPNAME=umamagic
 ARG UID=1000
 ARG GID=1000
 
+RUN pip install --upgrade pip
+COPY requirements.txt /tmp/ 
+RUN pip install -r /tmp/requirements.txt
+
 RUN groupadd -g $GID $GROUPNAME && \
     useradd -m -s /bin/bash -u $UID -g $GID $USERNAME
 USER $USERNAME
 WORKDIR /home/$USERNAME
 RUN mkdir sources
 WORKDIR /home/$USERNAME/sources
-
-RUN pip install --upgrade pip && \ 
-    pip install pipenv
 
