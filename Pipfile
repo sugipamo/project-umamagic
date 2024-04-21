@@ -1,8 +1,7 @@
 [scripts]
-start = "gunicorn umamagic.wsgi:application --bind 0.0.0.0:8001"
-migrate = "bash -c 'python manage.py makemigrations && python manage.py migrate'"
-migrate_reset = "bash -c 'python manage.py migrate --fake && python manage.py migrate'"
-test = "python manage.py test"
+up = 'docker compose -f "compose.yml" up -d --build'
+down = 'docker compose -f "compose.yml" down'
+logs = 'docker compose logs'
 
 [[source]]
 url = "https://pypi.org/simple"
@@ -10,13 +9,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"
-mysqlclient = "*"
-selenium = "*"
-gunicorn = "*"
-psycopg2-binary = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.10"
+python_version = "3"

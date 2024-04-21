@@ -1,0 +1,89 @@
+version: '3.8'
+services:
+  django:
+    build:
+      context: ./Dockerfile/django
+      dockerfile: Dockerfile
+    volumes:
+      - ./sources:/home/user/sources
+      - static_volume:/usr/src/app/staticfiles
+      - media_volume:/usr/src/app/mediafiles
+    # ports:
+    #   - '8001:8001'
+    tty: true
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      DEVELOP: ${DEVELOP}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    depends_on:
+      - mysql
+      - selenium
+    networks:
+      - web_network
+
+  mysql:
+    build:
+      context: ./Dockerfile/mysql
+      dockerfile: Dockerfile
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      TZ: Asia/Tokyo
+      LANG: C.UTF-8
+      LANGUAGE: en_US:en_US
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
+    networks:
+      - web_network
+
+  selenium:
+    image: selenium/standalone-chrome
+    # ports:
+    #   - 4444:4444
+    #   - 7900:7900
+    volumes:
+      - /dev/shm:/dev/shm
+    networks:
+      - web_network
+
+  phpmyadmin:
+    build:
+      context: ./Dockerfile/phpmyadmin
+      dockerfile: Dockerfile
+    # ports:
+    #   - 8080:80
+    environment:
+      - PMA_HOST=${PMA_HOST}
+      - PMA_USER=${PMA_USER}
+      - PMA_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    networks:
+      - web_network
+
+  nginx:
+    build:
+      context: ./Dockerfile/nginx
+      dockerfile: Dockerfile
+    ports:
+      - '80:80'
+    tty: true
+    volumes:
+      - ./Dockerfile/nginx/uwsgi_params:/etc/nginx/uwsgi_params
+      - static_volume:/usr/src/app/staticfiles
+      - media_volume:/usr/src/app/mediafiles
+    depends_on:
+      - django
+      - selenium
+      - phpmyadmin
+    networks:
+      - web_network
+
+volumes:
+  mysql_data:
+  web_data:
+  static_volume:
+  media_volume:
+
+
+networks:
+  web_network:
