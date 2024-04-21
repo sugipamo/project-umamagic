@@ -18,3 +18,4 @@ class Test():
         from .html_documents import HtmlDocuments
         obj = HtmlDocuments.objects.create(url=url, html=driver.page_source)
         obj.delete()
+
