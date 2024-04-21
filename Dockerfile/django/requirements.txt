@@ -1,0 +1,5 @@
+django
+mysqlclient
+selenium
+gunicorn
+psycopg2-binary
