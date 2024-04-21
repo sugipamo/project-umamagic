@@ -22,7 +22,7 @@
                     <tr class="odd gradeX text-center">
                         <td class="text-center" width="100">{{ item.domain }}</td>
                         <td class="text-center" width="100">
-                            <a href="{% url 'scraping:login_required_detail' item.pk %}"
+                            <a href="{% url 'scraping:login_for_scraping_detail' item.pk %}"
                                 class="btn btn-primary">ログイン</a>
                     </tr>
                     {% endfor %}

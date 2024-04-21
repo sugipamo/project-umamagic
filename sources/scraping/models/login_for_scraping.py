@@ -12,7 +12,15 @@ class LoginMethods():
         driver.find_element("xpath", ".//div[@class='loginBtn__wrap']/input").click()
         if driver.find_elements("name", "login_id"):
             raise Exception("ログインに失敗しました。")
-    
+        
+    @cookie_required(".netkeiba.com")
+    def logined_netkeibacom(driver):
+        url = "https://user.sp.netkeiba.com/owner/prof.html"
+        driver.get(url)
+        if url == driver.current_url:
+            return True
+        return False
+
 
 class LoginForScraping(models.Model):
     domain = models.CharField(max_length=255)
@@ -31,3 +39,9 @@ class LoginForScraping(models.Model):
 
         self.loggined = True
         self.save()
+
+    def is_logined(self):
+        method = getattr(LoginMethods, f"logined_{self.domain.replace('.', '')}")
+        from .webdriver import WebDriver
+        with WebDriver() as driver:
+            return method(driver)
