@@ -6,19 +6,8 @@ from . import event_methods
 from apscheduler.schedulers.background import BackgroundScheduler
 
 def doevents():
-    events = EventSchedule.objects.filter(status=1)
-    from collections import defaultdict
-    d = defaultdict(list)
-    for event in events:
-        d[event.category].append(event)
-    d = {k: sorted(v, key=lambda x: x.latestexecuted_at) for k, v in d.items()}
-    d = {k: v[:k.parallel_limit] for k, v in d.items()}
-    for _, events in d.items():
-        for event in events:
-            try:
-                event.doevent()
-            except Exception as e:
-                pass
+    # events = EventSchedule.objects.filter(status=1)
+    pass
 
 def doevents_scheduler():
     scheduler = BackgroundScheduler()
