@@ -27,9 +27,7 @@ DEBUG = os.environ.get('DEVELOP', 'True').lower() != 'true'
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
-# SECURE_SSL_REDIRECT=True
-# SECURE_PROXY_SSL_HEADER=('HTTP_X_FORWARDED_PROTO', 'https')
-# https://ikukyuuzinzinia.com/detail/22
+# AUTH_USER_MODEL = 'accounts.User'
 
 # Application definition
 
@@ -41,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'scraping',
+    'account',
 ]
 
 MIDDLEWARE = [
