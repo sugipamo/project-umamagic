@@ -2,17 +2,7 @@ from django.db import models
 from django.utils import timezone
 from .webdriver import WebDriver
 from . import event_methods
-
 from apscheduler.schedulers.background import BackgroundScheduler
-
-def doevents():
-    # events = EventSchedule.objects.filter(status=1)
-    pass
-
-def doevents_scheduler():
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(doevents, 'interval', seconds=1)
-    scheduler.start()
 
 class EventCategory(models.Model):
     name = models.CharField(max_length=255)
@@ -44,7 +34,8 @@ class EventSchedule(models.Model):
     startdatetime = models.DateTimeField(default=timezone.now)
     enddatetime = models.DateTimeField(null=True, blank=True)
     durationtime = models.IntegerField(null=True, blank=True)
-    latestexecuted_at = models.DateTimeField(auto_now=True)
+    latestexecuted_at = models.DateTimeField(default=timezone.now)
+    latestcalled_at = models.DateTimeField(default=timezone.now)
     errormessage = models.TextField(null=True, blank=True)
     category = models.ForeignKey(EventCategory, on_delete=models.PROTECT)
     memo = models.TextField(null=True, blank=True)
@@ -77,17 +68,18 @@ class EventSchedule(models.Model):
         self.save()
 
     def doevent(self):
+        self.latestcalled_at = timezone.now()
         if self.status == 2:
             return f"{self.title}は実行中です。"
         if self.status == 3:
             return f"{self.title}は既に完了しています。"
         if self.status == 4:
             return f"{self.title}はエラーが発生しています。"
-        elif self.startdatetime > timezone.now():
+        if self.startdatetime > timezone.now():
             return f"{self.title}はまだ実行できません。"
-        elif self.durationtime and self.latestexecuted_at and self.latestexecuted_at + timezone.timedelta(seconds=self.durationtime) > timezone.now():
+        if self.durationtime and self.latestexecuted_at and self.latestexecuted_at + timezone.timedelta(seconds=self.durationtime) > timezone.now():
             return f"{self.title}はまだ実行できません。"
-        elif self.enddatetime and self.enddatetime < timezone.now():
+        if self.enddatetime and self.enddatetime < timezone.now():
             return f"{self.title}は既に終了しています。"
 
         self.latestexecuted_at = timezone.now()
@@ -125,3 +117,15 @@ class EventArgs(models.Model):
         return f"{self.key}: {self.value}"
     
 
+def doevents():
+    event = EventSchedule.objects.filter(status=1).order_by("latestcalled_at")
+    if event.exists():
+        event.first().doevent()
+
+def doevents_scheduler():
+    from django.conf import settings
+    if settings.TESTING:
+        return
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(doevents, 'interval', seconds=1)
+    scheduler.start()

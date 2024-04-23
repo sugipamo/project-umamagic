@@ -2,7 +2,7 @@ from django.test import TestCase
 from scraping.models.events import EventCategory, EventSchedule, EventArgs
 
 
-class EventScheduleModelTest(TestCase):
+class EventScheduleBrowserTest(TestCase):
     def test_doevent_access_google(self):
         category = EventCategory(name="Googleアクセス")
         category.use_method = "Test.access_google"
