@@ -3,45 +3,43 @@ from selenium import webdriver
 import pickle
 import os
 from time import perf_counter
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
-class CookieForLogin(models.Model):
-    domain = models.CharField(max_length=255)
-    cookie_data = models.FileField(upload_to="cookies/")
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-
+COOKIEPATH = "cookies/"
 def cookie_required(domain):
     def decorator(func):
         def wrapper(*args, **kwargs):
-            if not "driver" in kwargs:
+            driver = [arg for arg in args if isinstance(arg, webdriver.Remote)]
+            if not driver:
                 return func(*args, **kwargs)
+            else:
+                driver = driver[0]
             cookies = {}
-            file = CookieForLogin.objects.filter(domain=domain)
-            if not file.exists():
-                file = CookieForLogin.objects.create(domain=domain)
-            if file.first().cookie_data:
-                with open(file.first().cookie_data.path, "rb") as f:
+            import pathlib
+            cookiepath = COOKIEPATH + "/" + domain + "_cookies.pkl"
+            if pathlib.Path(cookiepath).exists():
+                with open(cookiepath, "rb") as f:
                     cookies = pickle.load(f)
-            if type(cookies) != dict:
-                cookies = {}
-            if domain in cookies:
-                kwargs["driver"].get("https://" + domain[1:] if domain.startswith(".") else "https://" + domain)
-                [kwargs["driver"].add_cookie(cookie) for cookie in cookies[domain] if cookie["domain"] == domain]
+                if type(cookies) != list:
+                    cookies = []
+                url = "https://" + domain[1:] if domain.startswith(".") else "https://" + domain
+                driver.get(url)
+                print("accessed", url)
+                [driver.add_cookie(cookie) for cookie in cookies]
             return_value = func(*args, **kwargs)
-            with open(file.first().cookie_data.path, "wb") as f:
-                pickle.dump(kwargs["driver"].get_cookies(), f)
+            with open(cookiepath, "wb") as f:
+                cookies = driver.get_cookies()
+                cookies = [cookie for cookie in cookies if cookie["domain"] == domain]
+                pickle.dump(cookies, f)
             return return_value
-            
         return wrapper
     return decorator
-
 
 # withでつかってタイムアウトまでを計測する
 class TimeCounter():
     def __init__(self):
-        self.start = None
-        self.end = None
+        self.start = perf_counter()
 
     def __enter__(self, timeout=60):
         self.start = perf_counter()
@@ -49,16 +47,24 @@ class TimeCounter():
         return self
     
     def __exit__(self, exc_type, exc_value, traceback):
-        self.end = perf_counter()
-        if self.end - self.start >= self.timeout:
+        if self.get_time >= self.timeout:
             raise Exception("タイムアウトしました。")
         return True
     
+    @property
     def get_time(self):
-        return self.end - self.start
+        return perf_counter() - self.start
     
-    def can_continue(self):
-        return self.end - self.start < self.timeout
+    def do(self, func, *args, **kwargs):
+        """funcの戻り値がTrueになるまで実行する、タイムアウトしたらエラーを返す"""
+        while True:
+            result = func(*args, **kwargs)
+            # print("result", result)
+            if result:
+                return result
+            if self.get_time >= self.timeout:
+                raise Exception("タイムアウトしました。")
+
 
 class WebDriver():
     def __init__(self):
@@ -74,5 +80,5 @@ class WebDriver():
     def __exit__(self, exc_type, exc_value, traceback):
         self.driver.quit()
         if exc_type:
-            raise exc_value
+            raise exc_type(exc_value).with_traceback(traceback)
         return True

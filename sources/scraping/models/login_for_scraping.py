@@ -1,5 +1,6 @@
 from django.db import models
 from .webdriver import cookie_required
+from .webdriver import WebDriver
 
 class LoginMethods():
     @cookie_required(".google.com")
@@ -42,9 +43,10 @@ class LoginForScraping(models.Model):
     def __str__(self):
         return self.domain
     
-    def login(self, driver, username, password):
-        method = getattr(LoginMethods, self.domain.replace(".", ""))
-        method(driver, username, password)
+    def login(self, username, password):
+        with WebDriver() as driver:
+            method = getattr(LoginMethods, self.domain.replace(".", ""))
+            method(driver, username, password)
         self.loggined = True
         self.save()
 

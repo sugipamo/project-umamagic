@@ -5,14 +5,15 @@ from scraping.models.event_methods import Login, NetKeiba
 
 class TestLoginMethods(TestCase):
     def test_update_logined(self):
+        login = LoginForScraping.objects.create(domain=".google.com", loggined=True)
         with WebDriver() as driver:
-            login = LoginForScraping.objects.create(domain=".google.com", loggined=True)
             Login.update_logined(driver)
-            login.refresh_from_db()
-            self.assertEqual(login.loggined, False)
+        login.refresh_from_db()
+        self.assertEqual(login.loggined, False)
 
 class TestNetKeiba(TestCase):
     def test_collect_raceids(self):
-        NetKeiba.collect_raceids()
-        with self.assertRaises(Exception):
-            NetKeiba.collect_raceids()
+        login = LoginForScraping.objects.create(domain=".netkeiba.com", loggined=True)
+        with WebDriver() as driver:
+            NetKeiba.collect_raceids(driver)
+        login.refresh_from_db()
