@@ -25,7 +25,6 @@ def cookie_required(domain):
                     cookies = []
                 url = "https://" + domain[1:] if domain.startswith(".") else "https://" + domain
                 driver.get(url)
-                print("accessed", url)
                 [driver.add_cookie(cookie) for cookie in cookies]
             return_value = func(*args, **kwargs)
             with open(cookiepath, "wb") as f:
@@ -69,9 +68,11 @@ class TimeCounter():
 class WebDriver():
     def __init__(self):
         self.cookiepath = os.path.join("cookies.pkl")
+        options = webdriver.ChromeOptions()
+        options.set_capability('pageLoadStrategy', 'eager')
         self.driver = webdriver.Remote(
             command_executor = os.environ["SELENIUM_URL"],
-            options = webdriver.ChromeOptions()
+            options = options,
         )
 
     def __enter__(self):

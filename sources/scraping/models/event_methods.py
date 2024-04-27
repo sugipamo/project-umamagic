@@ -1,7 +1,7 @@
 from scraping.models.login_for_scraping import LoginForScraping
-from .webdriver import TimeCounter
-from .webdriver import cookie_required
-
+from scraping.models.webdriver import TimeCounter
+from scraping.models.webdriver import cookie_required
+from scraping.models.pages import RaceIdCategory, RaceId
 
 class Test():
     def default_methods():
@@ -29,8 +29,23 @@ class Login():
 class NetKeiba():
     @cookie_required(".netkeiba.com")
     def collect_raceids(driver):
-        driver.get("https://race.netkeiba.com/top/?rf=navi")
         with TimeCounter() as tc:
-            elems = tc.do(driver.find_elements, "xpath", ".//div[@class='RaceList_Area']")
-        print(elems)
+            elems = tc.do(driver.find_elements, "xpath", ".//a")
+        elems = driver.find_elements("xpath", ".//a[contains(@href, 'race_id')]")
+        urls = [elem.get_attribute("href") for elem in elems]
+        url_categorys = {"jra": [], "nar": []}
+        for url in urls:
+            if "nar" in url:
+                url_categorys["nar"].append(url)
+            else:
+                url_categorys["jra"].append(url)
+
+        for url_category, urls in url_categorys.items():
+            category = RaceIdCategory.objects.get_or_create(name=url_category)[0]
+            for url in urls:
+                params = url.split("?")[-1]
+                params = dict([param.split("=") for param in params.split("&")])
+                if "race_id" in params:
+                    RaceId.objects.create(race_id=params["race_id"], category=category)
+
         
