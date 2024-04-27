@@ -20,8 +20,13 @@ class TestNetKeiba(TestCase):
         login.refresh_from_db()
         self.assertEqual(login.loggined, True)
 
-    def test_collect_raceids(self):
+    def test_extract_raceids(self):
         LoginForScraping.objects.create(domain=".netkeiba.com", loggined=True)
         with WebDriver() as driver:
-            NetKeiba.collect_raceids(driver)
-        self.assertEqual(RaceId.objects.exists(), True)
+            ret = NetKeiba.extract_raceids(driver, "https://www.netkeiba.com/")
+        self.assertTrue(ret)
+
+    def test_new_raceids(self):
+        LoginForScraping.objects.create(domain=".netkeiba.com", loggined=True)
+        with WebDriver() as driver:
+            NetKeiba.new_raceids(driver)

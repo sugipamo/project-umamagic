@@ -67,7 +67,6 @@ class TimeCounter():
 
 class WebDriver():
     def __init__(self):
-        self.cookiepath = os.path.join("cookies.pkl")
         options = webdriver.ChromeOptions()
         options.set_capability('pageLoadStrategy', 'eager')
         self.driver = webdriver.Remote(
@@ -76,6 +75,7 @@ class WebDriver():
         )
 
     def __enter__(self):
+
         return self.driver
     
     def __exit__(self, exc_type, exc_value, traceback):

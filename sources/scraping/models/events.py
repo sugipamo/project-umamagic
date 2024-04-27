@@ -9,6 +9,7 @@ class EventCategory(models.Model):
     use_method = models.CharField(max_length=255, default="Test.default_methods")
     need_driver = models.BooleanField(default=False)
     repeat = models.BooleanField(default=False)
+    durationtime = models.IntegerField(null=True, blank=True)
     parallel_limit = models.IntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -33,9 +34,8 @@ class EventSchedule(models.Model):
     status = models.IntegerField(choices=[(i+1, s) for i, s in enumerate(["待機", "実行中", "完了", "エラー"])], default=1)
     startdatetime = models.DateTimeField(default=timezone.now)
     enddatetime = models.DateTimeField(null=True, blank=True)
-    durationtime = models.IntegerField(null=True, blank=True)
-    latestexecuted_at = models.DateTimeField(default=timezone.now)
-    latestcalled_at = models.DateTimeField(default=timezone.now)
+    latestexecuted_at = models.DateTimeField(null=True, blank=True)
+    latestcalled_at = models.DateTimeField(null=True, blank=True)
     errormessage = models.TextField(null=True, blank=True)
     category = models.ForeignKey(EventCategory, on_delete=models.PROTECT)
     memo = models.TextField(null=True, blank=True)
@@ -77,7 +77,7 @@ class EventSchedule(models.Model):
             return f"{self.title}はエラーが発生しています。"
         if self.startdatetime > timezone.now():
             return f"{self.title}はまだ実行できません。"
-        if self.durationtime and self.latestexecuted_at and self.latestexecuted_at + timezone.timedelta(seconds=self.durationtime) > timezone.now():
+        if self.category.durationtime and self.latestexecuted_at and self.latestexecuted_at + timezone.timedelta(seconds=self.category.durationtime) > timezone.now():
             return f"{self.title}はまだ実行できません。"
         if self.enddatetime and self.enddatetime < timezone.now():
             return f"{self.title}は既に終了しています。"

@@ -28,11 +28,14 @@ class Login():
 
 class NetKeiba():
     @cookie_required(".netkeiba.com")
-    def collect_raceids(driver):
+    def extract_raceids(driver, url):
+        if url != "":
+            driver.get(url)
         with TimeCounter() as tc:
             elems = tc.do(driver.find_elements, "xpath", ".//a")
         elems = driver.find_elements("xpath", ".//a[contains(@href, 'race_id')]")
         urls = [elem.get_attribute("href") for elem in elems]
+        print(urls)
         url_categorys = {"jra": [], "nar": []}
         for url in urls:
             if "nar" in url:
@@ -40,12 +43,28 @@ class NetKeiba():
             else:
                 url_categorys["jra"].append(url)
 
+        ret = {}
         for url_category, urls in url_categorys.items():
             category = RaceIdCategory.objects.get_or_create(name=url_category)[0]
+            if category not in ret:
+                ret[category] = []
             for url in urls:
                 params = url.split("?")[-1]
                 params = dict([param.split("=") for param in params.split("&")])
                 if "race_id" in params:
-                    RaceId.objects.create(race_id=params["race_id"], category=category)
+                    ret[category].append(params["race_id"])
+
+                for category in ret:
+                    ret[category] = list(set(ret[category]))
+        
+        return ret
+
+    
+    def new_raceids(driver):
+        for url in ["https://race.netkeiba.com/top/", "https://nar.netkeiba.com/top/"]:
+            for category, raceids in NetKeiba.extract_raceids(driver, url).items():
+                for raceid in raceids:
+                    RaceId.objects.get_or_create(race_id=raceid, category=category)
+
 
         
