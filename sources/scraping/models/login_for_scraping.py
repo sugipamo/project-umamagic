@@ -1,7 +1,19 @@
 from django.db import models
 from .webdriver import cookie_required
+from .webdriver import WebDriver
 
 class LoginMethods():
+    @cookie_required(".google.com")
+    def googlecom(driver, _, __):
+        url = "https://www.google.com/"
+        driver.get(url)
+        
+    @cookie_required(".google.com")
+    def logined_googlecom(driver):
+        url = "https://www.google.com/"
+        driver.get(url)
+        return False
+
     @cookie_required(".netkeiba.com")
     def netkeibacom(driver, username, password):
         url = "https://regist.netkeiba.com/account/?pid=login"
@@ -32,16 +44,13 @@ class LoginForScraping(models.Model):
         return self.domain
     
     def login(self, username, password):
-        method = getattr(LoginMethods, self.domain.replace(".", ""))
-        from .webdriver import WebDriver
         with WebDriver() as driver:
+            method = getattr(LoginMethods, self.domain.replace(".", ""))
             method(driver, username, password)
-
         self.loggined = True
         self.save()
 
-    def is_logined(self):
+    def update_logined(self, driver):
         method = getattr(LoginMethods, f"logined_{self.domain.replace('.', '')}")
-        from .webdriver import WebDriver
-        with WebDriver() as driver:
-            return method(driver)
+        self.loggined = method(driver)
+        self.save()

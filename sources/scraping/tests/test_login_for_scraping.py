@@ -1,8 +1,7 @@
 # 当サイトへのログインではなく、スクレイピングのためのログイン
 
 from django.test import TestCase
-from django.utils import timezone
-from ..models import LoginForScraping
+from scraping.models import LoginForScraping
 from django.urls import reverse
 
 class LoginForScrapingModelTest(TestCase):

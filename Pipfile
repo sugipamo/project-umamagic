@@ -6,7 +6,8 @@ logs = 'docker compose logs'
 exec = 'docker compose exec'
 migrate = 'docker compose exec django bash -c "python manage.py makemigrations && python manage.py migrate"'
 migrate_reset = 'docker compose exec django bash -c "python manage.py migrate --fake && python manage.py migrate"'
-start = 'gunicorn umamagic.wsgi:application --bind 0.0.0.0:8000'
+start = 'docker compose exec django bash -c "gunicorn umamagic.wsgi:application --bind 0.0.0.0:8000"'
+test_start = 'docker compose exec django bash -c "python manage.py runserver 0.0.0.0:8000"'
 test = 'docker compose exec django bash -c "python manage.py test"'
 
 
