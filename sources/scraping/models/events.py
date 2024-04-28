@@ -4,6 +4,7 @@ from scraping.model_utilitys.webdriver import WebDriver
 from scraping.model_utilitys import event_methods
 from apscheduler.schedulers.background import BackgroundScheduler
 from scraping.models.login_for_scraping import LoginForScraping
+from django.conf import settings
 
 class EventCategory(models.Model):
     name = models.CharField(max_length=255)
@@ -151,12 +152,11 @@ def doevents_scheduler():
     category.need_driver = True
     category.page_load_strategy = "normal"
     category.repeat = True
-    category.durationtime = 3
+    category.durationtime = 180
     category.save()
     schedule = EventSchedule.objects.get_or_create(title="新しい出馬表を取得する", category=category)[0]
     schedule.save()
 
-    from django.conf import settings
     if settings.TESTING:
         return
     

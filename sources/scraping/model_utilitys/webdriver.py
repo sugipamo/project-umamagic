@@ -2,6 +2,8 @@ from selenium import webdriver
 import os
 from time import perf_counter
 
+seleniums = []
+
 # withでつかってタイムアウトまでを計測する
 class TimeCounter():
     def __init__(self):
@@ -15,7 +17,6 @@ class TimeCounter():
     def __exit__(self, exc_type, exc_value, traceback):
         if self.get_time >= self.timeout:
             raise Exception("タイムアウトしました。")
-        return True
     
     @property
     def get_time(self):
@@ -40,12 +41,22 @@ class WebDriver():
             command_executor = os.environ["SELENIUM_URL"],
             options = options,
         )
+        global seleniums
+        seleniums.append(self.driver)
 
     def __enter__(self):
         return self.driver
     
     def __exit__(self, exc_type, exc_value, traceback):
         self.driver.quit()
-        if exc_type:
-            raise exc_type(exc_value).with_traceback(traceback)
-        return True
+
+
+def killseleniums():
+    for selenium in seleniums:
+        try:
+            selenium.quit()
+        except:
+            pass
+
+import atexit
+atexit.register(killseleniums)
