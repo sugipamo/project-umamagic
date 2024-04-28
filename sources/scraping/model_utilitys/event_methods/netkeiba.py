@@ -2,10 +2,7 @@ from scraping.models.login_for_scraping import cookie_required
 from scraping.models.pages import RaceCategory, Race
 from scraping.model_utilitys.webdriver import TimeCounter
 
-@cookie_required(".netkeiba.com")
-def extract_raceids(driver, url):
-    if url != "":
-        driver.get(url)
+def extract_raceids(driver):
     with TimeCounter() as tc:
         elems = tc.do(driver.find_elements, "xpath", ".//a")
     elems = driver.find_elements("xpath", ".//a[contains(@href, 'race_id')]")
@@ -33,9 +30,10 @@ def extract_raceids(driver, url):
     
     return ret
 
-
+@cookie_required(".netkeiba.com")
 def new_raceids(driver):
     for url in ["https://race.netkeiba.com/top/", "https://nar.netkeiba.com/top/"]:
-        for category, raceids in extract_raceids(driver, url).items():
+        driver.get(url)
+        for category, raceids in extract_raceids(driver).items():
             for raceid in raceids:
                 Race.objects.get_or_create(race_id=raceid, category=category)

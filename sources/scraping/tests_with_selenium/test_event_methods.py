@@ -22,7 +22,8 @@ class TestNetKeiba(TestCase):
     def test_extract_raceids(self):
         LoginForScraping.objects.create(domain=".netkeiba.com", loggined=True)
         with WebDriver() as driver:
-            ret = netkeiba.extract_raceids(driver, "https://www.netkeiba.com/")
+            driver.get("https://www.netkeiba.com/")
+            ret = netkeiba.extract_raceids(driver)
         self.assertTrue(ret)
 
     def test_new_raceids(self):
