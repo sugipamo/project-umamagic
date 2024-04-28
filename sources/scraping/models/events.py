@@ -9,6 +9,7 @@ class EventCategory(models.Model):
     name = models.CharField(max_length=255)
     use_method = models.CharField(max_length=255, default="test.default_methods")
     need_driver = models.BooleanField(default=False)
+    page_load_strategy = models.CharField(max_length=255, default="eager")
     repeat = models.BooleanField(default=False)
     durationtime = models.IntegerField(null=True, blank=True)
     parallel_limit = models.IntegerField(default=1)
@@ -20,7 +21,7 @@ class EventCategory(models.Model):
         for s in self.use_method.split("."):
             method = getattr(method, s)
         if self.need_driver:                
-            with WebDriver() as driver:
+            with WebDriver(self.page_load_strategy) as driver:
                 kwargs["driver"] = driver
                 method(**kwargs)
         else:
@@ -144,4 +145,15 @@ def doevents_scheduler():
     category.durationtime = 60 * 60 * 24
     category.save()
     schedule = EventSchedule.objects.get_or_create(title="新しいレースIDを取得する", category=category)[0]
+    schedule.save()
+
+    # 新規出馬表収集のイベントを登録
+    category = EventCategory.objects.get_or_create(name="新しい出馬表を取得する")[0]
+    category.use_method = "netkeiba.new_shutuba"
+    category.need_driver = True
+    category.page_load_strategy = "normal"
+    category.repeat = True
+    category.durationtime = 60 * 60 * 24
+    category.save()
+    schedule = EventSchedule.objects.get_or_create(title="新しい出馬表を取得する", category=category)[0]
     schedule.save()

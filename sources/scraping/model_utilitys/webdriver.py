@@ -33,9 +33,9 @@ class TimeCounter():
 
 
 class WebDriver():
-    def __init__(self):
+    def __init__(self, pageLoadStrategy="eager"):
         options = webdriver.ChromeOptions()
-        options.set_capability('pageLoadStrategy', 'eager')
+        options.set_capability('pageLoadStrategy', pageLoadStrategy)
         self.driver = webdriver.Remote(
             command_executor = os.environ["SELENIUM_URL"],
             options = options,

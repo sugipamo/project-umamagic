@@ -30,3 +30,9 @@ class TestNetKeiba(TestCase):
         LoginForScraping.objects.create(domain=".netkeiba.com", loggined=True)
         with WebDriver() as driver:
             netkeiba.new_raceids(driver)
+
+    def test_new_shutuba(self):
+        LoginForScraping.objects.create(domain=".netkeiba.com", loggined=True)
+        with WebDriver() as driver:
+            netkeiba.new_raceids(driver)
+            netkeiba.new_shutuba(driver)
