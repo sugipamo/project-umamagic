@@ -39,6 +39,3 @@ def new_raceids(driver):
         for category, raceids in extract_raceids(driver, url).items():
             for raceid in raceids:
                 Race.objects.get_or_create(race_id=raceid, category=category)
-
-
-    

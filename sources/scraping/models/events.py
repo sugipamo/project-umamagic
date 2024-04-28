@@ -3,6 +3,7 @@ from django.utils import timezone
 from scraping.model_utilitys.webdriver import WebDriver
 from scraping.model_utilitys import event_methods
 from apscheduler.schedulers.background import BackgroundScheduler
+from scraping.models.login_for_scraping import LoginForScraping
 
 class EventCategory(models.Model):
     name = models.CharField(max_length=255)
@@ -127,5 +128,20 @@ def doevents_scheduler():
     if settings.TESTING:
         return
     scheduler = BackgroundScheduler()
-    scheduler.add_job(doevents, 'interval', seconds=5)
+    scheduler.add_job(doevents, 'interval', seconds=1)
     scheduler.start()
+
+    # ログイン必要なサイトのドメインを登録
+    domains = [".netkeiba.com"]
+    for domain in domains:
+        LoginForScraping.objects.get_or_create(domain=domain)
+
+    # 新規レースID収集のイベントを登録
+    category = EventCategory.objects.get_or_create(name="新しいレースIDを取得する")[0]
+    category.use_method = "netkeiba.new_raceids"
+    category.need_driver = True
+    category.repeat = True
+    category.durationtime = 60 * 60 * 24
+    category.save()
+    schedule = EventSchedule.objects.get_or_create(title="新しいレースIDを取得する", category=category)[0]
+    schedule.save()
