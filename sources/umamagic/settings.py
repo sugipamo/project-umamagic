@@ -29,7 +29,7 @@ TESTING = 'test' in sys.argv
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
-# AUTH_USER_MODEL = 'accounts.User'
+AUTH_USER_MODEL = 'account.User'
 
 # Application definition
 

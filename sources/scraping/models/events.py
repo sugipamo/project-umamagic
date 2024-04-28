@@ -127,5 +127,5 @@ def doevents_scheduler():
     if settings.TESTING:
         return
     scheduler = BackgroundScheduler()
-    scheduler.add_job(doevents, 'interval', seconds=1)
+    scheduler.add_job(doevents, 'interval', seconds=5)
     scheduler.start()

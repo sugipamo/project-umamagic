@@ -1,7 +1,7 @@
 from scraping.models.login_for_scraping import LoginForScraping
 from scraping.models.webdriver import TimeCounter
-from scraping.models.webdriver import cookie_required
-from scraping.models.pages import RaceIdCategory, RaceId
+from scraping.models.login_for_scraping import cookie_required
+from scraping.models.pages import RaceCategory, Race
 
 class Test():
     def default_methods():
@@ -45,7 +45,7 @@ class NetKeiba():
 
         ret = {}
         for url_category, urls in url_categorys.items():
-            category = RaceIdCategory.objects.get_or_create(name=url_category)[0]
+            category = RaceCategory.objects.get_or_create(name=url_category)[0]
             if category not in ret:
                 ret[category] = []
             for url in urls:
@@ -64,7 +64,7 @@ class NetKeiba():
         for url in ["https://race.netkeiba.com/top/", "https://nar.netkeiba.com/top/"]:
             for category, raceids in NetKeiba.extract_raceids(driver, url).items():
                 for raceid in raceids:
-                    RaceId.objects.get_or_create(race_id=raceid, category=category)
+                    Race.objects.get_or_create(race_id=raceid, category=category)
 
 
         

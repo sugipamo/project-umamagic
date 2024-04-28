@@ -1,6 +1,36 @@
 from django.db import models
-from .webdriver import cookie_required
-from .webdriver import WebDriver
+from scraping.models.webdriver import WebDriver
+from selenium import webdriver
+import pickle
+
+COOKIEPATH = "cookies/"
+def cookie_required(domain):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            driver = [arg for arg in args if isinstance(arg, webdriver.Remote)]
+            if not driver:
+                return func(*args, **kwargs)
+            else:
+                driver = driver[0]
+            cookies = {}
+            import pathlib
+            cookiepath = COOKIEPATH + "/" + domain + "_cookies.pkl"
+            if pathlib.Path(cookiepath).exists():
+                with open(cookiepath, "rb") as f:
+                    cookies = pickle.load(f)
+                if type(cookies) != list:
+                    cookies = []
+                url = "https://" + domain[1:] if domain.startswith(".") else "https://" + domain
+                driver.get(url)
+                [driver.add_cookie(cookie) for cookie in cookies]
+            return_value = func(*args, **kwargs)
+            with open(cookiepath, "wb") as f:
+                cookies = driver.get_cookies()
+                cookies = [cookie for cookie in cookies if cookie["domain"] == domain]
+                pickle.dump(cookies, f)
+            return return_value
+        return wrapper
+    return decorator
 
 class LoginMethods():
     @cookie_required(".google.com")
@@ -32,7 +62,6 @@ class LoginMethods():
         if url == driver.current_url:
             return True
         return False
-
 
 class LoginForScraping(models.Model):
     domain = models.CharField(max_length=255)

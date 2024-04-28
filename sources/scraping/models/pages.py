@@ -1,6 +1,6 @@
 from django.db import models
 
-class RaceIdCategory(models.Model):
+class RaceCategory(models.Model):
     name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -8,18 +8,17 @@ class RaceIdCategory(models.Model):
     def __str__(self):
         return self.name
 
-class RaceId(models.Model):
+class Race(models.Model):
     race_id = models.CharField(max_length=255)
-    category = models.ForeignKey(RaceIdCategory, on_delete=models.PROTECT)
+    category = models.ForeignKey(RaceCategory, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.race_id
-    
 
 class Shutuba(models.Model):
-    race_id = models.ForeignKey(RaceId, on_delete=models.PROTECT)
+    race_id = models.OneToOneField(Race, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -28,4 +27,4 @@ class Shutuba(models.Model):
 
     @staticmethod
     def get_unused_raceids():
-        return RaceId.objects.exclude(shutuba__isnull=False)
+        return Race.objects.exclude(shutuba__isnull=False)

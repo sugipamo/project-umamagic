@@ -2,7 +2,6 @@ from django.test import TestCase
 from scraping.models.webdriver import WebDriver
 from scraping.models.login_for_scraping import LoginForScraping
 from scraping.models.event_methods import Login, NetKeiba
-from scraping.models.pages import RaceIdCategory, RaceId
 
 class TestLoginMethods(TestCase):
     def test_update_logined(self):
