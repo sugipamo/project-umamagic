@@ -1,12 +1,12 @@
 from django.db import models
 from django.utils import timezone
-from .webdriver import WebDriver
-from . import event_methods
+from scraping.utilitys.webdriver import WebDriver
+from scraping.utilitys import event_methods
 from apscheduler.schedulers.background import BackgroundScheduler
 
 class EventCategory(models.Model):
     name = models.CharField(max_length=255)
-    use_method = models.CharField(max_length=255, default="Test.default_methods")
+    use_method = models.CharField(max_length=255, default="test.default_methods")
     need_driver = models.BooleanField(default=False)
     repeat = models.BooleanField(default=False)
     durationtime = models.IntegerField(null=True, blank=True)
