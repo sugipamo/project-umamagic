@@ -1,5 +1,5 @@
 from django.db import models
-from scraping.utilitys.webdriver import WebDriver
+from scraping.model_utilitys.webdriver import WebDriver
 from selenium import webdriver
 import pickle
 

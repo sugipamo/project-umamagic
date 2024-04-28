@@ -1,5 +1,5 @@
 from django.test import TestCase
-from scraping.utilitys.event_methods import test
+from scraping.model_utilitys.event_methods import test
 
 
 class TestEventMethods(TestCase):

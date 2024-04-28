@@ -1,4 +1,4 @@
-from scraping.utilitys.html_documents import HtmlDocuments
+from scraping.model_utilitys.html_documents import HtmlDocuments
 def default_methods():
     pass
 

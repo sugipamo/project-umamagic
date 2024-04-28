@@ -1,6 +1,6 @@
 from scraping.models.login_for_scraping import cookie_required
 from scraping.models.pages import RaceCategory, Race
-from scraping.utilitys.webdriver import TimeCounter
+from scraping.model_utilitys.webdriver import TimeCounter
 
 @cookie_required(".netkeiba.com")
 def extract_raceids(driver, url):

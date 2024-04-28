@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
-from scraping.utilitys.webdriver import WebDriver
-from scraping.utilitys import event_methods
+from scraping.model_utilitys.webdriver import WebDriver
+from scraping.model_utilitys import event_methods
 from apscheduler.schedulers.background import BackgroundScheduler
 
 class EventCategory(models.Model):
