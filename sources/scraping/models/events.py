@@ -130,10 +130,16 @@ def doevents():
 def doevents_scheduler():
     if settings.TESTING:
         return
+    import logging
+    from apscheduler.schedulers.background import BackgroundScheduler
+
+    logging.basicConfig()
+    logging.getLogger('apscheduler').setLevel(logging.ERROR)
+
     scheduler = BackgroundScheduler()
     scheduler.add_job(doevents, 'interval', seconds=1)
     scheduler.start()
-    
+
 
 @receiver(request_started)
 def database_initializer(*args, **kwargs):

@@ -2,7 +2,7 @@ from selenium import webdriver
 import os
 from time import perf_counter
 
-seleniums = []
+seleniums = {}
 
 # withでつかってタイムアウトまでを計測する
 class TimeCounter():
@@ -42,17 +42,18 @@ class WebDriver():
             options = options,
         )
         global seleniums
-        seleniums.append(self.driver)
+        seleniums[id(self)] = self.driver
 
     def __enter__(self):
         return self.driver
     
     def __exit__(self, exc_type, exc_value, traceback):
         self.driver.quit()
-
+        global seleniums
+        del seleniums[id(self)]
 
 def killseleniums():
-    for selenium in seleniums:
+    for selenium in seleniums.values():
         try:
             selenium.quit()
         except:
