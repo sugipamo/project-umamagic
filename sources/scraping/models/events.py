@@ -122,15 +122,13 @@ class EventArgs(models.Model):
 def doevents():
     event = EventSchedule.objects.filter(status=1).order_by("latestcalled_at")
     if event.exists():
-        event.first().doevent()
+        event.last().doevent()
 
 def doevents_scheduler():
-    from django.conf import settings
-    if settings.TESTING:
-        return
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(doevents, 'interval', seconds=1)
-    scheduler.start()
+    schedules = EventSchedule.objects.filter(status=2)
+    for schedule in schedules:
+        schedule.status = 1
+        schedule.save()
 
     # ログイン必要なサイトのドメインを登録
     domains = [".netkeiba.com"]
@@ -153,7 +151,15 @@ def doevents_scheduler():
     category.need_driver = True
     category.page_load_strategy = "normal"
     category.repeat = True
-    category.durationtime = 60 * 60 * 24
+    category.durationtime = 3
     category.save()
     schedule = EventSchedule.objects.get_or_create(title="新しい出馬表を取得する", category=category)[0]
     schedule.save()
+
+    from django.conf import settings
+    if settings.TESTING:
+        return
+    
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(doevents, 'interval', seconds=1)
+    scheduler.start()
