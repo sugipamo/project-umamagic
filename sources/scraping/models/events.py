@@ -5,6 +5,8 @@ from scraping.model_utilitys import event_methods
 from apscheduler.schedulers.background import BackgroundScheduler
 from scraping.models.login_for_scraping import LoginForScraping
 from django.conf import settings
+from django.core.signals import request_started
+from django.dispatch import receiver
 
 class EventCategory(models.Model):
     name = models.CharField(max_length=255)
@@ -126,6 +128,16 @@ def doevents():
         event.last().doevent()
 
 def doevents_scheduler():
+    if settings.TESTING:
+        return
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(doevents, 'interval', seconds=1)
+    scheduler.start()
+    
+
+@receiver(request_started)
+def database_initializer(*args, **kwargs):
+    print("database_initialize")
     schedules = EventSchedule.objects.filter(status=2)
     for schedule in schedules:
         schedule.status = 1
@@ -157,9 +169,6 @@ def doevents_scheduler():
     schedule = EventSchedule.objects.get_or_create(title="新しい出馬表を取得する", category=category)[0]
     schedule.save()
 
-    if settings.TESTING:
-        return
     
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(doevents, 'interval', seconds=1)
-    scheduler.start()
+
+
