@@ -143,7 +143,7 @@ def doevents_scheduler():
 
 @receiver(request_started)
 def database_initializer(*args, **kwargs):
-    print("database_initialize")
+    # print("database_initialize")
     schedules = EventSchedule.objects.filter(status=2)
     for schedule in schedules:
         schedule.status = 1

@@ -29,7 +29,10 @@ def new_raceids(driver):
 
 
 def new_shutuba(driver):
-    races = Shutuba.get_unused_raceids()
+    for method in [Shutuba.get_html_null_raceids, Shutuba.get_unused_raceids]:
+        races = method()
+        if races:
+            break
     if not races:
         return
     race = races.first()

@@ -22,8 +22,8 @@ class TestRace(TestCase):
 class TestShutuba(TestCase):
     def setUp(self):
         category = RaceCategory.objects.create(name="example")
-        race_id = Race.objects.create(race_id="00000000000", category=category)
-        self.shutuba = Shutuba.objects.create(race_id=race_id)
+        race = Race.objects.create(race_id="00000000000", category=category)
+        self.shutuba = Shutuba.objects.create(race=race)
 
     def test_str(self):
-        self.assertEqual(str(self.shutuba.race_id), "00000000000")
+        self.assertEqual(str(self.shutuba.race.race_id), "00000000000")

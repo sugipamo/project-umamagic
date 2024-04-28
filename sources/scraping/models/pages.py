@@ -28,6 +28,11 @@ class Shutuba(models.Model):
         return self.race.race_id
 
     @staticmethod
+    def get_html_null_raceids():
+        shutubas = Shutuba.objects.filter(html__isnull=True)
+        return shutubas
+
+    @staticmethod
     def get_unused_raceids():
         return Race.objects.exclude(shutuba__isnull=False)
     
