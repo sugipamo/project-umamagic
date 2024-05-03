@@ -1,5 +1,5 @@
 from django.db import models
-from scraping.model_utilitys.webdriver import TimeCounter
+import gzip
 
 class RaceCategory(models.Model):
     name = models.CharField(max_length=255)
@@ -17,32 +17,39 @@ class Race(models.Model):
 
     def __str__(self):
         return self.race_id
-
-class Shutuba(models.Model):
-    race = models.OneToOneField(Race, on_delete=models.PROTECT)
-    html = models.TextField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.race.race_id
-
-    @staticmethod
-    def get_html_null_raceids():
-        shutubas = Shutuba.objects.filter(html__isnull=True)
-        return shutubas
-
-    @staticmethod
-    def get_unused_raceids():
-        return Race.objects.exclude(shutuba__isnull=False)
     
-    @property
-    def url(self):
-        return f"https://{self.race.category.name}/race/shutuba.html?race_id={self.race.race_id}"
+    def read_html(self):
+        return gzip.decompress(self.html).decode()
 
     def update_html(self, driver):
         driver.get(self.url)
-        with TimeCounter() as tc:
-            tc.do(driver.find_element, "xpath", ".//table")
-        self.html = driver.page_source
+        compressed_html = gzip.compress(driver.page_source.encode())
+        self.html = compressed_html
         self.save()
+
+    @classmethod
+    def get_html_null_raceid(cls):
+        return cls.objects.filter(html=None).first()
+    
+    @classmethod
+    def get_unused_raceid(cls):
+        # Get race_id that does not exist in Shutuba
+        unused_race = Race.objects.exclude(race_id__in=cls.objects.values_list('race_id', flat=True)).order_by('created_at').first()
+        if unused_race:
+            # Create a new Shutuba object with the unused race_id
+            new_shutuba = cls(race_id=unused_race.race_id, category=unused_race.category)
+            return new_shutuba
+        return None
+
+class Shutuba(Race):
+    html = models.BinaryField(null=True, blank=True)
+    @property
+    def url(self):
+        return f"https://{self.category.name}/race/shutuba.html?race_id={self.race_id}"
+
+# class RaceResult(Race):
+#     html = models.BinaryField(null=True, blank=True)
+#     @property
+#     def url(self):
+#         return f"https://{self.category.name}/race/result.html?race_id={self.race_id}"
+    

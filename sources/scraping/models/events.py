@@ -7,6 +7,7 @@ from scraping.models.login_for_scraping import LoginForScraping
 from django.conf import settings
 from django.core.signals import request_started
 from django.dispatch import receiver
+import traceback
 
 class EventCategory(models.Model):
     name = models.CharField(max_length=255)
@@ -74,6 +75,7 @@ class EventSchedule(models.Model):
 
     def doevent(self):
         self.latestcalled_at = timezone.now()
+        self.save()
         if self.status == 2:
             return f"{self.title}は実行中です。"
         if self.status == 3:
@@ -86,8 +88,7 @@ class EventSchedule(models.Model):
             return f"{self.title}はまだ実行できません。"
         if self.enddatetime and self.enddatetime < timezone.now():
             return f"{self.title}は既に終了しています。"
-
-        self.latestexecuted_at = timezone.now()
+        
         self.status = 2
         self.save()
 
@@ -95,7 +96,7 @@ class EventSchedule(models.Model):
             ret = self.category.doevent(**{d["key"]: d["value"] for d in self.eventargs_set.all().values()} if self.pk else {})
         except Exception as e:
             self.status = 4
-            self.errormessage = str(e)
+            self.errormessage = f"{str(e)}\n{traceback.format_exc()}"
             self.save()
             raise e
         
@@ -104,6 +105,7 @@ class EventSchedule(models.Model):
         else:
             self.status = 3
 
+        self.latestexecuted_at = timezone.now()
         self.save()
         return ret
 
@@ -125,7 +127,7 @@ class EventArgs(models.Model):
 def doevents():
     event = EventSchedule.objects.filter(status=1).order_by("latestcalled_at")
     if event.exists():
-        event.last().doevent()
+        event.first().doevent()
 
 def doevents_scheduler():
     if settings.TESTING:
