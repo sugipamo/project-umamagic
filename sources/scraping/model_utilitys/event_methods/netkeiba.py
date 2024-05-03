@@ -16,11 +16,10 @@ def extract_raceids(driver):
         params = url.split("?")[-1]
         params = dict([param.split("=") for param in params.split("&")])
         if "race_id" in params:
-            if params["race_id"] not in raceids:            
-                raceids[params["race_id"]] = Race.objects.get_or_create(race_id=params["race_id"], category=category)
-
-    return raceids
-
+            race_id = params["race_id"]
+            if race_id not in raceids:
+                raceids[race_id] = Race.objects.get_or_create(race_id=race_id, category=category)[0]
+                
 # @cookie_required(".netkeiba.com")
 def new_raceids(driver):
     for url in ["https://race.netkeiba.com/top/", "https://nar.netkeiba.com/top/"]:
@@ -29,12 +28,10 @@ def new_raceids(driver):
 
 
 def new_shutuba(driver):
-    for method in [Shutuba.get_html_null_raceid, Shutuba.get_unused_raceid]:
-        race = method()
-        if not race is None:
-            break
+    race = Shutuba.next_raceid()
     if race is None:
         return
+    
     race.update_html(driver)
     extract_raceids(driver)
     
