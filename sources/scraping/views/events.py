@@ -8,5 +8,5 @@ class EventScheduleListView(ListView):
     template_name = 'scraping/event_schedule_list.html'
 
     def queryset(self):
-        return EventSchedule.objects.all()
+        return EventSchedule.objects.all().order_by('latestcalled_at')
     

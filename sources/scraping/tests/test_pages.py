@@ -23,7 +23,10 @@ class TestShutuba(TestCase):
     def setUp(self):
         category = RaceCategory.objects.create(name="example")
         race = Race.objects.create(race_id="00000000000", category=category)
-        self.shutuba = Shutuba.objects.create(race=race)
+        self.shutuba = Shutuba(race_ptr=race)
 
     def test_str(self):
-        self.assertEqual(str(self.shutuba.race.race_id), "00000000000")
+        self.assertEqual(str(self.shutuba.race_ptr.race_id), "00000000000")
+
+    def test_save(self):
+        self.shutuba.save_base(raw=True)
