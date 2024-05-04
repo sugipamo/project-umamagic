@@ -14,8 +14,21 @@ class EventCategory(models.Model):
     use_method = models.CharField(max_length=255, default="test.default_methods")
     need_driver = models.BooleanField(default=False)
     page_load_strategy = models.CharField(max_length=255, default="eager")
-    repeat = models.BooleanField(default=False)
-    durationtime = models.IntegerField(null=True, blank=True)
+    repeat = models.CharField(max_length=255, default="")
+    # ','で区切り時間指定する。空白が指定されれば即実行する
+    # date型が指定された場合はその日時にスケジューリングする
+    # int型が指定された場合はその秒数後にスケジューリングする
+    # - "" = 一度だけ実行
+    # - "0:00:00" = 次の0時に実行
+    # - "0:00:00," = 毎日0時に実行を繰り返す
+    # - "0:00:00,12:00:00" = 毎日0時と12時に実行
+    # - "0:00:00,12:00:00," = 毎日0時と12時に実行を繰り返す
+    # - ",1,1,1" = 1秒ごとに3回実行
+    # - "1,1,1" = 初回実行はスキップ、その後1秒ごとに3回実行
+    # - "1,1,1," = 初回実行はスキップ、その後1秒ごとに3回実行を繰り返す
+    # - ",1,1,1," = 1秒ごとに3回実行を繰り返す
+    # - "0:00:00,1,1," = 毎日0時に1秒ごとに3回実行を繰り返す
+    # - "0:00:00,1,1,1" = 毎日0時に1秒ごとに3回実行
     parallel_limit = models.IntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
