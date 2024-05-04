@@ -9,26 +9,15 @@ from django.core.signals import request_started
 from django.dispatch import receiver
 import traceback
 
+class ScheduleError(Exception):
+    pass
+
 class EventCategory(models.Model):
     name = models.CharField(max_length=255)
     use_method = models.CharField(max_length=255, default="test.default_methods")
     need_driver = models.BooleanField(default=False)
     page_load_strategy = models.CharField(max_length=255, default="eager")
     repeat = models.CharField(max_length=255, default="")
-    # ','で区切り時間指定する。空白が指定されれば即実行する
-    # date型が指定された場合はその日時にスケジューリングする
-    # int型が指定された場合はその秒数後にスケジューリングする
-    # - "" = 一度だけ実行
-    # - "0:00:00" = 次の0時に実行
-    # - "0:00:00," = 毎日0時に実行を繰り返す
-    # - "0:00:00,12:00:00" = 毎日0時と12時に実行
-    # - "0:00:00,12:00:00," = 毎日0時と12時に実行を繰り返す
-    # - ",1,1,1" = 1秒ごとに3回実行
-    # - "1,1,1" = 初回実行はスキップ、その後1秒ごとに3回実行
-    # - "1,1,1," = 初回実行はスキップ、その後1秒ごとに3回実行を繰り返す
-    # - ",1,1,1," = 1秒ごとに3回実行を繰り返す
-    # - "0:00:00,1,1," = 毎日0時に1秒ごとに3回実行を繰り返す
-    # - "0:00:00,1,1,1" = 毎日0時に1秒ごとに3回実行
     parallel_limit = models.IntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -50,13 +39,12 @@ class EventCategory(models.Model):
 
 class EventSchedule(models.Model):
     title = models.CharField(max_length=255)
+    category = models.ForeignKey(EventCategory, on_delete=models.PROTECT)
     status = models.IntegerField(choices=[(i+1, s) for i, s in enumerate(["待機", "実行中", "完了", "エラー"])], default=1)
-    startdatetime = models.DateTimeField(default=timezone.now)
-    enddatetime = models.DateTimeField(null=True, blank=True)
-    latestexecuted_at = models.DateTimeField(null=True, blank=True)
+    nextexecutedatetime = models.DateTimeField(default=timezone.now, null=True, blank=True)
+    repeat = models.CharField(max_length=255, default="")
     latestcalled_at = models.DateTimeField(null=True, blank=True)
     errormessage = models.TextField(null=True, blank=True)
-    category = models.ForeignKey(EventCategory, on_delete=models.PROTECT)
     memo = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -80,47 +68,88 @@ class EventSchedule(models.Model):
             return self.eventargs_set.get(key=key).value
         except:
             return None
-        
-    def done(self):
-        self.status = 3
-        self.enddatetime = timezone.now()
-        self.save()
+
+    def __parse_repeat(self, repeat):
+        needdo, nextexecutedatetime, repeat = False, None, repeat
+
+        # ','で区切り時間指定する。
+        # date型が指定された場合はその日時にスケジューリングする
+        # int型が指定された場合はその秒数後にスケジューリングする
+        # 
+        # - "0" = 一度だけ実行
+        # - "0:00:00" = 次の0時に実行
+        # - "0:00:00," = 毎日0時に実行を繰り返す
+        # - "0:00:00,12:00:00" = 毎日0時と12時に実行
+        # - "0:00:00,12:00:00," = 毎日0時と12時に実行を繰り返す
+        # - "0,1,1" = 1秒ごとに合計3回実行
+        # - "1,1,1" = 初回実行はスキップ、その後1秒ごとに合計3回実行
+        # - "0:00:00,1,1," = 毎日0時に1秒ごとに3回実行を繰り返す
+
+        # repeatをリストに変換
+        # 次の要素が0の場合はそれを削除しイベントを実行
+        repeat = self.repeat.split(",")
+        if repeat[0] == 0: 
+            repeat.pop(0)
+            needdo = True
+
+        # repeatが空の場合はステータスを完了に変更
+        # repeatが空でない場合は次の実行日時を設定
+        # repeatの次の要素が日付の場合はその日時に設定
+        # repeatの次の要素がintの場合はその秒数後に設定
+        # repeatの次の要素が空文字の場合はrepeatをリセット
+        if repeat:
+            next = repeat.pop(0)
+            if next == "":
+                repeat = self.category.repeat.split(",")
+            if ":" in next:
+                next = timezone.datetime.strptime(next, "%H:%M:%S")
+                next = timezone.datetime(timezone.now().year, timezone.now().month, timezone.now().day, next.hour, next.minute, next.second)
+                if next < timezone.now():
+                    next += timezone.timedelta(days=1)
+                nextexecutedatetime = next
+                repeat.push(0)
+            else:
+                self.nextexecutedatetime = timezone.now() + timezone.timedelta(seconds=int(next))
+                repeat.push(0)
+
+            self.repeat = ",".join(repeat)
+
+        return needdo, nextexecutedatetime, repeat
 
     def doevent(self):
         self.latestcalled_at = timezone.now()
-        self.save()
+
         if self.status == 2:
-            return f"{self.title}は実行中です。"
+            self.save()
+            raise ScheduleError(f"{self.title}は実行中です。")
         if self.status == 3:
-            return f"{self.title}は既に完了しています。"
+            self.save()
+            raise ScheduleError(f"{self.title}は既に完了しています。")
         if self.status == 4:
-            return f"{self.title}はエラーが発生しています。"
-        if self.startdatetime > timezone.now():
-            return f"{self.title}はまだ実行できません。"
-        if self.category.durationtime and self.latestexecuted_at and self.latestexecuted_at + timezone.timedelta(seconds=self.category.durationtime) > timezone.now():
-            return f"{self.title}はまだ実行できません。"
-        if self.enddatetime and self.enddatetime < timezone.now():
-            return f"{self.title}は既に終了しています。"
+            self.save()
+            raise ScheduleError(f"{self.title}はエラーが発生しています。")
+        if self.nextexecutedatetime > timezone.now():
+            self.save()
+            raise ScheduleError(f"{self.title}はまだ実行できません。")
         
         self.status = 2
         self.save()
-
-        try:
-            ret = self.category.doevent(**{d["key"]: d["value"] for d in self.eventargs_set.all().values()} if self.pk else {})
-        except Exception as e:
-            self.status = 4
-            self.errormessage = f"{str(e)}\n{traceback.format_exc()}"
-            self.save()
-            raise e
         
-        if self.category.repeat:
-            self.status = 1
-        else:
+        needdo, self.nextexecutedatetime, self.repeat = self.__parse_repeat(self.repeat)
+        if needdo:
+            try:
+                ret = self.category.doevent(**{d["key"]: d["value"] for d in self.eventargs_set.all().values()} if self.pk else {})
+            except Exception as e:
+                self.status = 4
+                self.errormessage = f"{str(e)}\n{traceback.format_exc()}"
+                self.save()
+                raise e
+            
+        if self.nextexecutedatetime is None:
             self.status = 3
 
-        self.latestexecuted_at = timezone.now()
         self.save()
-        return ret
+        return
 
     def __str__(self):
         return self.title
