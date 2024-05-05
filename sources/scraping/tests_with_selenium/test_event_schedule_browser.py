@@ -9,7 +9,7 @@ class EventScheduleBrowserTest(TestCase):
         category.need_driver = True
         schedule = EventSchedule(title="Googleアクセス", category=category)
         schedule.set_args("url", "http://google.com")
-        self.assertEqual(schedule.doevent(), "Googleアクセスのイベントを実行しました。")
+        self.assertEqual(schedule.doevent(), True)
 
     def test_doevent_access_google_error(self):
         category = EventCategory(name="Googleアクセス")
@@ -26,4 +26,4 @@ class EventScheduleBrowserTest(TestCase):
         category.need_driver = True
         schedule = EventSchedule(title="GoogleHtml取得", category=category)
         schedule.set_args("url", "http://google.com")
-        self.assertEqual(schedule.doevent(), "GoogleHtml取得のイベントを実行しました。")
+        self.assertEqual(schedule.doevent(), True)

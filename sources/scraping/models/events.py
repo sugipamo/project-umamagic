@@ -1,14 +1,12 @@
 from django.db import models
 from django.utils import timezone
-from scraping.model_utilitys.webdriver import WebDriver
-from scraping.model_utilitys import event_methods
-from apscheduler.schedulers.background import BackgroundScheduler
-from scraping.models.login_for_scraping import LoginForScraping
 from django.conf import settings
 from django.core.signals import request_started
 from django.dispatch import receiver
+from scraping.model_utilitys.webdriver import WebDriver
+from scraping.model_utilitys import event_methods
+from scraping.models.login_for_scraping import LoginForScraping
 import traceback
-from django.core.exceptions import ValidationError
 
 class ScheduleError(Exception):
     pass
@@ -18,14 +16,10 @@ class EventCategory(models.Model):
     use_method = models.CharField(max_length=255, default="test.default_methods")
     need_driver = models.BooleanField(default=False)
     page_load_strategy = models.CharField(max_length=255, default="eager")
-    schedule_str = models.CharField(max_length=255, default="0")
+    schedule_str = models.CharField(max_length=255, null=True, default="0")
     parallel_limit = models.IntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    def clean(self):
-        if not self.schedule_str or self.schedule_str.isspace():
-            raise ValidationError("schedule_str cannot be empty or whitespace only.")
 
     def doevent(self, **kwargs):
         method = event_methods
@@ -37,7 +31,6 @@ class EventCategory(models.Model):
                 method(**kwargs)
         else:
             method(**kwargs)
-        return f"{self.name}のイベントを実行しました。"
 
     def __str__(self):
         return self.name
@@ -47,7 +40,7 @@ class EventSchedule(models.Model):
     category = models.ForeignKey(EventCategory, on_delete=models.PROTECT)
     status = models.IntegerField(choices=[(i+1, s) for i, s in enumerate(["待機", "実行中", "完了", "エラー"])], default=1)
     nextexecutedatetime = models.DateTimeField(default=timezone.now, null=True, blank=True)
-    schedule_str = models.CharField(max_length=255, default="0")
+    schedule_str = models.CharField(max_length=255, null=True, default="0")
     latestcalled_at = models.DateTimeField(null=True, blank=True)
     errormessage = models.TextField(null=True, blank=True)
     memo = models.TextField(null=True, blank=True)
@@ -139,7 +132,7 @@ class EventSchedule(models.Model):
         needdo, self.nextexecutedatetime, self.schedule_str = self.parse_schedule_str(self.schedule_str)
         if needdo:
             try:
-                ret = self.category.doevent(**{d["key"]: d["value"] for d in self.eventargs_set.all().values()} if self.pk else {})
+                self.category.doevent(**{d["key"]: d["value"] for d in self.eventargs_set.all().values()} if self.pk else {})
             except Exception as e:
                 self.status = 4
                 self.errormessage = f"{str(e)}\n{traceback.format_exc()}"
@@ -150,7 +143,7 @@ class EventSchedule(models.Model):
             self.status = 3
 
         self.save()
-        return True
+        return needdo
 
     def __str__(self):
         return self.title
@@ -203,7 +196,7 @@ def database_initializer(*args, **kwargs):
     category = EventCategory.objects.get_or_create(name="新しいレースIDを取得する")[0]
     category.use_method = "netkeiba.new_raceids"
     category.need_driver = True
-    category.repeat = True
+    category.schedule_str = "0 0 0," #毎日0時に実行
     category.save()
     schedule = EventSchedule.objects.get_or_create(title="新しいレースIDを取得する", category=category)[0]
     schedule.save()
@@ -213,7 +206,7 @@ def database_initializer(*args, **kwargs):
     category.use_method = "netkeiba.new_shutuba"
     category.need_driver = True
     category.page_load_strategy = "normal"
-    category.repeat = True
+    category.schedule_str = "5 0," #五分ごとに実行
     category.save()
     schedule = EventSchedule.objects.get_or_create(title="新しい出馬表を取得する", category=category)[0]
     schedule.save()
