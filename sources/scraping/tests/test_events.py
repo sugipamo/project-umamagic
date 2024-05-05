@@ -2,6 +2,8 @@ from django.test import TestCase
 from scraping.models.events import EventCategory, EventSchedule, EventArgs
 from django.utils import timezone
 from django.urls import reverse
+from scraping.models.events import ScheduleError
+from unittest import mock
 
 
 class ScrapeCategoryModelTest(TestCase):
@@ -41,6 +43,7 @@ class EventArgsModelTest(TestCase):
         self.assertEqual(schedule.get_args("test_key"), "test_value")
 
 
+
 class EventScheduleModelTest(TestCase):
     def test_str(self):
         schedule = EventSchedule(title="テストスケジュール", category=EventCategory(name="テストカテゴリー"))
@@ -48,25 +51,58 @@ class EventScheduleModelTest(TestCase):
 
     def test_doevent_default_method(self):
         schedule = EventSchedule(title="テストスケジュール", category=EventCategory(name="テストカテゴリー"))
-        self.assertEqual(schedule.doevent(), "テストカテゴリーのイベントを実行しました。")
+        self.assertEqual(schedule.doevent(), True)
 
     def test_doevent_error(self):
         category = EventCategory(name="エラー")
         schedule = EventSchedule.objects.create(title="エラー", category=category)
         schedule.status = 4
-        self.assertEqual(schedule.doevent(), "エラーはエラーが発生しています。")
+        with self.assertRaises(ScheduleError):
+            schedule.doevent()
 
     def test_future_time_doevent(self):
         category = EventCategory(name="未来時間")
         schedule = EventSchedule.objects.create(title="未来時間", category=category)
-        schedule.startdatetime = timezone.now() + timezone.timedelta(days=1)
-        self.assertEqual(schedule.doevent(), "未来時間はまだ実行できません。")
+        schedule.nextexecutedatetime = timezone.now() + timezone.timedelta(days=1)
+        with self.assertRaises(ScheduleError):
+            schedule.doevent()
 
-    def test_past_time_doevent(self):
+    def test_done_doevent(self):
         category = EventCategory(name="過去時間")
         schedule = EventSchedule.objects.create(title="過去時間", category=category)
-        schedule.enddatetime = timezone.now() - timezone.timedelta(days=1)
-        self.assertEqual(schedule.doevent(), "過去時間は既に終了しています。")
+        schedule.status = 3
+        schedule.nextexecutedatetime = timezone.now() - timezone.timedelta(days=1)
+        with self.assertRaises(ScheduleError):
+            schedule.doevent()
+
+    @mock.patch("scraping.models.events.timezone.now")
+    def test_parse_schedule_str(self, mock_now):
+        category=EventCategory(name="テストカテゴリー", schedule_str="")
+        schedule = EventSchedule(title="テストスケジュール", category=category)
+        self.assertEqual(schedule.parse_schedule_str(""), (False, None, None))
+
+        category=EventCategory(name="テストカテゴリー", schedule_str="0,1,2,")
+        schedule = EventSchedule(title="テストスケジュール", category=category)
+        mock_now.return_value = timezone.datetime(2021, 1, 1, 0, 0, 0)
+        self.assertEqual(schedule.parse_schedule_str("0"), (True, None, None))
+        self.assertEqual(schedule.parse_schedule_str("0,"), (True, timezone.datetime(2021, 1, 1, 0, 0, 0), "0,1,2,"))
+        self.assertEqual(schedule.parse_schedule_str("1,2,3,4,5"), (False, timezone.datetime(2021, 1, 1, 0, 0, 1), "0,2,3,4,5"))
+        self.assertEqual(schedule.parse_schedule_str(""), (True, timezone.datetime(2021, 1, 1, 0, 0, 1), "0,2,"))
+        self.assertEqual(schedule.parse_schedule_str("0 0 0"), (True, None, None))
+        
+        mock_now.return_value = timezone.datetime(2021, 7, 1, 0, 0, 0)
+        self.assertEqual(schedule.parse_schedule_str("0"), (True, None, None))
+        self.assertEqual(schedule.parse_schedule_str("0,"), (True, timezone.datetime(2021, 7, 1, 0, 0, 0), "0,1,2,"))
+        self.assertEqual(schedule.parse_schedule_str("1,2,3,4,5"), (False, timezone.datetime(2021, 7, 1, 0, 0, 1), "0,2,3,4,5"))
+        self.assertEqual(schedule.parse_schedule_str(""), (True, timezone.datetime(2021, 7, 1, 0, 0, 1), "0,2,"))
+        self.assertEqual(schedule.parse_schedule_str("0 0 0"), (True, None, None))
+
+        mock_now.return_value = timezone.datetime(2021, 7, 1, 12, 0, 0)
+        self.assertEqual(schedule.parse_schedule_str("0"), (True, None, None))
+        self.assertEqual(schedule.parse_schedule_str("0,"), (True, timezone.datetime(2021, 7, 1, 12, 0, 0), "0,1,2,"))
+        self.assertEqual(schedule.parse_schedule_str("1,2,3,4,5"), (False, timezone.datetime(2021, 7, 1, 12, 0, 1), "0,2,3,4,5"))
+        self.assertEqual(schedule.parse_schedule_str(""), (True, timezone.datetime(2021, 7, 1, 12, 0, 1), "0,2,"))
+        self.assertEqual(schedule.parse_schedule_str("0 0 0"), (False, timezone.datetime(2021, 7, 2, 0, 0, 0), "0"))
 
 
 class EventScheduleListViewTest(TestCase):

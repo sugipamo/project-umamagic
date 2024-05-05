@@ -8,17 +8,24 @@ from django.conf import settings
 from django.core.signals import request_started
 from django.dispatch import receiver
 import traceback
+from django.core.exceptions import ValidationError
+
+class ScheduleError(Exception):
+    pass
 
 class EventCategory(models.Model):
     name = models.CharField(max_length=255)
     use_method = models.CharField(max_length=255, default="test.default_methods")
     need_driver = models.BooleanField(default=False)
     page_load_strategy = models.CharField(max_length=255, default="eager")
-    repeat = models.BooleanField(default=False)
-    durationtime = models.IntegerField(null=True, blank=True)
+    schedule_str = models.CharField(max_length=255, default="0")
     parallel_limit = models.IntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def clean(self):
+        if not self.schedule_str or self.schedule_str.isspace():
+            raise ValidationError("schedule_str cannot be empty or whitespace only.")
 
     def doevent(self, **kwargs):
         method = event_methods
@@ -37,13 +44,12 @@ class EventCategory(models.Model):
 
 class EventSchedule(models.Model):
     title = models.CharField(max_length=255)
+    category = models.ForeignKey(EventCategory, on_delete=models.PROTECT)
     status = models.IntegerField(choices=[(i+1, s) for i, s in enumerate(["待機", "実行中", "完了", "エラー"])], default=1)
-    startdatetime = models.DateTimeField(default=timezone.now)
-    enddatetime = models.DateTimeField(null=True, blank=True)
-    latestexecuted_at = models.DateTimeField(null=True, blank=True)
+    nextexecutedatetime = models.DateTimeField(default=timezone.now, null=True, blank=True)
+    schedule_str = models.CharField(max_length=255, default="0")
     latestcalled_at = models.DateTimeField(null=True, blank=True)
     errormessage = models.TextField(null=True, blank=True)
-    category = models.ForeignKey(EventCategory, on_delete=models.PROTECT)
     memo = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -67,47 +73,84 @@ class EventSchedule(models.Model):
             return self.eventargs_set.get(key=key).value
         except:
             return None
+
+    def parse_schedule_str(self, schedule_str):
+        def schedule_str_to_que(schedule_str): return str(schedule_str).split(",")[::-1]
+        needdo, nextexecutedatetime, schedule_str = False, None, schedule_str_to_que(schedule_str)
+
+        while schedule_str and nextexecutedatetime is None:
+            s = schedule_str.pop()
+            if s.replace(" ", "") == "":
+                if self.category.schedule_str == "":
+                    schedule_str = None
+                else:   
+                    schedule_str = schedule_str_to_que(self.category.schedule_str)
+                continue
+
+            if s.replace(" ", "") == "0":
+                if needdo:
+                    nextexecutedatetime = timezone.now()
+                needdo = True
+                continue
+
+            dodate = [timezone.now().year, timezone.now().month, timezone.now().day, timezone.now().hour, timezone.now().minute, timezone.now().second]
+            for i, d in enumerate(s.split()[::-1]):
+                dodate[-i-1] = int(d)
+
+            dodate = timezone.datetime(*dodate)
+
+            if dodate == timezone.now():
+                needdo = True
+                continue
+            
+            if dodate < timezone.now():
+                dodate = dodate + timezone.timedelta(*([1] + [0]*len(s.split())))
+
+            nextexecutedatetime = dodate
+
+        if not nextexecutedatetime is None:
+            schedule_str.append("0")
         
-    def done(self):
-        self.status = 3
-        self.enddatetime = timezone.now()
-        self.save()
+        if schedule_str:
+            schedule_str = ",".join(str(r) for r in schedule_str[::-1])
+        else:
+            schedule_str = None
+        return needdo, nextexecutedatetime, schedule_str
 
     def doevent(self):
         self.latestcalled_at = timezone.now()
-        self.save()
+
         if self.status == 2:
-            return f"{self.title}は実行中です。"
+            self.save()
+            raise ScheduleError(f"{self.title}は実行中です。")
         if self.status == 3:
-            return f"{self.title}は既に完了しています。"
+            self.save()
+            raise ScheduleError(f"{self.title}は既に完了しています。")
         if self.status == 4:
-            return f"{self.title}はエラーが発生しています。"
-        if self.startdatetime > timezone.now():
-            return f"{self.title}はまだ実行できません。"
-        if self.category.durationtime and self.latestexecuted_at and self.latestexecuted_at + timezone.timedelta(seconds=self.category.durationtime) > timezone.now():
-            return f"{self.title}はまだ実行できません。"
-        if self.enddatetime and self.enddatetime < timezone.now():
-            return f"{self.title}は既に終了しています。"
+            self.save()
+            raise ScheduleError(f"{self.title}はエラーが発生しています。")
+        if self.nextexecutedatetime > timezone.now():
+            self.save()
+            raise ScheduleError(f"{self.title}はまだ実行できません。")
         
         self.status = 2
         self.save()
-
-        try:
-            ret = self.category.doevent(**{d["key"]: d["value"] for d in self.eventargs_set.all().values()} if self.pk else {})
-        except Exception as e:
-            self.status = 4
-            self.errormessage = f"{str(e)}\n{traceback.format_exc()}"
-            self.save()
-            raise e
         
-        if self.category.repeat:
-            self.status = 1
-        else:
+        needdo, self.nextexecutedatetime, self.schedule_str = self.parse_schedule_str(self.schedule_str)
+        if needdo:
+            try:
+                ret = self.category.doevent(**{d["key"]: d["value"] for d in self.eventargs_set.all().values()} if self.pk else {})
+            except Exception as e:
+                self.status = 4
+                self.errormessage = f"{str(e)}\n{traceback.format_exc()}"
+                self.save()
+                raise e
+            
+        if self.nextexecutedatetime is None:
             self.status = 3
 
-        self.latestexecuted_at = timezone.now()
         self.save()
-        return ret
+        return True
 
     def __str__(self):
         return self.title
@@ -161,7 +204,6 @@ def database_initializer(*args, **kwargs):
     category.use_method = "netkeiba.new_raceids"
     category.need_driver = True
     category.repeat = True
-    category.durationtime = 60 * 60 * 24
     category.save()
     schedule = EventSchedule.objects.get_or_create(title="新しいレースIDを取得する", category=category)[0]
     schedule.save()
@@ -172,7 +214,6 @@ def database_initializer(*args, **kwargs):
     category.need_driver = True
     category.page_load_strategy = "normal"
     category.repeat = True
-    category.durationtime = 180
     category.save()
     schedule = EventSchedule.objects.get_or_create(title="新しい出馬表を取得する", category=category)[0]
     schedule.save()
