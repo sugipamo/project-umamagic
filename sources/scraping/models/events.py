@@ -8,6 +8,7 @@ from django.conf import settings
 from django.core.signals import request_started
 from django.dispatch import receiver
 import traceback
+from django.core.exceptions import ValidationError
 
 class ScheduleError(Exception):
     pass
@@ -17,10 +18,14 @@ class EventCategory(models.Model):
     use_method = models.CharField(max_length=255, default="test.default_methods")
     need_driver = models.BooleanField(default=False)
     page_load_strategy = models.CharField(max_length=255, default="eager")
-    repeat = models.CharField(max_length=255, default="")
+    schedule_str = models.CharField(max_length=255, default="0")
     parallel_limit = models.IntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def clean(self):
+        if not self.schedule_str or self.schedule_str.isspace():
+            raise ValidationError("schedule_str cannot be empty or whitespace only.")
 
     def doevent(self, **kwargs):
         method = event_methods
@@ -42,7 +47,7 @@ class EventSchedule(models.Model):
     category = models.ForeignKey(EventCategory, on_delete=models.PROTECT)
     status = models.IntegerField(choices=[(i+1, s) for i, s in enumerate(["待機", "実行中", "完了", "エラー"])], default=1)
     nextexecutedatetime = models.DateTimeField(default=timezone.now, null=True, blank=True)
-    repeat = models.CharField(max_length=255, default="")
+    schedule_str = models.CharField(max_length=255, default="0")
     latestcalled_at = models.DateTimeField(null=True, blank=True)
     errormessage = models.TextField(null=True, blank=True)
     memo = models.TextField(null=True, blank=True)
@@ -69,52 +74,48 @@ class EventSchedule(models.Model):
         except:
             return None
 
-    def __parse_repeat(self, repeat):
-        needdo, nextexecutedatetime, repeat = False, None, repeat
+    def parse_schedule_str(self, schedule_str):
+        def schedule_str_to_que(schedule_str): return str(schedule_str).split(",")[::-1]
+        needdo, nextexecutedatetime, schedule_str = False, None, schedule_str_to_que(schedule_str)
 
-        # ','で区切り時間指定する。
-        # date型が指定された場合はその日時にスケジューリングする
-        # int型が指定された場合はその秒数後にスケジューリングする
-        # 
-        # - "0" = 一度だけ実行
-        # - "0:00:00" = 次の0時に実行
-        # - "0:00:00," = 毎日0時に実行を繰り返す
-        # - "0:00:00,12:00:00" = 毎日0時と12時に実行
-        # - "0:00:00,12:00:00," = 毎日0時と12時に実行を繰り返す
-        # - "0,1,1" = 1秒ごとに合計3回実行
-        # - "1,1,1" = 初回実行はスキップ、その後1秒ごとに合計3回実行
-        # - "0:00:00,1,1," = 毎日0時に1秒ごとに3回実行を繰り返す
+        while schedule_str and nextexecutedatetime is None:
+            s = schedule_str.pop()
+            if s.replace(" ", "") == "":
+                if self.category.schedule_str == "":
+                    schedule_str = None
+                else:   
+                    schedule_str = schedule_str_to_que(self.category.schedule_str)
+                continue
 
-        # repeatをリストに変換
-        # 次の要素が0の場合はそれを削除しイベントを実行
-        repeat = self.repeat.split(",")
-        if repeat[0] == 0: 
-            repeat.pop(0)
-            needdo = True
+            if s.replace(" ", "") == "0":
+                if needdo:
+                    nextexecutedatetime = timezone.now()
+                needdo = True
+                continue
 
-        # repeatが空の場合はステータスを完了に変更
-        # repeatが空でない場合は次の実行日時を設定
-        # repeatの次の要素が日付の場合はその日時に設定
-        # repeatの次の要素がintの場合はその秒数後に設定
-        # repeatの次の要素が空文字の場合はrepeatをリセット
-        if repeat:
-            next = repeat.pop(0)
-            if next == "":
-                repeat = self.category.repeat.split(",")
-            if ":" in next:
-                next = timezone.datetime.strptime(next, "%H:%M:%S")
-                next = timezone.datetime(timezone.now().year, timezone.now().month, timezone.now().day, next.hour, next.minute, next.second)
-                if next < timezone.now():
-                    next += timezone.timedelta(days=1)
-                nextexecutedatetime = next
-                repeat.push(0)
-            else:
-                self.nextexecutedatetime = timezone.now() + timezone.timedelta(seconds=int(next))
-                repeat.push(0)
+            dodate = [timezone.now().year, timezone.now().month, timezone.now().day, timezone.now().hour, timezone.now().minute, timezone.now().second]
+            for i, d in enumerate(s.split()[::-1]):
+                dodate[-i-1] = int(d)
 
-            self.repeat = ",".join(repeat)
+            dodate = timezone.datetime(*dodate)
 
-        return needdo, nextexecutedatetime, repeat
+            if dodate == timezone.now():
+                needdo = True
+                continue
+            
+            if dodate < timezone.now():
+                dodate = dodate + timezone.timedelta(*([1] + [0]*len(s.split())))
+
+            nextexecutedatetime = dodate
+
+        if not nextexecutedatetime is None:
+            schedule_str.append("0")
+        
+        if schedule_str:
+            schedule_str = ",".join(str(r) for r in schedule_str[::-1])
+        else:
+            schedule_str = None
+        return needdo, nextexecutedatetime, schedule_str
 
     def doevent(self):
         self.latestcalled_at = timezone.now()
@@ -135,7 +136,7 @@ class EventSchedule(models.Model):
         self.status = 2
         self.save()
         
-        needdo, self.nextexecutedatetime, self.repeat = self.__parse_repeat(self.repeat)
+        needdo, self.nextexecutedatetime, self.schedule_str = self.parse_schedule_str(self.schedule_str)
         if needdo:
             try:
                 ret = self.category.doevent(**{d["key"]: d["value"] for d in self.eventargs_set.all().values()} if self.pk else {})
@@ -149,7 +150,7 @@ class EventSchedule(models.Model):
             self.status = 3
 
         self.save()
-        return
+        return True
 
     def __str__(self):
         return self.title
@@ -203,7 +204,6 @@ def database_initializer(*args, **kwargs):
     category.use_method = "netkeiba.new_raceids"
     category.need_driver = True
     category.repeat = True
-    category.durationtime = 60 * 60 * 24
     category.save()
     schedule = EventSchedule.objects.get_or_create(title="新しいレースIDを取得する", category=category)[0]
     schedule.save()
@@ -214,7 +214,6 @@ def database_initializer(*args, **kwargs):
     category.need_driver = True
     category.page_load_strategy = "normal"
     category.repeat = True
-    category.durationtime = 180
     category.save()
     schedule = EventSchedule.objects.get_or_create(title="新しい出馬表を取得する", category=category)[0]
     schedule.save()
