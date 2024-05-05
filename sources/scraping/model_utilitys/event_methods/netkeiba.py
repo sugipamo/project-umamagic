@@ -1,6 +1,9 @@
 from scraping.models.login_for_scraping import cookie_required
-from scraping.models.pages import RaceCategory, Race, Shutuba
+from scraping.models.netkeiba_pages import PageCategory, Page
+from scraping.models.netkeiba_pages import PageShutuba, PageResult, PageDbNetkeiba
 from scraping.model_utilitys.webdriver import TimeCounter
+
+
 
 def extract_raceids(driver):
     with TimeCounter() as tc:
@@ -12,13 +15,13 @@ def extract_raceids(driver):
     race_categorys = {}
     for url in urls:
         race_category = url.split("/")[2]
-        category = race_categorys.get(race_category, RaceCategory.objects.get_or_create(name=race_category)[0])
+        category = race_categorys.get(race_category, PageCategory.objects.get_or_create(name=race_category)[0])
         params = url.split("?")[-1]
         params = dict([param.split("=") for param in params.split("&")])
         if "race_id" in params:
             race_id = params["race_id"]
             if race_id not in raceids:
-                raceids[race_id] = Race.objects.get_or_create(race_id=race_id, category=category)[0]
+                raceids[race_id] = Page.objects.get_or_create(race_id=race_id, category=category)[0]
                 
 # @cookie_required(".netkeiba.com")
 def new_raceids(driver):
@@ -27,11 +30,13 @@ def new_raceids(driver):
         extract_raceids(driver)
 
 
-def new_shutuba(driver):
-    race = Shutuba.next_raceid()
+def new_page(driver):
+    models = [PageShutuba, PageResult, PageDbNetkeiba]
+    model = min(models, key=lambda m: m.objects.exclude(html=None).count())
+    race = model.next_raceid()
     if race is None:
         return
-    
     race.update_html(driver)
     extract_raceids(driver)
-    
+
+    return race

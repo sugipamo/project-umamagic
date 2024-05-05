@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.core.signals import request_started
 from django.dispatch import receiver
+from django.utils.timezone import make_naive
 from scraping.model_utilitys.webdriver import WebDriver
 from scraping.model_utilitys import event_methods
 from scraping.models.login_for_scraping import LoginForScraping
@@ -16,7 +17,7 @@ class EventCategory(models.Model):
     use_method = models.CharField(max_length=255, default="test.default_methods")
     need_driver = models.BooleanField(default=False)
     page_load_strategy = models.CharField(max_length=255, default="eager")
-    schedule_str = models.CharField(max_length=255, null=True, default="0")
+    schedule_str = models.CharField(max_length=255, null=True, blank=True, default="0")
     parallel_limit = models.IntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -31,6 +32,7 @@ class EventCategory(models.Model):
                 method(**kwargs)
         else:
             method(**kwargs)
+        return True
 
     def __str__(self):
         return self.name
@@ -39,8 +41,8 @@ class EventSchedule(models.Model):
     title = models.CharField(max_length=255)
     category = models.ForeignKey(EventCategory, on_delete=models.PROTECT)
     status = models.IntegerField(choices=[(i+1, s) for i, s in enumerate(["待機", "実行中", "完了", "エラー"])], default=1)
-    nextexecutedatetime = models.DateTimeField(default=timezone.now, null=True, blank=True)
-    schedule_str = models.CharField(max_length=255, null=True, default="0")
+    nextexecutedatetime = models.DateTimeField(default=timezone.now)
+    schedule_str = models.CharField(max_length=255, null=True, blank=True, default="0")
     latestcalled_at = models.DateTimeField(null=True, blank=True)
     errormessage = models.TextField(null=True, blank=True)
     memo = models.TextField(null=True, blank=True)
@@ -69,6 +71,8 @@ class EventSchedule(models.Model):
 
     def parse_schedule_str(self, schedule_str):
         def schedule_str_to_que(schedule_str): return str(schedule_str).split(",")[::-1]
+        if schedule_str is None:
+            schedule_str = self.category.schedule_str
         needdo, nextexecutedatetime, schedule_str = False, None, schedule_str_to_que(schedule_str)
 
         while schedule_str and nextexecutedatetime is None:
@@ -87,10 +91,12 @@ class EventSchedule(models.Model):
                 continue
 
             dodate = [timezone.now().year, timezone.now().month, timezone.now().day, timezone.now().hour, timezone.now().minute, timezone.now().second]
-            for i, d in enumerate(s.split()[::-1]):
-                dodate[-i-1] = int(d)
-
-            dodate = timezone.datetime(*dodate)
+            if len(s.split()) == 1:
+                dodate = timezone.now() + timezone.timedelta(seconds=int(s))
+            else:
+                for i, d in enumerate(s.split()[::-1]):
+                    dodate[-i-1] = int(d)
+                dodate = timezone.datetime(*dodate)
 
             if dodate == timezone.now():
                 needdo = True
@@ -122,7 +128,7 @@ class EventSchedule(models.Model):
         if self.status == 4:
             self.save()
             raise ScheduleError(f"{self.title}はエラーが発生しています。")
-        if self.nextexecutedatetime > timezone.now():
+        if not self.nextexecutedatetime is None and self.nextexecutedatetime > timezone.now():
             self.save()
             raise ScheduleError(f"{self.title}はまだ実行できません。")
         
@@ -161,7 +167,8 @@ class EventArgs(models.Model):
     
 
 def doevents():
-    event = EventSchedule.objects.filter(status=1).order_by("latestcalled_at")
+    now = timezone.now()
+    event = EventSchedule.objects.filter(status=1, nextexecutedatetime__lte=now).order_by("latestcalled_at")
     if event.exists():
         event.first().doevent()
 
@@ -201,14 +208,14 @@ def database_initializer(*args, **kwargs):
     schedule = EventSchedule.objects.get_or_create(title="新しいレースIDを取得する", category=category)[0]
     schedule.save()
 
-    # 新規出馬表収集のイベントを登録
-    category = EventCategory.objects.get_or_create(name="新しい出馬表を取得する")[0]
-    category.use_method = "netkeiba.new_shutuba"
+    # 新規ページ収集のイベントを登録
+    category = EventCategory.objects.get_or_create(name="新しいページを取得する")[0]
+    category.use_method = "netkeiba.new_page"
     category.need_driver = True
     category.page_load_strategy = "normal"
-    category.schedule_str = "5 0," #五分ごとに実行
+    category.schedule_str = "300," #五分ごとに実行
     category.save()
-    schedule = EventSchedule.objects.get_or_create(title="新しい出馬表を取得する", category=category)[0]
+    schedule = EventSchedule.objects.get_or_create(title="新しいページを取得する", category=category)[0]
     schedule.save()
 
     

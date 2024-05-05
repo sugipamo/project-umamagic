@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from scraping.models.pages import RaceCategory, Race, Shutuba
+from scraping.models.netkeiba_pages import RaceCategory, Race, Shutuba
 
 class TestRaceCategory(TestCase):
     def test_str(self):
