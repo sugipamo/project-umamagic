@@ -10,6 +10,8 @@ services:
       - media_volume:/usr/src/app/mediafiles
     tty: true
     environment:
+      TZ: ${TZ}
+      LANG: ${LANG}
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
       DEVELOP: ${DEVELOP}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -26,6 +28,8 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     environment:
+      TZ: ${TZ}
+      LANG: ${LANG}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
