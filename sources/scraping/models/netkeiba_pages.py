@@ -1,8 +1,9 @@
 from django.db import models
 from django.db.models import Q
-import gzip
 from scraping.models.login_for_scraping import cookie_required
 from scraping.model_utilitys.webdriver import TimeCounter
+import gzip
+import traceback
 
 class NonUrlError(Exception):
     pass
@@ -132,14 +133,22 @@ class PageYosoCp(Page):
             gzip.decompress(self.html_pedigree).decode(),
         ]
 
-    @cookie_required(".netkeiba.com")
+
     def update_html(self, driver):
+        try:
+            self.__update_html(driver)
+        except Exception as e:
+            with open("error.log", "a") as f:
+                f.write(f"{str(e)}\n{traceback.format_exc()}")
+
+    @cookie_required(".netkeiba.com")
+    def __update_html(self, driver):
         if not self.page_ptr.category.name in {"nar.netkeiba.com", "race.netkeiba.com"}:
-            return gzip.compress("".encode())
+            return 
         try:
             driver.get(self.url)
         except NonUrlError as e:
-            return gzip.compress("".encode())
+            return
 
         htmls = [self.html_rising, self.html_precede, self.html_spurt, self.html_jockey, self.html_trainer, self.html_pedigree]
         for i in range(len(htmls)):
