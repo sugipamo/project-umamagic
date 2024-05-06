@@ -90,22 +90,7 @@ class EventSchedule(models.Model):
                 needdo = True
                 continue
 
-            dodate = [timezone.now().year, timezone.now().month, timezone.now().day, timezone.now().hour, timezone.now().minute, timezone.now().second]
-            if len(s.split()) == 1:
-                dodate = timezone.now() + timezone.timedelta(seconds=int(s))
-            else:
-                for i, d in enumerate(s.split()[::-1]):
-                    dodate[-i-1] = int(d)
-                dodate = timezone.datetime(*dodate)
-
-            if dodate == timezone.now():
-                needdo = True
-                continue
-            
-            if dodate < timezone.now():
-                dodate = dodate + timezone.timedelta(*([1] + [0]*len(s.split())))
-
-            nextexecutedatetime = dodate
+            nextexecutedatetime = timezone.now() + timezone.timedelta(seconds=int(s))
 
         if not nextexecutedatetime is None:
             schedule_str.append("0")
@@ -203,7 +188,7 @@ def database_initializer(*args, **kwargs):
     category = EventCategory.objects.get_or_create(name="新しいレースIDを取得する")[0]
     category.use_method = "netkeiba.new_raceids"
     category.need_driver = True
-    category.schedule_str = "0 0 0," #毎日0時に実行
+    category.schedule_str = str(60*60*24)+","
     category.save()
     schedule = EventSchedule.objects.get_or_create(title="新しいレースIDを取得する", category=category)[0]
     schedule.save()
@@ -213,7 +198,7 @@ def database_initializer(*args, **kwargs):
     category.use_method = "netkeiba.new_page"
     category.need_driver = True
     category.page_load_strategy = "normal"
-    category.schedule_str = "300," #五分ごとに実行
+    category.schedule_str = "120,"
     category.save()
     schedule = EventSchedule.objects.get_or_create(title="新しいページを取得する", category=category)[0]
     schedule.save()
