@@ -1,6 +1,6 @@
 from scraping.models.login_for_scraping import cookie_required
 from scraping.models.netkeiba_pages import PageCategory, Page
-from scraping.models.netkeiba_pages import PageShutuba, PageResult, PageDbNetkeiba
+from scraping.models.netkeiba_pages import Pages
 from scraping.model_utilitys.webdriver import TimeCounter
 
 
@@ -31,7 +31,7 @@ def new_raceids(driver):
 
 
 def new_page(driver):
-    models = [PageShutuba, PageResult, PageDbNetkeiba]
+    models = Pages.PageClasses
     model = min(models, key=lambda m: m.objects.exclude(html=None).count())
     race = model.next_raceid()
     if race is None:

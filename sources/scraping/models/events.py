@@ -131,6 +131,7 @@ class EventSchedule(models.Model):
                 raise e
             
         if self.nextexecutedatetime is None:
+            self.nextexecutedatetime = timezone.now()
             self.status = 3
 
         self.save()
@@ -198,7 +199,7 @@ def database_initializer(*args, **kwargs):
     category.use_method = "netkeiba.new_page"
     category.need_driver = True
     category.page_load_strategy = "normal"
-    category.schedule_str = "120,"
+    category.schedule_str = "120,120,120,120,120,120,120,120,120,120,120,120,120,120,360,120,120,120,120,120,3600,"
     category.save()
     schedule = EventSchedule.objects.get_or_create(title="新しいページを取得する", category=category)[0]
     schedule.save()
