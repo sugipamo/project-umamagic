@@ -46,10 +46,6 @@ class Page(models.Model):
 
     @classmethod
     def next_raceid(cls):
-        shutuba = cls.objects.filter(html=None).first()
-        if shutuba is not None:
-            return shutuba
-
         unused_races = Page.objects.exclude(race_id__in=cls.objects.values_list('race_id', flat=True))
         unused_races = unused_races.filter(
             Q(category__name="nar.netkeiba.com") |

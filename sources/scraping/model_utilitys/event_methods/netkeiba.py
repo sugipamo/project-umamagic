@@ -32,7 +32,7 @@ def new_raceids(driver):
 
 def new_page(driver):
     models = Pages.PageClasses
-    model = min(models, key=lambda m: m.objects.exclude(html=None).count())
+    model = min(models, key=lambda m: m.objects.all().count())
     race = model.next_raceid()
     if race is None:
         return
