@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 DEBUG = os.environ.get('DEVELOP', 'True').lower() != 'true'
 TESTING = 'test' in sys.argv
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "192.168.0.103"]
 
 AUTH_USER_MODEL = 'account.User'
 
