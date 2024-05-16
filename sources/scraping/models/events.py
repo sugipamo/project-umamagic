@@ -42,7 +42,7 @@ class EventSchedule(models.Model):
     category = models.ForeignKey(EventCategory, on_delete=models.PROTECT)
     status = models.IntegerField(choices=[(i+1, s) for i, s in enumerate(["待機", "実行中", "完了", "エラー"])], default=1)
     nextexecutedatetime = models.DateTimeField(default=timezone.now)
-    schedule_str = models.CharField(max_length=255, null=True, blank=True, default="0")
+    schedule_str = models.CharField(max_length=255, null=True, blank=True, default=",")
     latestcalled_at = models.DateTimeField(null=True, blank=True)
     errormessage = models.TextField(null=True, blank=True)
     memo = models.TextField(null=True, blank=True)
