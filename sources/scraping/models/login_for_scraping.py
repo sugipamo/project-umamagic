@@ -36,6 +36,8 @@ def cookie_required(domain):
                 driver = driver[0]
             cookies = {}
             import pathlib
+            if not pathlib.Path(COOKIEPATH).exists():
+                pathlib.Path(COOKIEPATH).mkdir()
             cookiepath = COOKIEPATH + "/" + domain + "_cookies.pkl"
             if pathlib.Path(cookiepath).exists():
                 with open(cookiepath, "rb") as f:
@@ -47,6 +49,7 @@ def cookie_required(domain):
                 [driver.add_cookie(cookie) for cookie in cookies]
             LoginForScraping.objects.get_or_create(domain=domain)
             return_value = func(*args, **kwargs)
+
             with open(cookiepath, "wb") as f:
                 cookies = driver.get_cookies()
                 cookies = [cookie for cookie in cookies if cookie["domain"] == domain]
