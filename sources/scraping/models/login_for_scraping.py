@@ -46,7 +46,7 @@ def cookie_required(domain):
                     cookies = []
                 url = "https://" + domain[1:] if domain.startswith(".") else "https://" + domain
                 driver.get(url)
-                [driver.add_cookie(cookie) for cookie in cookies]
+                [driver.add_cookie(cookie) for cookie in cookies if cookie["domain"] == domain]
             LoginForScraping.objects.get_or_create(domain=domain)
             return_value = func(*args, **kwargs)
 
