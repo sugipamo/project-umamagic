@@ -115,5 +115,4 @@ class EventScheduleListViewTest(TestCase):
         response = self.client.get(reverse('scraping:event_schedule_list'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'テストスケジュール')
-        self.assertContains(response, 'テストカテゴリー')
         

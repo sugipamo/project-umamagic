@@ -2,6 +2,7 @@ from scraping.models.login_for_scraping import cookie_required
 from scraping.models.netkeiba_pages import PageCategory, Page
 from scraping.models.netkeiba_pages import Pages
 from scraping.model_utilitys.webdriver import TimeCounter
+from scraping.models.login_for_scraping import LoginForScraping
 
 
 
@@ -31,7 +32,11 @@ def new_raceids(driver):
 
 
 def new_page(driver):
+    login = LoginForScraping.objects.get_or_create(domain=".netkeiba.com")[0]
+    islogined = login.update_logined(driver)
     models = Pages.PageClasses
+    if not islogined:
+        models = [model for model in models if not model.need_cookie]
     model = min(models, key=lambda m: m.objects.all().count())
     race = model.next_raceid()
     if race is None:

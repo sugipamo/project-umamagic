@@ -3,7 +3,6 @@ from django.utils import timezone
 from django.conf import settings
 from django.core.signals import request_started
 from django.dispatch import receiver
-from django.utils.timezone import make_naive
 from scraping.model_utilitys.webdriver import WebDriver
 from scraping.model_utilitys import event_methods
 from scraping.models.login_for_scraping import LoginForScraping

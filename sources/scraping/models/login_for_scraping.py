@@ -25,6 +25,7 @@ class LoginForScraping(models.Model):
         method = getattr(LoginMethods, f"logined_{self.domain.replace('.', '')}")
         self.loggined = method(driver)
         self.save()
+        return self.loggined
 
 def cookie_required(domain):
     def decorator(func):
