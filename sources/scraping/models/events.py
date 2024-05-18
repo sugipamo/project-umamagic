@@ -133,6 +133,7 @@ class EventSchedule(models.Model):
             self.nextexecutedatetime = timezone.now()
             self.status = 3
 
+        self.status = 1
         self.save()
         return needdo
 
@@ -174,10 +175,10 @@ def doevents_scheduler():
 @receiver(request_started)
 def database_initializer(*args, **kwargs):
     # print("database_initialize")
-    schedules = EventSchedule.objects.filter(status=2)
-    for schedule in schedules:
-        schedule.status = 1
-        schedule.save()
+    # schedules = EventSchedule.objects.filter(status=2)
+    # for schedule in schedules:
+    #     schedule.status = 1
+    #     schedule.save()
 
     # ログイン必要なサイトのドメインを登録
     domains = [".netkeiba.com"]
@@ -193,16 +194,27 @@ def database_initializer(*args, **kwargs):
     schedule = EventSchedule.objects.get_or_create(title="新しいレースIDを取得する", category=category)[0]
     schedule.save()
 
-    # 新規ページ収集のイベントを登録
-    category = EventCategory.objects.get_or_create(name="新しいページを取得する")[0]
+    # ログイン不要の新規ページ収集のイベントを登録
+    category = EventCategory.objects.get_or_create(name="ログイン不要のページを取得する")[0]
     category.use_method = "netkeiba.new_page"
     category.need_driver = True
     category.page_load_strategy = "normal"
-    category.schedule_str = "120,120,120,120,120,120,120,120,120,120,120,120,120,120,360,120,120,120,120,120,3600,"
+    category.schedule_str = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,360,0,0,0,0,0,3600,"
     category.save()
-    schedule = EventSchedule.objects.get_or_create(title="新しいページを取得する", category=category)[0]
+    schedule = EventSchedule.objects.get_or_create(title="ログイン不要のページを取得する", category=category)[0]
     schedule.save()
 
+    # ログイン必要の新規ページ収集のイベントを登録
+    category = EventCategory.objects.get_or_create(name="ログイン必要のページを取得する")[0]
+    category.use_method = "netkeiba.new_page_with_login"
+    category.need_driver = True
+    category.page_load_strategy = "normal"
+    category.schedule_str = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,360,0,0,0,0,0,3600,"
+    category.save()
+    schedule = EventSchedule.objects.get_or_create(title="ログイン必要のページを取得する", category=category)[0]
+    schedule.save()
+
+    
     
 
 
