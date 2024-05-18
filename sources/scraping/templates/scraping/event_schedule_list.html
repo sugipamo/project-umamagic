@@ -13,8 +13,8 @@
                     <tr>
                         <th class="text-center">状態</th>
                         <th class="text-center">タイトル</th>
-                        <th class="text-center">カテゴリ</th>
-                        <th class="text-center">メモ</th>
+                        <th class="text-center">エラー</th>
+                        <th class="text-center">エラー解除</th>
                     </tr>
                 </thead>
                 　<!-- ここまでが表の列の定義-->
@@ -23,9 +23,12 @@
                     {% for item in object_list %}
                     <tr class="odd gradeX text-center">
                         <td class="text-center" width="100">{{ item.get_status_display }}</td>
-                        <td class="text-center" width="100">{{ item.title }}</td>
-                        <td class="text-center" width="140">{{ item.category }}</td>
-                        <td class="text-center" width="140">{{ item.memo }}</td>
+                        <td class="text-center" width="140">{{ item.title }}</td>
+                        <td class="text-center">{{ item.errormessage }}</td>
+                        <td class="text-center" width="140">
+                            <a class="btn btn-primary"
+                                href="{% url 'scraping:event_schedule_solve_error' item.pk %}">エラー解除</a>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>

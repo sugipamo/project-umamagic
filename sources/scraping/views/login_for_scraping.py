@@ -27,4 +27,3 @@ def login_for_scraping_detail(request, pk):
     else:
         form = LoginForScrapingDetailForm()
     return render(request, 'scraping/login_for_scraping_detail.html', {'login_for_scraping': login_for_scraping})
-
