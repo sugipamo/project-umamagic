@@ -42,6 +42,9 @@ class Page(models.Model):
             driver.get(self.url)
         except NonUrlError as e:
             return gzip.compress("".encode())
+        if self.need_cookie and "premium_new" in driver.current_url:
+            raise NonUrlError("ログインが必要です。")
+
         self.html = gzip.compress(driver.page_source.encode())
         self.save_base(raw=True)
 
