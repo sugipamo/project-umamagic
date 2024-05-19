@@ -27,26 +27,24 @@ def new_raceids(driver):
         driver.get(url)
         extract_raceids(driver)
 
-def update_html(driver, model):
-    race = model.next_raceid()
-    if race is None:
+def update_html(driver, models):
+    if not models:
         return
-    race.update_html(driver)
-    extract_raceids(driver)
-    return race
+    models = sorted(models, key=lambda m: m.objects.all().count())
+    for model in models:
+        race = model.next_raceid()
+        if race is None:
+            continue
+        race.update_html(driver)
+        extract_raceids(driver)
+        return race
 
 def new_page(driver):
     models = Pages.PageClasses
-    models = [m for m in models if not m.need_cookie]
-    if not models:
-        return
-    model = min(models, key=lambda m: m.objects.all().count())
-    update_html(driver, model)
+    models = [m for m in models if not m.need_cookie()]
+    return update_html(driver, models)
 
 def new_page_with_login(driver):
     models = Pages.PageClasses
-    models = [m for m in models if m.need_cookie]
-    if not models:
-        return
-    model = min(models, key=lambda m: m.objects.all().count())
-    update_html(driver, model)
+    models = [m for m in models if m.need_cookie()]
+    return update_html(driver, models)

@@ -28,5 +28,14 @@ class TestNetKeiba(TestCase):
         
     def test_new_page(self):
         with WebDriver() as driver:
+            driver.get("https://race.netkeiba.com/top/")
+            netkeiba.extract_raceids(driver)
             race = netkeiba.new_page(driver)
+        self.assertTrue(race)
+
+    def test_new_page_with_login(self):
+        with WebDriver() as driver:
+            driver.get("https://race.netkeiba.com/top/")
+            netkeiba.extract_raceids(driver)
+            race = netkeiba.new_page_with_login(driver)
         self.assertTrue(race)

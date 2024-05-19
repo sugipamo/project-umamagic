@@ -1,10 +1,10 @@
 from selenium import webdriver
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from time import sleep, perf_counter
 import os
-from time import perf_counter
+class DriverNotExistsError(Exception):
+    pass
 
-seleniums = {}
-
-# withでつかってタイムアウトまでを計測する
 class TimeCounter():
     def __init__(self):
         self.start = perf_counter()
@@ -26,38 +26,23 @@ class TimeCounter():
         """funcの戻り値がTrueになるまで実行する、タイムアウトしたらエラーを返す"""
         while True:
             result = func(*args, **kwargs)
-            # print("result", result)
             if result:
                 return result
             if self.get_time >= self.timeout:
                 raise Exception("タイムアウトしました。")
-
+            sleep(1)
 
 class WebDriver():
     def __init__(self, pageLoadStrategy="eager"):
         options = webdriver.ChromeOptions()
         options.set_capability('pageLoadStrategy', pageLoadStrategy)
         self.driver = webdriver.Remote(
-            command_executor = os.environ["SELENIUM_URL"],
-            options = options,
+            command_executor=os.environ["SELENIUM_URL"],
+            options=options,
         )
-        global seleniums
-        seleniums[id(self)] = self.driver
 
     def __enter__(self):
         return self.driver
     
     def __exit__(self, exc_type, exc_value, traceback):
         self.driver.quit()
-        global seleniums
-        del seleniums[id(self)]
-
-def killseleniums():
-    for selenium in seleniums.values():
-        try:
-            selenium.quit()
-        except:
-            pass
-
-import atexit
-atexit.register(killseleniums)

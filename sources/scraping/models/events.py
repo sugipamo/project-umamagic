@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.signals import request_started
 from django.dispatch import receiver
 from scraping.model_utilitys.webdriver import WebDriver
+from scraping.model_utilitys.webdriver import DriverNotExistsError
 from scraping.model_utilitys import event_methods
 from scraping.models.login_for_scraping import LoginForScraping
 import traceback
@@ -119,21 +120,28 @@ class EventSchedule(models.Model):
         self.status = 2
         self.save()
         
-        needdo, self.nextexecutedatetime, self.schedule_str = self.parse_schedule_str(self.schedule_str)
+        needdo, nextexecutedatetime, schedule_str = self.parse_schedule_str(self.schedule_str)
         if needdo:
             try:
                 self.category.doevent(**{d["key"]: d["value"] for d in self.eventargs_set.all().values()} if self.pk else {})
             except Exception as e:
+                if DriverNotExistsError == e.__class__:
+                    self.status = 1
+                    self.save()
+                    return False
                 self.status = 4
                 self.errormessage = f"{str(e)}\n{traceback.format_exc()}"
                 self.save()
                 raise e
             
-        if self.nextexecutedatetime is None:
+        self.status = 1
+        self.schedule_str = schedule_str
+        self.nextexecutedatetime = nextexecutedatetime
+        
+        if nextexecutedatetime is None:
             self.nextexecutedatetime = timezone.now()
             self.status = 3
-
-        self.status = 1
+        
         self.save()
         return needdo
 
@@ -175,10 +183,7 @@ def doevents_scheduler():
 @receiver(request_started)
 def database_initializer(*args, **kwargs):
     # print("database_initialize")
-    # schedules = EventSchedule.objects.filter(status=2)
-    # for schedule in schedules:
-    #     schedule.status = 1
-    #     schedule.save()
+
 
     # ログイン必要なサイトのドメインを登録
     domains = [".netkeiba.com"]
@@ -216,5 +221,11 @@ def database_initializer(*args, **kwargs):
 
     
     
+def stops_schedules():
+    schedules = EventSchedule.objects.filter(status=2)
+    for schedule in schedules:
+        schedule.status = 1
+        schedule.save()
 
-
+import atexit
+atexit.register(stops_schedules)

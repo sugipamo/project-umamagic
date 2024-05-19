@@ -22,8 +22,8 @@ class Page(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    @property
-    def need_cookie(self):
+    @classmethod
+    def need_cookie(cls):
         return False
 
     def __str__(self):
@@ -88,8 +88,8 @@ class PageYoso(Page):
     def url(self):
         return f"https://{self.page_ptr.category.name}/yoso/mark_list.html?race_id={self.page_ptr.race_id}"
 
-    @property
-    def need_cookie(self):
+    @classmethod
+    def need_cookie(cls):
         return True
 
     @cookie_required(".netkeiba.com")
@@ -102,8 +102,8 @@ class PageYosoPro(Page):
     def url(self):
         return f"https://{self.page_ptr.category.name}/yoso/yoso_pro_opinion_list.html?race_id={self.page_ptr.race_id}"
 
-    @property
-    def need_cookie(self):
+    @classmethod
+    def need_cookie(cls):
         return True
     
     @cookie_required(".netkeiba.com")
@@ -122,8 +122,8 @@ class PageYosoCp(Page):
     def url(self):
         return f"https://{self.page_ptr.category.name}/yoso/yoso_cp.html?race_id={self.page_ptr.race_id}"
 
-    @property
-    def need_cookie(self):
+    @classmethod
+    def need_cookie(cls):
         return True
     
     def read_html(self):
@@ -179,8 +179,8 @@ class PageOikiri(Page):
             raise NonUrlError("nar.netkeiba.comには追い切りページがありません。")
         return f"https://race.netkeiba.com/race/oikiri.html?race_id={self.page_ptr.race_id}&type=2"
 
-    @property
-    def need_cookie(self):
+    @classmethod
+    def need_cookie(cls):
         return True
 
     @cookie_required(".netkeiba.com")
