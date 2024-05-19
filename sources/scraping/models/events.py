@@ -204,7 +204,7 @@ def database_initializer(*args, **kwargs):
     category.use_method = "netkeiba.new_page"
     category.need_driver = True
     category.page_load_strategy = "normal"
-    category.schedule_str = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,360,0,0,0,0,0,3600,"
+    category.schedule_str = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,360,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3600,"
     category.save()
     schedule = EventSchedule.objects.get_or_create(title="ログイン不要のページを取得する", category=category)[0]
     schedule.save()
@@ -214,7 +214,7 @@ def database_initializer(*args, **kwargs):
     category.use_method = "netkeiba.new_page_with_login"
     category.need_driver = True
     category.page_load_strategy = "normal"
-    category.schedule_str = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,360,0,0,0,0,0,3600,"
+    category.schedule_str = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,360,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3600,"
     category.save()
     schedule = EventSchedule.objects.get_or_create(title="ログイン必要のページを取得する", category=category)[0]
     schedule.save()
