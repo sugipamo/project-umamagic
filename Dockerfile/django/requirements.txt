@@ -6,4 +6,6 @@ mysqlclient
 selenium
 gunicorn
 psycopg2-binary
-docker
+pytest
+pytest-django
+pytest-xdist

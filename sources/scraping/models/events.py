@@ -166,6 +166,7 @@ def doevents():
     if event.exists():
         event.first().doevent()
 
+
 def doevents_scheduler():
     if settings.TESTING:
         return
@@ -182,9 +183,8 @@ def doevents_scheduler():
 
 @receiver(request_started)
 def database_initializer(*args, **kwargs):
-    # print("database_initialize")
-
-
+    if settings.TESTING:
+        return
     # ログイン必要なサイトのドメインを登録
     domains = [".netkeiba.com"]
     for domain in domains:
@@ -220,8 +220,9 @@ def database_initializer(*args, **kwargs):
     schedule.save()
 
     
-    
 def stops_schedules():
+    if settings.TESTING:
+        return
     schedules = EventSchedule.objects.filter(status=2)
     for schedule in schedules:
         schedule.status = 1
