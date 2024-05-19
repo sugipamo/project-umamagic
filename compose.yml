@@ -6,8 +6,6 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./sources:/home/user/sources
-      - static_volume:/home/user/sources/staticfiles
-      - media_volume:/home/user/sources/mediafiles
     tty: true
     environment:
       TZ: ${TZ}
@@ -72,8 +70,8 @@ services:
     tty: true
     volumes:
       - ./Dockerfile/nginx/uwsgi_params:/etc/nginx/uwsgi_params
-      - static_volume:/home/user/sources/staticfiles
-      - media_volume:/home/user/sources/mediafiles
+      - static_volume:/home/user/sources/umamagic/staticfiles
+      - media_volume:/home/user/sources/umamagic/mediafiles
     depends_on:
       - django
       - selenium

@@ -93,11 +93,11 @@ DATABASES = {
 
 # set static files directory and url path
 STATIC_URL = '/staticfiles/'
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATIC_ROOT = os.path.join(BASE_DIR, "umamagic", "staticfiles")
 
 # set upload files directory and url path
 MEDIA_URL = "/mediafiles/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "mediafiles")
+MEDIA_ROOT = os.path.join(BASE_DIR, "umamagic", "mediafiles")
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
