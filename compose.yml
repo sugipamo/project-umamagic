@@ -20,6 +20,13 @@ services:
     networks:
       - web_network
 
+  cron:
+    build:
+      context: ./Dockerfile/cron
+      dockerfile: Dockerfile
+    networks:
+      - web_network
+
   mysql:
     build:
       context: ./Dockerfile/mysql

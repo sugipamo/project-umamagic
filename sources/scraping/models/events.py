@@ -158,28 +158,12 @@ class EventArgs(models.Model):
 
     def __str__(self):
         return f"{self.key}: {self.value}"
-    
 
-def doevents():
+def doevent():
     now = timezone.now()
     event = EventSchedule.objects.filter(status=1, nextexecutedatetime__lte=now).order_by("latestcalled_at")
     if event.exists():
         event.first().doevent()
-
-
-def doevents_scheduler():
-    if settings.TESTING:
-        return
-    import logging
-    from apscheduler.schedulers.background import BackgroundScheduler
-
-    logging.basicConfig()
-    logging.getLogger('apscheduler').setLevel(logging.ERROR)
-
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(doevents, 'interval', seconds=1)
-    scheduler.start()
-
 
 @receiver(request_started)
 def database_initializer(*args, **kwargs):

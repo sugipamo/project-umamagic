@@ -1,9 +1,8 @@
 django
-apscheduler
-django-apscheduler
-django-cleanup
 mysqlclient
 selenium
+requests
+BeautifulSoup4
 gunicorn
 psycopg2-binary
 pytest
