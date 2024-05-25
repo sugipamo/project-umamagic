@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.http import HttpResponse
 from django.shortcuts import redirect
 
 from django.views.generic import ListView
@@ -12,9 +12,11 @@ class EventScheduleListView(ListView):
     def queryset(self):
         return EventSchedule.objects.all().order_by('latestcalled_at') 
 
-def event_chedule_doevent(request):
+
+
+def event_schedule_doevent(request):
     doevent()
-    return redirect('scraping:event_schedule_list')
+    return HttpResponse("<html><body></body></html>")
 
 def redirect_event_schedule_list(request):
     return redirect('scraping:event_schedule_list')

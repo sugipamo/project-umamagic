@@ -160,6 +160,7 @@ class EventArgs(models.Model):
         return f"{self.key}: {self.value}"
 
 def doevent():
+    
     now = timezone.now()
     event = EventSchedule.objects.filter(status=1, nextexecutedatetime__lte=now).order_by("latestcalled_at")
     if event.exists():
@@ -212,8 +213,6 @@ def database_initializer(*args, **kwargs):
 
     
 def stops_schedules():
-    if settings.TESTING:
-        return
     schedules = EventSchedule.objects.filter(status=2)
     for schedule in schedules:
         schedule.status = 1
