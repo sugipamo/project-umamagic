@@ -29,4 +29,4 @@ def event_schedule_solve_error(request, pk):
     event_schedule.status = 1
     event_schedule.errormessage = ""
     event_schedule.save()
-    return redirect('scraping:event_error_history_list')
+    return redirect('scraping:event_schedule_list')
