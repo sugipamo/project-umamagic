@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Q
 from scraping.models.login_for_scraping import cookie_required
+from scraping.models.login_for_scraping import LoginForScraping
 from scraping.model_utilitys.webdriver import TimeCounter
 import gzip
 import traceback
@@ -45,6 +46,9 @@ class Page(models.Model):
             self.save_base(raw=True)
             return
         if self.need_cookie and "premium_new" in driver.current_url:
+            domain = LoginForScraping.objects.get(domain=".netkeiba.com")
+            domain.loggined = False
+            domain.save()
             raise NonUrlError("ログインが必要です。")
 
         self.html = gzip.compress(driver.page_source.encode())
