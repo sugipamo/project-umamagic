@@ -1,8 +1,6 @@
 django
 mysqlclient
 selenium
-requests
-BeautifulSoup4
 gunicorn
 psycopg2-binary
 pytest
