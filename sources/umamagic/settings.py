@@ -91,13 +91,6 @@ DATABASES = {
     }
 }
 
-# set static files directory and url path
-STATIC_URL = '/staticfiles/'
-STATIC_ROOT = os.path.join(BASE_DIR, "umamagic", "staticfiles")
-
-# set upload files directory and url path
-MEDIA_URL = "/mediafiles/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "umamagic", "mediafiles")
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -133,7 +126,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
+# set static files directory and url path
 STATIC_URL = 'static/'
+STATIC_ROOT = 'static/'
+
+# set upload files directory and url path
+MEDIA_URL = 'media/'
+MEDIA_ROOT = 'media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

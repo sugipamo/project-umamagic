@@ -165,6 +165,13 @@ def doevent():
     if event.exists():
         event.first().doevent()
 
+class EventErrorHistory(models.Model):
+    event_schedule = models.ForeignKey(EventSchedule, on_delete=models.PROTECT)
+    errormessage = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
 @receiver(request_started)
 def database_initializer(*args, **kwargs):
     if settings.TESTING:
