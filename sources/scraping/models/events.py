@@ -160,7 +160,6 @@ class EventArgs(models.Model):
         return f"{self.key}: {self.value}"
 
 def doevent():
-    
     now = timezone.now()
     event = EventSchedule.objects.filter(status=1, nextexecutedatetime__lte=now).order_by("latestcalled_at")
     if event.exists():

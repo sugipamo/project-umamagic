@@ -37,11 +37,13 @@ class Page(models.Model):
             raise NotImplementedError("Pageクラスは直接使えません。")
         
         if not self.page_ptr.category.name in {"nar.netkeiba.com", "race.netkeiba.com"}:
-            return gzip.compress("".encode())
+            self.save_base(raw=True)
+            return
         try:
             driver.get(self.url)
         except NonUrlError as e:
-            return gzip.compress("".encode())
+            self.save_base(raw=True)
+            return
         if self.need_cookie and "premium_new" in driver.current_url:
             raise NonUrlError("ログインが必要です。")
 
@@ -147,10 +149,12 @@ class PageYosoCp(Page):
     @cookie_required(".netkeiba.com")
     def __update_html(self, driver):
         if not self.page_ptr.category.name in {"nar.netkeiba.com", "race.netkeiba.com"}:
+            self.save_base(raw=True)
             return 
         try:
             driver.get(self.url)
         except NonUrlError as e:
+            self.save_base(raw=True)
             return
 
         htmls = [self.html_rising, self.html_precede, self.html_spurt, self.html_jockey, self.html_trainer, self.html_pedigree]
