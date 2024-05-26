@@ -45,7 +45,8 @@ class Page(models.Model):
         except NonUrlError as e:
             self.save_base(raw=True)
             return
-        if self.need_cookie and "premium_new" in driver.current_url:
+        
+        if self.need_cookie() and "premium_new" in driver.current_url:
             domain = LoginForScraping.objects.get(domain=".netkeiba.com")
             domain.loggined = False
             domain.save()
@@ -160,6 +161,13 @@ class PageYosoCp(Page):
         except NonUrlError as e:
             self.save_base(raw=True)
             return
+        
+        if "premium_new" in driver.current_url:
+            domain = LoginForScraping.objects.get(domain=".netkeiba.com")
+            domain.loggined = False
+            domain.save()
+            raise NonUrlError("ログインが必要です。")
+
 
         htmls = [self.html_rising, self.html_precede, self.html_spurt, self.html_jockey, self.html_trainer, self.html_pedigree]
         for i in range(len(htmls)):

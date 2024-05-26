@@ -21,7 +21,6 @@ def extract_raceids(driver):
             if race_id not in raceids:
                 raceids[race_id] = Page.objects.get_or_create(race_id=race_id, category=category)[0]
                 
-# @cookie_required(".netkeiba.com")
 def new_raceids(driver):
     for url in ["https://race.netkeiba.com/top/", "https://nar.netkeiba.com/top/"]:
         driver.get(url)

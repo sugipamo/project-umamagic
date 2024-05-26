@@ -125,10 +125,6 @@ class EventSchedule(models.Model):
             try:
                 self.category.doevent(**{d["key"]: d["value"] for d in self.eventargs_set.all().values()} if self.pk else {})
             except Exception as e:
-                if DriverNotExistsError == e.__class__:
-                    self.status = 1
-                    self.save()
-                    return False
                 self.status = 4
                 self.errormessage = f"{str(e)}\n{traceback.format_exc()}"
                 self.save()
@@ -163,7 +159,12 @@ def doevent():
     now = timezone.now()
     event = EventSchedule.objects.filter(status=1, nextexecutedatetime__lte=now).order_by("latestcalled_at")
     if event.exists():
-        event.first().doevent()
+        try:
+            event.first().doevent()
+        except Exception as e:
+            with open("error.log", "a") as f:
+                f.write(f"{timezone.now()}: {str(e)}\n{traceback.format_exc()}\n\n")
+            raise e
 
 class EventErrorHistory(models.Model):
     event_schedule = models.ForeignKey(EventSchedule, on_delete=models.PROTECT)
