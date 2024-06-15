@@ -35,6 +35,7 @@ def update_html(driver, models):
         if race is None:
             continue
         race.update_html(driver)
+        race.save_base(raw=True)
         extract_raceids(driver)
         return race
 
