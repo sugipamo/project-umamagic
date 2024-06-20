@@ -4,6 +4,7 @@ services:
     build:
       context: ./Dockerfile/django
       dockerfile: Dockerfile
+    image: my_django_app
     volumes:
       - ./sources:/home/user/sources
     tty: true
@@ -24,13 +25,12 @@ services:
     build:
       context: ./Dockerfile/cron
       dockerfile: Dockerfile
+    image: my_cron_app
     networks:
       - web_network
 
   mysql:
-    build:
-      context: ./Dockerfile/mysql
-      dockerfile: Dockerfile
+    image: mysql:8.0.36
     volumes:
       - mysql_data:/var/lib/mysql
     environment:
@@ -56,9 +56,7 @@ services:
       - web_network
 
   phpmyadmin:
-    build:
-      context: ./Dockerfile/phpmyadmin
-      dockerfile: Dockerfile
+    image: phpmyadmin/phpmyadmin
     # ports:
     #   - 8080:80
     environment:
@@ -69,15 +67,14 @@ services:
       - web_network
 
   nginx:
-    build:
-      context: ./Dockerfile/nginx
-      dockerfile: Dockerfile
+    image: nginx:latest
     ports:
       - '80:80'
     tty: true
     volumes:
       - ./Dockerfile/nginx/uwsgi_params:/etc/nginx/uwsgi_params
       - ./sources:/home/user/sources
+      - ./Dockerfile/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - django
       - selenium
@@ -87,8 +84,6 @@ services:
 
 volumes:
   mysql_data:
-  static_volume:
-  media_volume:
 
 
 networks:
