@@ -14,7 +14,7 @@ COMMANDS = {
     "migrate": "docker compose exec django bash -c 'python manage.py makemigrations && python manage.py migrate'",
     "migrate_reset": "docker compose exec django bash -c 'python manage.py migrate --fake && python manage.py migrate'",
     "start": "docker compose exec django bash -c 'gunicorn --workers 4 --threads 2 umamagic.wsgi:application --bind'",
-    "test_start": "docker compose exec django bash -c 'python manage.py runserver",
+    "test_start": "docker compose exec django python manage.py runserver 0.0.0.0:8000",
     "test": "docker compose exec django bash -c 'python manage.py test'",
     "pytest": "docker compose exec django bash -c 'pytest -v -n auto'",    
 }
