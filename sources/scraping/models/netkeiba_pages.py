@@ -3,6 +3,7 @@ from django.db.models import Q
 from scraping.models.login_for_scraping import cookie_required
 from scraping.models.login_for_scraping import LoginForScraping
 from scraping.model_utilitys.webdriver import TimeCounter
+from account.models import User
 import gzip
 import traceback
 

@@ -26,6 +26,10 @@ RUN groupadd -g $GID $GROUPNAME && \
 # RUN groupadd -g 999 docker && \
 # usermod -aG docker $USERNAME
 
+# Copy installed packages from base image
+COPY --from=base /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
+COPY --from=base /usr/local/bin /usr/local/bin
+
 # Set working directory
 USER $USERNAME
 WORKDIR /home/$USERNAME/sources
