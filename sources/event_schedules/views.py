@@ -31,4 +31,4 @@ def event_schedule_solve_error(request, pk):
     return redirect('event_schedules:event_schedule_list')
 
 def event_schedule_doevent(request):
-    return HttpResponse("<html><body>"+ str(doevent()) + "</body></html>")
+    return HttpResponse("<html><body>"+ str(doevent()).replace("\n", "<br>") + "</body></html>")

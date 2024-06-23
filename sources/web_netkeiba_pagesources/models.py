@@ -1,13 +1,45 @@
 from django.db import models
 from django.db.models import Q
-from scraping.models.login_for_scraping import cookie_required
-from scraping.models.login_for_scraping import LoginForScraping
-from scraping.model_utilitys.webdriver import TimeCounter
+from web_controller.apps import TimeCounter, WebDriver
 import gzip
 import traceback
+import abc
 
 class NonUrlError(Exception):
     pass
+
+class LoginMethods(models.Model):
+    domain = models.CharField(max_length=255)
+    loggined = models.BooleanField(default=False)
+
+    class Meta:
+        abstract = True
+
+    def login(self, username, password):
+        # ほかの場所で同じURLを使用するのであればリファクタリングしてください
+        url = "https://regist.netkeiba.com/account/?pid=login"
+        with WebDriver(url=url, domain=".netkeiba.com") as driver:
+            driver.find_element("name", "login_id").send_keys(username)
+            driver.find_element("name", "pswd").send_keys(password)
+            driver.find_element("xpath", ".//div[@class='loginBtn__wrap']/input").click()
+            if driver.find_elements("name", "login_id"):
+                raise Exception("ログインに失敗しました。")
+        self.loggined = True
+        self.save()
+        return self.loggined
+
+    def update_logined(self):
+        # ほかの場所で同じURLを使用するのであればリファクタリングしてください
+        url = "https://user.sp.netkeiba.com/owner/prof.html"
+        with WebDriver(url=url, domain=".netkeiba.com") as driver:
+            loggined = url == driver.current_url
+
+        if self.loggined != loggined:
+            self.loggined = loggined
+            self.save()
+
+        return self.loggined
+
 
 class PageCategory(models.Model):
     name = models.CharField(max_length=255)
@@ -17,15 +49,20 @@ class PageCategory(models.Model):
     def __str__(self):
         return self.name
 
-class Page(models.Model):
+class Page(LoginMethods):
     race_id = models.CharField(max_length=255)
     category = models.ForeignKey(PageCategory, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    @classmethod
-    def need_cookie(cls):
+    @property
+    def need_login(cls):
         return False
+    
+    @property
+    @abc.abstractmethod
+    def url(self):
+        return "https://www.netkeiba.com/"
 
     def __str__(self):
         return self.race_id
@@ -40,14 +77,17 @@ class Page(models.Model):
         if not self.page_ptr.category.name in {"nar.netkeiba.com", "race.netkeiba.com"}:
             return
         try:
-            driver.get(self.url)
+            kwargs = {"url": self.url}
+            if self.need_login():
+                kwargs["domain"] = ".netkeiba.com"
+            with WebDriver(**kwargs) as driver:
+                pass
         except NonUrlError as e:
             return
         
-        if self.need_cookie() and "premium_new" in driver.current_url:
-            domain = LoginForScraping.objects.get(domain=".netkeiba.com")
-            domain.loggined = False
-            domain.save()
+        if self.need_login() and "premium_new" in driver.current_url:
+            super().loggined = False
+            super().save()
             raise NonUrlError("ログインが必要です。")
 
         self.html = gzip.compress(driver.page_source.encode())
@@ -95,10 +135,6 @@ class PageYoso(Page):
     @classmethod
     def need_cookie(cls):
         return True
-
-    @cookie_required(".netkeiba.com")
-    def update_html(self, driver):
-        super().update_html(driver)
 
 class PageYosoPro(Page):
     html = models.BinaryField(null=True, blank=True)

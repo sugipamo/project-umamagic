@@ -16,12 +16,20 @@ class ScheduleDoeventHistory(models.Model):
 
     def save(self):
         self.event_function = self.schedule.event_function
-        variables = []
-        for property_ in dir(self.schedule):
-            try:
-                variables.append("{}: {}".format(property_, getattr(self.schedule, property_)))
-            except:
-                pass
+        variables = [
+            "---------------",
+            "doevent datetime: " + str(timezone.now()),
+            "schedule: " + str(self.schedule.title),
+            "nextexecutedatetime: " + str(self.schedule.nextexecutedatetime),
+            "error_message: " + str(self.error_message),
+            "---------------",
+        ]
+        # for property_ in dir(self.schedule):
+        #     try:
+        #         variables.append("{}: {}".format(property_, getattr(self.schedule, property_)))
+        #     except:
+        #         pass
+
         self.variables = "\n".join(variables)
         super().save()
 
@@ -101,7 +109,7 @@ class Schedule(models.Model):
                 # 本番環境移行時には適切な対策を行うこと。
                 if import_str not in ACCEPT_IMPORTS:
                     raise ScheduleExecutuionError(f"{import_str}はimportできません。")
-                exec("import {}".format())
+                exec("import {}".format(import_str))
                 exec(f"{self.event_function}")
 
             except Exception as e:

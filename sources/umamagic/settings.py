@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'scraping',
     'event_schedules',
     'account',
-
+    'web_controller',
+    'web_netkeiba_pagesources',
 ]
 
 MIDDLEWARE = [
