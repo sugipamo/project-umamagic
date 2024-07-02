@@ -27,3 +27,289 @@ Traceback (most recent call last):
   File "/usr/local/lib/python3.10/site-packages/pytest_django/plugin.py", line 803, in _blocking_wrapper
     raise RuntimeError(
 RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+2024-06-22 08:51:51.031335+00:00: Empty module name
+Traceback (most recent call last):
+  File "/home/user/sources/event_schedules/models.py", line 119, in doevent
+    event.first().doevent()
+  File "/home/user/sources/event_schedules/models.py", line 100, in doevent
+    raise e
+  File "/home/user/sources/event_schedules/models.py", line 90, in doevent
+    module = __import__(self.event_function.split(".")[0])
+ValueError: Empty module name
+
+
+2024-06-22 08:55:49.720565+00:00: 'Manager' object has no attribute 'create(status=4)'
+Traceback (most recent call last):
+  File "/home/user/sources/event_schedules/models.py", line 119, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/event_schedules/models.py", line 100, in doevent
+    raise e
+  File "/home/user/sources/event_schedules/models.py", line 92, in doevent
+    module = getattr(module, i)
+AttributeError: 'Manager' object has no attribute 'create(status=4)'
+
+
+2024-06-22 08:58:51.681772+00:00: __import__() missing required argument 'name' (pos 1)
+Traceback (most recent call last):
+  File "/home/user/sources/event_schedules/models.py", line 119, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/event_schedules/models.py", line 100, in doevent
+    raise e
+  File "/home/user/sources/event_schedules/models.py", line 90, in doevent
+    module = __import__()
+TypeError: __import__() missing required argument 'name' (pos 1)
+
+
+2024-06-22 09:01:19.055707+00:00: Manager isn't accessible via Schedule instances
+Traceback (most recent call last):
+  File "/home/user/sources/event_schedules/models.py", line 91, in doevent
+    exec(f"{self.event_function}()")
+  File "<string>", line 1, in <module>
+TypeError: 'Schedule' object is not callable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/user/sources/event_schedules/models.py", line 118, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/event_schedules/models.py", line 96, in doevent
+    event_history.save()
+  File "/home/user/sources/event_schedules/models.py", line 15, in save
+    variables = {property_: getattr(self.schedule, property_) for property_ in dir(self.schedule)}
+  File "/home/user/sources/event_schedules/models.py", line 15, in <dictcomp>
+    variables = {property_: getattr(self.schedule, property_) for property_ in dir(self.schedule)}
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/manager.py", line 186, in __get__
+    raise AttributeError(
+AttributeError: Manager isn't accessible via Schedule instances
+
+
+2024-06-22 09:02:12.350137+00:00: Manager isn't accessible via Schedule instances
+Traceback (most recent call last):
+  File "/home/user/sources/event_schedules/models.py", line 91, in doevent
+    exec(f"{self.event_function}()")
+  File "<string>", line 1, in <module>
+TypeError: 'Schedule' object is not callable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/user/sources/event_schedules/models.py", line 118, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/event_schedules/models.py", line 96, in doevent
+    event_history.save()
+  File "/home/user/sources/event_schedules/models.py", line 15, in save
+    variables = {property_: getattr(self.schedule, property_) for property_ in dir(self.schedule)}
+  File "/home/user/sources/event_schedules/models.py", line 15, in <dictcomp>
+    variables = {property_: getattr(self.schedule, property_) for property_ in dir(self.schedule)}
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/manager.py", line 186, in __get__
+    raise AttributeError(
+AttributeError: Manager isn't accessible via Schedule instances
+
+
+2024-06-22 09:02:42.116208+00:00: Manager isn't accessible via Schedule instances
+Traceback (most recent call last):
+  File "/home/user/sources/event_schedules/models.py", line 91, in doevent
+    exec(f"{self.event_function}()")
+  File "<string>", line 1, in <module>
+TypeError: 'Schedule' object is not callable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/user/sources/event_schedules/models.py", line 117, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/event_schedules/models.py", line 95, in doevent
+    event_history.save()
+  File "/home/user/sources/event_schedules/models.py", line 15, in save
+    variables = {property_: getattr(self.schedule, property_) for property_ in dir(self.schedule)}
+  File "/home/user/sources/event_schedules/models.py", line 15, in <dictcomp>
+    variables = {property_: getattr(self.schedule, property_) for property_ in dir(self.schedule)}
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/manager.py", line 186, in __get__
+    raise AttributeError(
+AttributeError: Manager isn't accessible via Schedule instances
+
+
+2024-06-22 09:03:12.673515+00:00: Manager isn't accessible via Schedule instances
+Traceback (most recent call last):
+  File "/home/user/sources/event_schedules/models.py", line 91, in doevent
+    exec(f"{self.event_function}()")
+  File "<string>", line 1, in <module>
+TypeError: 'Schedule' object is not callable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/user/sources/event_schedules/models.py", line 117, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/event_schedules/models.py", line 95, in doevent
+    event_history.save()
+  File "/home/user/sources/event_schedules/models.py", line 15, in save
+    variables = {property_: getattr(self.schedule, property_) for property_ in dir(self.schedule)}
+  File "/home/user/sources/event_schedules/models.py", line 15, in <dictcomp>
+    variables = {property_: getattr(self.schedule, property_) for property_ in dir(self.schedule)}
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/manager.py", line 186, in __get__
+    raise AttributeError(
+AttributeError: Manager isn't accessible via Schedule instances
+
+
+2024-06-22 09:04:36.975678+00:00: 'Schedule' object is not callable
+Traceback (most recent call last):
+  File "/home/user/sources/event_schedules/models.py", line 122, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/event_schedules/models.py", line 103, in doevent
+    raise e
+  File "/home/user/sources/event_schedules/models.py", line 96, in doevent
+    exec(f"{self.event_function}()")
+  File "<string>", line 1, in <module>
+TypeError: 'Schedule' object is not callable
+
+
+2024-06-22 09:05:53.102038+00:00: 'Schedule' object has no attribute 'schedule'
+Traceback (most recent call last):
+  File "/home/user/sources/event_schedules/models.py", line 122, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/event_schedules/models.py", line 114, in doevent
+    return str({property_: getattr(self.schedule, property_) for property_ in dir(self.schedule)})
+AttributeError: 'Schedule' object has no attribute 'schedule'
+
+
+2024-06-22 09:08:09.967491+00:00: 'Schedule' object has no attribute 'schedule'
+Traceback (most recent call last):
+  File "/home/user/sources/event_schedules/models.py", line 122, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/event_schedules/models.py", line 114, in doevent
+    return str({property_: getattr(self.schedule, property_) for property_ in dir(self.schedule)})
+AttributeError: 'Schedule' object has no attribute 'schedule'
+
+
+2024-06-22 09:25:24.848431+00:00: (1054, "Unknown column 'event_function' in 'field list'")
+Traceback (most recent call last):
+  File "/home/user/sources/event_schedules/models.py", line 97, in doevent
+    exec("import {}".format(self.event_function.split(".")[0]))
+  File "<string>", line 1
+    import 
+           ^
+SyntaxError: invalid syntax
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+MySQLdb.OperationalError: (1054, "Unknown column 'event_function' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/sources/event_schedules/models.py", line 124, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/event_schedules/models.py", line 102, in doevent
+    event_history.save()
+  File "/home/user/sources/event_schedules/models.py", line 24, in save
+    super().save()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 822, in save
+    self.save_base(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 909, in save_base
+    updated = self._save_table(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1071, in _save_table
+    results = self._do_insert(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1112, in _do_insert
+    return manager._insert(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 1847, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1823, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'event_function' in 'field list'")
+
+
+2024-06-22 09:25:53.984631+00:00: invalid syntax (<string>, line 1)
+Traceback (most recent call last):
+  File "/home/user/sources/event_schedules/models.py", line 124, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/event_schedules/models.py", line 105, in doevent
+    raise e
+  File "/home/user/sources/event_schedules/models.py", line 97, in doevent
+    exec("import {}".format(self.event_function.split(".")[0]))
+  File "<string>", line 1
+    import 
+           ^
+SyntaxError: invalid syntax
+
+
+2024-06-23 12:21:35.113473+00:00: Replacement index 0 out of range for positional args tuple
+Traceback (most recent call last):
+  File "/home/user/sources/event_schedules/models.py", line 131, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/event_schedules/models.py", line 112, in doevent
+    raise e
+  File "/home/user/sources/event_schedules/models.py", line 104, in doevent
+    exec("import {}".format())
+IndexError: Replacement index 0 out of range for positional args tuple
+
+
+2024-06-23 12:22:12.084380+00:00: Replacement index 0 out of range for positional args tuple
+Traceback (most recent call last):
+  File "/home/user/sources/event_schedules/models.py", line 131, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/event_schedules/models.py", line 112, in doevent
+    raise e
+  File "/home/user/sources/event_schedules/models.py", line 104, in doevent
+    exec("import {}".format())
+IndexError: Replacement index 0 out of range for positional args tuple
+
+
+2024-06-23 12:22:38.021948+00:00: Replacement index 0 out of range for positional args tuple
+Traceback (most recent call last):
+  File "/home/user/sources/event_schedules/models.py", line 131, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/event_schedules/models.py", line 112, in doevent
+    raise e
+  File "/home/user/sources/event_schedules/models.py", line 104, in doevent
+    exec("import {}".format())
+IndexError: Replacement index 0 out of range for positional args tuple
+
+
+2024-06-23 12:23:25.784144+00:00: invalid syntax (<string>, line 1)
+Traceback (most recent call last):
+  File "/home/user/sources/event_schedules/models.py", line 131, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/event_schedules/models.py", line 112, in doevent
+    raise e
+  File "/home/user/sources/event_schedules/models.py", line 104, in doevent
+    exec("import {}")
+  File "<string>", line 1
+    import {}
+           ^
+SyntaxError: invalid syntax
+
+
