@@ -3,43 +3,11 @@ from django.db.models import Q
 from web_controller.apps import TimeCounter, WebDriver
 import gzip
 import traceback
-import abc
+from functools import wraps
+from urllib.error import URLError
 
-class NonUrlError(Exception):
-    pass
-
-class LoginMethods(models.Model):
-    domain = models.CharField(max_length=255)
-    loggined = models.BooleanField(default=False)
-
-    class Meta:
-        abstract = True
-
-    def login(self, username, password):
-        # ほかの場所で同じURLを使用するのであればリファクタリングしてください
-        url = "https://regist.netkeiba.com/account/?pid=login"
-        with WebDriver(url=url, domain=".netkeiba.com") as driver:
-            driver.find_element("name", "login_id").send_keys(username)
-            driver.find_element("name", "pswd").send_keys(password)
-            driver.find_element("xpath", ".//div[@class='loginBtn__wrap']/input").click()
-            if driver.find_elements("name", "login_id"):
-                raise Exception("ログインに失敗しました。")
-        self.loggined = True
-        self.save()
-        return self.loggined
-
-    def update_logined(self):
-        # ほかの場所で同じURLを使用するのであればリファクタリングしてください
-        url = "https://user.sp.netkeiba.com/owner/prof.html"
-        with WebDriver(url=url, domain=".netkeiba.com") as driver:
-            loggined = url == driver.current_url
-
-        if self.loggined != loggined:
-            self.loggined = loggined
-            self.save()
-
-        return self.loggined
-
+NETKEIBA_BASE_URL = "https://www.netkeiba.com/"
+NETKEIBA_DOMAIN = ".netkeiba.com"
 
 class PageCategory(models.Model):
     name = models.CharField(max_length=255)
@@ -49,63 +17,95 @@ class PageCategory(models.Model):
     def __str__(self):
         return self.name
 
-class Page(LoginMethods):
+def ensure_driver(method):
+    @wraps(method)
+    def wrapper(self_or_cls, *args, **kwargs):
+        if 'driver' not in kwargs or kwargs['driver'] is None:
+            new_kwargs = {"url": self_or_cls.url}
+            if self_or_cls.need_login:
+                new_kwargs["domain"] = NETKEIBA_DOMAIN
+            with WebDriver(**new_kwargs) as driver:
+                kwargs['driver'] = driver
+                return method(self_or_cls, *args, **kwargs)
+        else:
+            return method(self_or_cls, *args, **kwargs)
+    return wrapper
+
+class Page(models.Model):
     race_id = models.CharField(max_length=255)
     category = models.ForeignKey(PageCategory, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     @property
-    def need_login(cls):
+    def need_login(self):
         return False
-    
+
     @property
-    @abc.abstractmethod
     def url(self):
-        return "https://www.netkeiba.com/"
+        return NETKEIBA_BASE_URL
 
     def __str__(self):
         return self.race_id
 
+    @classmethod
+    @ensure_driver
+    def extract_raceids(cls, driver):
+        with TimeCounter() as tc:
+            elems = tc.do(driver.find_elements, "xpath", ".//a")
+        elems = driver.find_elements("xpath", ".//a[contains(@href, 'race_id')]")
+        urls = {elem.get_attribute("href") for elem in elems}
+
+        raceids = {}
+        race_categorys = {}
+        for url in urls:
+            race_category = url.split("/")[2]
+            if race_category not in {"nar.netkeiba.com", "race.netkeiba.com"}:
+                continue
+            category = race_categorys.get(race_category, PageCategory.objects.get_or_create(name=race_category)[0])
+            params = url.split("?")[-1]
+            params = dict([param.split("=") for param in params.split("&")])
+            if "race_id" in params:
+                race_id = params["race_id"]
+                if race_id not in raceids:
+                    raceids[race_id] = Page.objects.get_or_create(race_id=race_id, category=category)[0]
+
     def read_html(self):
         return gzip.decompress(self.html).decode()
 
+    @ensure_driver
     def update_html(self, driver):
         if self.__class__ == Page:
             raise NotImplementedError("Pageクラスは直接使えません。")
         
-        if not self.page_ptr.category.name in {"nar.netkeiba.com", "race.netkeiba.com"}:
-            return
-        try:
-            kwargs = {"url": self.url}
-            if self.need_login():
-                kwargs["domain"] = ".netkeiba.com"
-            with WebDriver(**kwargs) as driver:
-                pass
-        except NonUrlError as e:
-            return
-        
-        if self.need_login() and "premium_new" in driver.current_url:
-            super().loggined = False
-            super().save()
-            raise NonUrlError("ログインが必要です。")
+        if self.url is not None:
+            if not driver.current_url.startswith(self.url):
+                driver.get(self.url)
+            if "premium_new" in driver.current_url:
+                self.loggined = False
+                self.save()
+                raise PermissionError("ログインが必要です。")
+            self.html = gzip.compress(driver.page_source.encode())
+            self.extract_raceids(driver)
 
-        self.html = gzip.compress(driver.page_source.encode())
+        self.save_base(raw=True)
 
     @classmethod
-    def next_raceid(cls):
+    def next(cls):
         unused_races = Page.objects.exclude(race_id__in=cls.objects.values_list('race_id', flat=True))
-        unused_races = unused_races.filter(
-            Q(category__name="nar.netkeiba.com") |
-            Q(category__name="race.netkeiba.com")
-        )
         unused_race = unused_races.order_by("created_at").first()
         if unused_race:
             shutuba = cls(page_ptr=unused_race)
             return shutuba
-
+        
         return None
-
+    
+    @classmethod
+    def new_page(cls):
+        page = cls.next()
+        if page:
+            page.update_html()
+        return page
 
 
 class PageShutuba(Page):
@@ -128,27 +128,28 @@ class PageDbNetkeiba(Page):
     
 class PageYoso(Page):
     html = models.BinaryField(null=True, blank=True)
+
+    @property
+    def need_login(cls):
+        return True
+    
     @property
     def url(self):
         return f"https://{self.page_ptr.category.name}/yoso/mark_list.html?race_id={self.page_ptr.race_id}"
 
-    @classmethod
-    def need_cookie(cls):
-        return True
+
 
 class PageYosoPro(Page):
     html = models.BinaryField(null=True, blank=True)
+
+    @property
+    def need_login(cls):
+        return True
+    
     @property
     def url(self):
         return f"https://{self.page_ptr.category.name}/yoso/yoso_pro_opinion_list.html?race_id={self.page_ptr.race_id}"
 
-    @classmethod
-    def need_cookie(cls):
-        return True
-    
-    @cookie_required(".netkeiba.com")
-    def update_html(self, driver):
-        super().update_html(driver)
 
 class PageYosoCp(Page):
     html_rising = models.BinaryField(null=True, blank=True)
@@ -159,12 +160,12 @@ class PageYosoCp(Page):
     html_pedigree = models.BinaryField(null=True, blank=True)
 
     @property
+    def need_login(cls):
+        return True
+    
+    @property
     def url(self):
         return f"https://{self.page_ptr.category.name}/yoso/yoso_cp.html?race_id={self.page_ptr.race_id}"
-
-    @classmethod
-    def need_cookie(cls):
-        return True
     
     def read_html(self):
         return [
@@ -176,28 +177,24 @@ class PageYosoCp(Page):
             gzip.decompress(self.html_pedigree).decode(),
         ]
 
-
     def update_html(self, driver):
         try:
             self.__update_html(driver)
         except Exception as e:
             with open("error.log", "a") as f:
                 f.write(f"{str(e)}\n{traceback.format_exc()}")
+        self.save_base(raw=True)
 
-    @cookie_required(".netkeiba.com")
     def __update_html(self, driver):
-        if not self.page_ptr.category.name in {"nar.netkeiba.com", "race.netkeiba.com"}:
-            return 
         try:
             driver.get(self.url)
-        except NonUrlError as e:
+        except URLError as e:
             return
         
         if "premium_new" in driver.current_url:
-            domain = LoginForScraping.objects.get(domain=".netkeiba.com")
-            domain.loggined = False
-            domain.save()
-            raise NonUrlError("ログインが必要です。")
+            self.loggined = False
+            self.save()
+            raise PermissionError("ログインが必要です。")
 
 
         htmls = [self.html_rising, self.html_precede, self.html_spurt, self.html_jockey, self.html_trainer, self.html_pedigree]
@@ -215,24 +212,21 @@ class PageYosoCp(Page):
             htmls[i] = gzip.compress(driver.page_source.encode())
         
         self.html_rising, self.html_precede, self.html_spurt, self.html_jockey, self.html_trainer, self.html_pedigree = htmls
-        self.save_base(raw=True)
+        
 
 
 class PageOikiri(Page):
     html = models.BinaryField(null=True, blank=True)
+
+    @property
+    def need_login(cls):
+        return True
+
     @property
     def url(self):
         if self.page_ptr.category.name == "nar.netkeiba.com":
-            raise NonUrlError("nar.netkeiba.comには追い切りページがありません。")
+            raise URLError("nar.netkeiba.comには追い切りページがありません。")
         return f"https://race.netkeiba.com/race/oikiri.html?race_id={self.page_ptr.race_id}&type=2"
-
-    @classmethod
-    def need_cookie(cls):
-        return True
-
-    @cookie_required(".netkeiba.com")
-    def update_html(self, driver):
-        super().update_html(driver)
 
 
 # class PageOddsB1(Page):
@@ -282,7 +276,7 @@ class PageOikiri(Page):
 #     @property
 #     def url(self):
 #         if self.page_ptr.category.name == "race.netkeiba.com":
-#             raise NonUrlError("race.netkeiba.comには枠単がありません。")
+#             raise URLError("race.netkeiba.comには枠単がありません。")
 #         return f"https://{self.page_ptr.category.name}/odds/index.html?type=b9&race_id={self.page_ptr.race_id}"
     
 

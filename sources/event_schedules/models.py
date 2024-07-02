@@ -24,11 +24,6 @@ class ScheduleDoeventHistory(models.Model):
             "error_message: " + str(self.error_message),
             "---------------",
         ]
-        # for property_ in dir(self.schedule):
-        #     try:
-        #         variables.append("{}: {}".format(property_, getattr(self.schedule, property_)))
-        #     except:
-        #         pass
 
         self.variables = "\n".join(variables)
         super().save()

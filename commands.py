@@ -2,7 +2,6 @@ import os
 import sys
 from pathlib import Path
 import subprocess
-import inspect
 
 COMMANDS = {
     "up": "docker compose up -d --build",
@@ -16,7 +15,8 @@ COMMANDS = {
     "start": "docker compose exec django bash -c 'gunicorn --workers 4 --threads 2 umamagic.wsgi:application --bind'",
     "test_start": "docker compose exec django python manage.py runserver 0.0.0.0:8000",
     "test": "docker compose exec django bash -c 'python manage.py test'",
-    "pytest": "docker compose exec django bash -c 'pytest -v -n auto'",    
+    "pytest": "docker compose exec django bash -c 'pytest -v -n auto'",  
+    "open_chrome": "start http://localhost/novnc/vnc.html?resize=remote^&path=novnc/websockify",  
 }
 
 

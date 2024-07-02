@@ -42,7 +42,7 @@ class TimeCounter():
             sleep(1)
 
 class WebDriver():
-    def __init__(self, pageLoadStrategy="eager"):
+    def __init__(self, *args, pageLoadStrategy="eager", **kwargs):
         options = webdriver.ChromeOptions()
         options.set_capability('pageLoadStrategy', pageLoadStrategy)
         self.driver = webdriver.Remote(
@@ -51,13 +51,22 @@ class WebDriver():
         )
         self.quit_functions = []
 
+        if "url" in kwargs:
+            self.driver.get(kwargs["url"])
+
+        if "domain" in kwargs and type(kwargs["domain"]) == str:
+            kwargs["domain"] = [kwargs["domain"]]
+
+        for domain in kwargs.get("domain", []):
+            self.__cookie_init(domain)
+
     def __cookie_init(self, domain):
-        self.cookiepath = COOKIEPATH / domain + "_cookies.pkl"
+        self.cookiepath = COOKIEPATH / (domain + "_cookies.pkl")
         if not self.cookiepath.exists():
             return
         
         if not domain in self.driver.current_url:
-            self.driver.get("https://www" + domain)
+            self.driver.get(domain)
 
         with open(self.cookiepath, "rb") as f:
             cookies = pickle.load(f)
@@ -77,19 +86,7 @@ class WebDriver():
             cookies = [cookie for cookie in cookies if cookie["domain"] == domain]
             pickle.dump(cookies, f)
 
-    def __enter__(self, *args, **kwargs):
-        if "url" in kwargs:
-            url = kwargs["url"]
-
-        if "domain" in kwargs:
-            domain = kwargs["domain"]
-
-        for dom in domain:
-            self.__cookie_init(dom)
-
-        if url:
-            self.driver.get(url)
-
+    def __enter__(self):
         return self.driver
     
     def __exit__(self, exc_type, exc_value, traceback):

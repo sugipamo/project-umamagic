@@ -40,9 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'scraping',
-    'event_schedules',
     'account',
+    'event_schedules',
     'web_controller',
     'web_netkeiba_pagesources',
 ]
