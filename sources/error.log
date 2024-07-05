@@ -461,3 +461,325 @@ Traceback (most recent call last):
 AttributeError: type object 'Page' has no attribute 'Page'
 
 
+2024-07-05 09:41:54.337226+00:00: <urlopen error nar.netkeiba.comには追い切りページがありません。>
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 145, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 112, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 105, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_page_with_login.py", line 8, in main
+    models[0].new_page()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 109, in new_page
+    page.update_html()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 22, in wrapper
+    new_kwargs = {"url": self_or_cls.url}
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 215, in url
+    raise URLError("nar.netkeiba.comには追い切りページがありません。")
+urllib.error.URLError: <urlopen error nar.netkeiba.comには追い切りページがありません。>
+
+
+2024-07-05 09:45:25.026614+00:00: Message: invalid argument
+  (Session info: chrome=125.0.6422.76)
+Stacktrace:
+#0 0x5579fc63fe9a <unknown>
+#1 0x5579fc3292a1 <unknown>
+#2 0x5579fc30f973 <unknown>
+#3 0x5579fc30e1b8 <unknown>
+#4 0x5579fc30e83a <unknown>
+#5 0x5579fc32bea7 <unknown>
+#6 0x5579fc3b7ed5 <unknown>
+#7 0x5579fc3984b2 <unknown>
+#8 0x5579fc3b72cc <unknown>
+#9 0x5579fc398253 <unknown>
+#10 0x5579fc3681c7 <unknown>
+#11 0x5579fc368b3e <unknown>
+#12 0x5579fc6062db <unknown>
+#13 0x5579fc60a387 <unknown>
+#14 0x5579fc5f2e0e <unknown>
+#15 0x5579fc60ae52 <unknown>
+#16 0x5579fc5d77af <unknown>
+#17 0x5579fc62f188 <unknown>
+#18 0x5579fc62f35b <unknown>
+#19 0x5579fc63efcc <unknown>
+#20 0x7efdc0e59ac3 <unknown>
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 145, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 112, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 105, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_page_with_login.py", line 8, in main
+    models[0].new_page()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 111, in new_page
+    page.update_html()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 33, in wrapper
+    with WebDriver(**new_kwargs) as driver:
+  File "/home/user/sources/apps/web_controller/apps.py", line 64, in __init__
+    self.__cookie_init(domain)
+  File "/home/user/sources/apps/web_controller/apps.py", line 72, in __cookie_init
+    self.driver.get(domain)
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 363, in get
+    self.execute(Command.GET, {"url": url})
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 354, in execute
+    self.error_handler.check_response(response)
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/errorhandler.py", line 229, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.InvalidArgumentException: Message: invalid argument
+  (Session info: chrome=125.0.6422.76)
+Stacktrace:
+#0 0x5579fc63fe9a <unknown>
+#1 0x5579fc3292a1 <unknown>
+#2 0x5579fc30f973 <unknown>
+#3 0x5579fc30e1b8 <unknown>
+#4 0x5579fc30e83a <unknown>
+#5 0x5579fc32bea7 <unknown>
+#6 0x5579fc3b7ed5 <unknown>
+#7 0x5579fc3984b2 <unknown>
+#8 0x5579fc3b72cc <unknown>
+#9 0x5579fc398253 <unknown>
+#10 0x5579fc3681c7 <unknown>
+#11 0x5579fc368b3e <unknown>
+#12 0x5579fc6062db <unknown>
+#13 0x5579fc60a387 <unknown>
+#14 0x5579fc5f2e0e <unknown>
+#15 0x5579fc60ae52 <unknown>
+#16 0x5579fc5d77af <unknown>
+#17 0x5579fc62f188 <unknown>
+#18 0x5579fc62f35b <unknown>
+#19 0x5579fc63efcc <unknown>
+#20 0x7efdc0e59ac3 <unknown>
+
+
+
+2024-07-05 09:47:54.987594+00:00: Message: invalid argument
+  (Session info: chrome=125.0.6422.76)
+Stacktrace:
+#0 0x55c9efd9ee9a <unknown>
+#1 0x55c9efa882a1 <unknown>
+#2 0x55c9efa6e973 <unknown>
+#3 0x55c9efa6d1b8 <unknown>
+#4 0x55c9efa6d83a <unknown>
+#5 0x55c9efa8aea7 <unknown>
+#6 0x55c9efb16ed5 <unknown>
+#7 0x55c9efaf74b2 <unknown>
+#8 0x55c9efb162cc <unknown>
+#9 0x55c9efaf7253 <unknown>
+#10 0x55c9efac71c7 <unknown>
+#11 0x55c9efac7b3e <unknown>
+#12 0x55c9efd652db <unknown>
+#13 0x55c9efd69387 <unknown>
+#14 0x55c9efd51e0e <unknown>
+#15 0x55c9efd69e52 <unknown>
+#16 0x55c9efd367af <unknown>
+#17 0x55c9efd8e188 <unknown>
+#18 0x55c9efd8e35b <unknown>
+#19 0x55c9efd9dfcc <unknown>
+#20 0x7f37462abac3 <unknown>
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 145, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 112, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 105, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_page_with_login.py", line 8, in main
+    models[0].new_page()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 111, in new_page
+    page.update_html()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 33, in wrapper
+    with WebDriver(**new_kwargs) as driver:
+  File "/home/user/sources/apps/web_controller/apps.py", line 64, in __init__
+    self.__cookie_init(domain)
+  File "/home/user/sources/apps/web_controller/apps.py", line 72, in __cookie_init
+    self.driver.get(domain)
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 363, in get
+    self.execute(Command.GET, {"url": url})
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 354, in execute
+    self.error_handler.check_response(response)
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/errorhandler.py", line 229, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.InvalidArgumentException: Message: invalid argument
+  (Session info: chrome=125.0.6422.76)
+Stacktrace:
+#0 0x55c9efd9ee9a <unknown>
+#1 0x55c9efa882a1 <unknown>
+#2 0x55c9efa6e973 <unknown>
+#3 0x55c9efa6d1b8 <unknown>
+#4 0x55c9efa6d83a <unknown>
+#5 0x55c9efa8aea7 <unknown>
+#6 0x55c9efb16ed5 <unknown>
+#7 0x55c9efaf74b2 <unknown>
+#8 0x55c9efb162cc <unknown>
+#9 0x55c9efaf7253 <unknown>
+#10 0x55c9efac71c7 <unknown>
+#11 0x55c9efac7b3e <unknown>
+#12 0x55c9efd652db <unknown>
+#13 0x55c9efd69387 <unknown>
+#14 0x55c9efd51e0e <unknown>
+#15 0x55c9efd69e52 <unknown>
+#16 0x55c9efd367af <unknown>
+#17 0x55c9efd8e188 <unknown>
+#18 0x55c9efd8e35b <unknown>
+#19 0x55c9efd9dfcc <unknown>
+#20 0x7f37462abac3 <unknown>
+
+
+
+2024-07-05 09:52:55.318679+00:00: Message: invalid argument
+  (Session info: chrome=125.0.6422.76)
+Stacktrace:
+#0 0x55bc0dc11e9a <unknown>
+#1 0x55bc0d8fb2a1 <unknown>
+#2 0x55bc0d8e1973 <unknown>
+#3 0x55bc0d8e01b8 <unknown>
+#4 0x55bc0d8e083a <unknown>
+#5 0x55bc0d8fdea7 <unknown>
+#6 0x55bc0d989ed5 <unknown>
+#7 0x55bc0d96a4b2 <unknown>
+#8 0x55bc0d9892cc <unknown>
+#9 0x55bc0d96a253 <unknown>
+#10 0x55bc0d93a1c7 <unknown>
+#11 0x55bc0d93ab3e <unknown>
+#12 0x55bc0dbd82db <unknown>
+#13 0x55bc0dbdc387 <unknown>
+#14 0x55bc0dbc4e0e <unknown>
+#15 0x55bc0dbdce52 <unknown>
+#16 0x55bc0dba97af <unknown>
+#17 0x55bc0dc01188 <unknown>
+#18 0x55bc0dc0135b <unknown>
+#19 0x55bc0dc10fcc <unknown>
+#20 0x7fdfc5deeac3 <unknown>
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 145, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 112, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 105, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_page_with_login.py", line 8, in main
+    models[0].new_page()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 113, in new_page
+    page.update_html()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 33, in wrapper
+    with WebDriver(**new_kwargs) as driver:
+  File "/home/user/sources/apps/web_controller/apps.py", line 64, in __init__
+    self.__cookie_init(domain)
+  File "/home/user/sources/apps/web_controller/apps.py", line 72, in __cookie_init
+    self.driver.get(domain)
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 363, in get
+    self.execute(Command.GET, {"url": url})
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 354, in execute
+    self.error_handler.check_response(response)
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/errorhandler.py", line 229, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.InvalidArgumentException: Message: invalid argument
+  (Session info: chrome=125.0.6422.76)
+Stacktrace:
+#0 0x55bc0dc11e9a <unknown>
+#1 0x55bc0d8fb2a1 <unknown>
+#2 0x55bc0d8e1973 <unknown>
+#3 0x55bc0d8e01b8 <unknown>
+#4 0x55bc0d8e083a <unknown>
+#5 0x55bc0d8fdea7 <unknown>
+#6 0x55bc0d989ed5 <unknown>
+#7 0x55bc0d96a4b2 <unknown>
+#8 0x55bc0d9892cc <unknown>
+#9 0x55bc0d96a253 <unknown>
+#10 0x55bc0d93a1c7 <unknown>
+#11 0x55bc0d93ab3e <unknown>
+#12 0x55bc0dbd82db <unknown>
+#13 0x55bc0dbdc387 <unknown>
+#14 0x55bc0dbc4e0e <unknown>
+#15 0x55bc0dbdce52 <unknown>
+#16 0x55bc0dba97af <unknown>
+#17 0x55bc0dc01188 <unknown>
+#18 0x55bc0dc0135b <unknown>
+#19 0x55bc0dc10fcc <unknown>
+#20 0x7fdfc5deeac3 <unknown>
+
+
+
+2024-07-05 09:59:25.139829+00:00: <urlopen error nar.netkeiba.comには追い切りページがありません。>
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 145, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 112, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 105, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_page_with_login.py", line 8, in main
+    models[0].new_page()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 112, in new_page
+    page.update_html()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 25, in wrapper
+    raise e
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 23, in wrapper
+    new_kwargs = {"url": self_or_cls.url}
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 218, in url
+    raise URLError("nar.netkeiba.comには追い切りページがありません。")
+urllib.error.URLError: <urlopen error nar.netkeiba.comには追い切りページがありません。>
+
+
+2024-07-05 10:00:37.901877+00:00: 'str' object has no attribute 'start_with'
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 145, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 112, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 105, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_page_with_login.py", line 8, in main
+    models[0].new_page()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 110, in new_page
+    page.update_html()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 36, in wrapper
+    return method(self_or_cls, *args, **kwargs)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 86, in update_html
+    if not driver.current_url.start_with(self.url):
+AttributeError: 'str' object has no attribute 'start_with'
+
+
+2024-07-05 10:01:34.773925+00:00: 'str' object has no attribute 'starts_with'
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 145, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 112, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 105, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_page_with_login.py", line 8, in main
+    models[0].new_page()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 110, in new_page
+    page.update_html()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 36, in wrapper
+    return method(self_or_cls, *args, **kwargs)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 86, in update_html
+    if not driver.current_url.starts_with(self.url):
+AttributeError: 'str' object has no attribute 'starts_with'
+
+
+2024-07-05 10:01:47.425803+00:00: 'str' object has no attribute 'starts_with'
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 145, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 112, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 105, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_page_with_login.py", line 8, in main
+    models[0].new_page()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 110, in new_page
+    page.update_html()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 36, in wrapper
+    return method(self_or_cls, *args, **kwargs)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 86, in update_html
+    if not driver.current_url.starts_with(self.url):
+AttributeError: 'str' object has no attribute 'starts_with'
+
+

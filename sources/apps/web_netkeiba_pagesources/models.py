@@ -19,7 +19,10 @@ class PageCategory(models.Model):
 def ensure_driver(method):
     @wraps(method)
     def wrapper(self_or_cls, *args, **kwargs):
-        new_kwargs = {"url": self_or_cls.url}
+        try:
+            new_kwargs = {"url": self_or_cls.url}
+        except URLError as e:
+            return
         for arg in args:
             if type(arg) == WebDriver:
                 new_kwargs['driver'] = arg
@@ -80,25 +83,23 @@ class Page(models.Model):
         if self.__class__ == Page:
             raise NotImplementedError("Pageクラスは直接使えません。")
         
-        driver.get(self.url)
+        if not driver.current_url.startswith(self.url):
+            driver.get(self.url)
         if "premium_new" in driver.current_url:
             self.loggined = False
             self.save()
             raise PermissionError("ログインが必要です。")
         self.html = gzip.compress(driver.page_source.encode())
 
-
         extract_raceids(driver)
-
-        self.save_base(raw=True)
 
     @classmethod
     def next(cls):
         unused_races = Page.objects.exclude(race_id__in=cls.objects.values_list('race_id', flat=True))
         unused_race = unused_races.order_by("created_at").first()
         if unused_race:
-            shutuba = cls(page_ptr=unused_race)
-            return shutuba
+            race = cls(page_ptr=unused_race)
+            return race
         
         return None
     
@@ -107,6 +108,7 @@ class Page(models.Model):
         page = cls.next()
         if page:
             page.update_html()
+            page.save_base(raw=True)
         return page
 
 
