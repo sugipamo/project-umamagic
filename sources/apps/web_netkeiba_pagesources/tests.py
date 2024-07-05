@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from web_netkeiba_pagesources.models import Page
+from .models import Page
 # Create your tests here.
 
 class TestExtractRaceIds(TestCase):

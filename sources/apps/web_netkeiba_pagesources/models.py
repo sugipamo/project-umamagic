@@ -36,13 +36,8 @@ class Page(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    @property
-    def need_login(self):
-        return False
-
-    @property
-    def url(self):
-        return NETKEIBA_BASE_URL
+    url = NETKEIBA_BASE_URL
+    need_login = False
 
     def __str__(self):
         return self.race_id
@@ -127,11 +122,7 @@ class PageDbNetkeiba(Page):
     
 class PageYoso(Page):
     html = models.BinaryField(null=True, blank=True)
-
-    @property
-    def need_login(cls):
-        return True
-    
+    need_login = True
     @property
     def url(self):
         return f"https://{self.page_ptr.category.name}/yoso/mark_list.html?race_id={self.page_ptr.race_id}"
@@ -140,11 +131,7 @@ class PageYoso(Page):
 
 class PageYosoPro(Page):
     html = models.BinaryField(null=True, blank=True)
-
-    @property
-    def need_login(cls):
-        return True
-    
+    need_login = True
     @property
     def url(self):
         return f"https://{self.page_ptr.category.name}/yoso/yoso_pro_opinion_list.html?race_id={self.page_ptr.race_id}"
@@ -157,11 +144,7 @@ class PageYosoCp(Page):
     html_jockey = models.BinaryField(null=True, blank=True)
     html_trainer = models.BinaryField(null=True, blank=True)
     html_pedigree = models.BinaryField(null=True, blank=True)
-
-    @property
-    def need_login(cls):
-        return True
-    
+    need_login = True
     @property
     def url(self):
         return f"https://{self.page_ptr.category.name}/yoso/yoso_cp.html?race_id={self.page_ptr.race_id}"
@@ -216,11 +199,7 @@ class PageYosoCp(Page):
 
 class PageOikiri(Page):
     html = models.BinaryField(null=True, blank=True)
-
-    @property
-    def need_login(cls):
-        return True
-
+    need_login = True
     @property
     def url(self):
         if self.page_ptr.category.name == "nar.netkeiba.com":
