@@ -1,8 +1,10 @@
 from django.utils import timezone
 from django.db import models
 import traceback
+from pathlib import Path
+import importlib
 
-ACCEPT_IMPORTS = ["django", "event_schedules"]
+event_functions = {}
 
 class ScheduleExecutuionError(Exception):
     pass
@@ -19,7 +21,7 @@ class ScheduleDoeventHistory(models.Model):
         variables = [
             "---------------",
             "doevent datetime: " + str(timezone.now()),
-            "schedule: " + str(self.schedule.title),
+            "schedule: " + str(self.schedule.event_function),
             "nextexecutedatetime: " + str(self.schedule.nextexecutedatetime),
             "error_message: " + str(self.error_message),
             "---------------",
@@ -32,32 +34,30 @@ class ScheduleDoeventHistory(models.Model):
         return self.schedule.title
 
 class Schedule(models.Model):
-    title = models.CharField(max_length=255)
     status = models.IntegerField(choices=[(i+1, s) for i, s in enumerate(["待機", "実行中", "完了", "エラー"])], default=1)
     event_function = models.CharField(max_length=255)
     nextexecutedatetime = models.DateTimeField(default=timezone.now)
-    schedule_str_default = models.CharField(max_length=255, null=True, blank=True, default="0")
     schedule_str = models.CharField(max_length=255, null=True, blank=True, default=",")
     latestcalled_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.title
+        return self.event_function
 
-    def __parse_schedule_str(self, schedule_str):
+    def __parse_schedule_str(self, schedule_str, schedule_str_default):
         def schedule_str_to_que(schedule_str): return str(schedule_str).split(",")[::-1]
         if schedule_str is None:
-            schedule_str = self.schedule_str_default
+            schedule_str = schedule_str_default
         needdo, nextexecutedatetime, schedule_str = False, None, schedule_str_to_que(schedule_str)
 
         while schedule_str and nextexecutedatetime is None:
             s = schedule_str.pop()
             if s.replace(" ", "") == "":
-                if self.schedule_str_default == "":
+                if schedule_str_default == "":
                     schedule_str = None
                 else:   
-                    schedule_str = schedule_str_to_que(self.schedule_str_default)
+                    schedule_str = schedule_str_to_que(schedule_str_default)
                 continue
 
             if s.replace(" ", "") == "0":
@@ -93,19 +93,16 @@ class Schedule(models.Model):
             self.save()
             raise ScheduleExecutuionError(f"{self.title}はまだ実行できません。")
         
-        needdo, nextexecutedatetime, schedule_str = self.__parse_schedule_str(self.schedule_str)
+        event_function = event_functions.get(self.event_function)
+        schedule_str_default = event_function.SCHEDULE_STR
+
+        needdo, nextexecutedatetime, schedule_str = self.__parse_schedule_str(self.schedule_str, schedule_str_default)
+        event_history = ScheduleDoeventHistory(schedule=self)
         if needdo:
-            event_history = ScheduleDoeventHistory(schedule=self)
             try:
                 self.status = 2
                 self.save()
-                import_str = self.event_function.split(".")[0]
-                # いったんこれですすめるが、セキュリティの問題があるため
-                # 本番環境移行時には適切な対策を行うこと。
-                if import_str not in ACCEPT_IMPORTS:
-                    raise ScheduleExecutuionError(f"{import_str}はimportできません。")
-                exec("import {}".format(import_str))
-                exec(f"{self.event_function}")
+                event_function.main()
 
             except Exception as e:
                 event_history.error_message = f"{str(e)}\n{traceback.format_exc()}"
@@ -122,13 +119,27 @@ class Schedule(models.Model):
             self.nextexecutedatetime = timezone.now()
             self.status = 3
         self.save()
-        event_history.save()
+        if needdo:
+            event_history.save()
         return str(event_history.variables)
 
 
 def doevent():
-    now = timezone.now()
-    event = Schedule.objects.filter(status=1, nextexecutedatetime__lte=now).order_by("latestcalled_at")
+    if len(event_functions) == 0:
+        for event_function in Path("apps/event_schedules/events").glob("*.py"):
+            event_function = event_function.stem
+            if event_function == "__init__":
+                continue
+            event_functions[event_function] = importlib.import_module("apps.event_schedules.events." + event_function)
+
+        for event_function in event_functions:
+            Schedule.objects.get_or_create(event_function=event_function)
+
+        schedules_to_delete = set(Schedule.objects.values_list('event_function', flat=True)) - set(event_functions.keys())
+        Schedule.objects.filter(event_function__in=schedules_to_delete).delete()
+        
+
+    event = Schedule.objects.filter(status=1, nextexecutedatetime__lte=timezone.now()).order_by("latestcalled_at")
     if event.exists():
         try:
             return event.first().doevent()
