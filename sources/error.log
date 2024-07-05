@@ -422,3 +422,42 @@ Traceback (most recent call last):
 AttributeError: 'NoneType' object has no attribute 'SCHEDULE_STR'
 
 
+2024-07-05 09:18:25.553116+00:00: type object 'Pages' has no attribute 'extract_raceids'
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 145, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 112, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 105, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_raceids.py", line 5, in main
+    print(Pages.extract_raceids())
+AttributeError: type object 'Pages' has no attribute 'extract_raceids'
+
+
+2024-07-05 09:19:20.509211+00:00: type object 'Pages' has no attribute 'extract_raceids'
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 145, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 112, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 105, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_raceids.py", line 5, in main
+    print(Pages.extract_raceids())
+AttributeError: type object 'Pages' has no attribute 'extract_raceids'
+
+
+2024-07-05 09:20:34.663272+00:00: type object 'Page' has no attribute 'Page'
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 145, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 112, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 105, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_raceids.py", line 5, in main
+    print(Page.Page.extract_raceids())
+AttributeError: type object 'Page' has no attribute 'Page'
+
+
