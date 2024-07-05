@@ -19,8 +19,13 @@ class PageCategory(models.Model):
 def ensure_driver(method):
     @wraps(method)
     def wrapper(self_or_cls, *args, **kwargs):
+        new_kwargs = {"url": self_or_cls.url}
+        for arg in args:
+            if type(arg) == WebDriver:
+                new_kwargs['driver'] = arg
+                break
+
         if 'driver' not in kwargs or kwargs['driver'] is None:
-            new_kwargs = {"url": self_or_cls.url}
             if self_or_cls.need_login:
                 new_kwargs["domain"] = NETKEIBA_DOMAIN
             with WebDriver(**new_kwargs) as driver:
@@ -29,6 +34,26 @@ def ensure_driver(method):
         else:
             return method(self_or_cls, *args, **kwargs)
     return wrapper
+    
+def extract_raceids(driver):
+    with TimeCounter() as tc:
+        elems = tc.do(driver.find_elements, "xpath", ".//a")
+    elems = driver.find_elements("xpath", ".//a[contains(@href, 'race_id')]")
+    urls = {elem.get_attribute("href") for elem in elems}
+
+    raceids = {}
+    race_categorys = {}
+    for url in urls:
+        race_category = url.split("/")[2]
+        if race_category not in {"nar.netkeiba.com", "race.netkeiba.com"}:
+            continue
+        category = race_categorys.get(race_category, PageCategory.objects.get_or_create(name=race_category)[0])
+        params = url.split("?")[-1]
+        params = dict([param.split("=") for param in params.split("&")])
+        if "race_id" in params:
+            race_id = params["race_id"]
+            if race_id not in raceids:
+                raceids[race_id] = Page.objects.get_or_create(race_id=race_id, category=category)[0]
 
 class Page(models.Model):
     race_id = models.CharField(max_length=255)
@@ -42,45 +67,28 @@ class Page(models.Model):
     def __str__(self):
         return self.race_id
 
+    def read_html(self):
+        return gzip.decompress(self.html).decode()
+
     @classmethod
     @ensure_driver
     def extract_raceids(cls, driver):
-        with TimeCounter() as tc:
-            elems = tc.do(driver.find_elements, "xpath", ".//a")
-        elems = driver.find_elements("xpath", ".//a[contains(@href, 'race_id')]")
-        urls = {elem.get_attribute("href") for elem in elems}
-
-        raceids = {}
-        race_categorys = {}
-        for url in urls:
-            race_category = url.split("/")[2]
-            if race_category not in {"nar.netkeiba.com", "race.netkeiba.com"}:
-                continue
-            category = race_categorys.get(race_category, PageCategory.objects.get_or_create(name=race_category)[0])
-            params = url.split("?")[-1]
-            params = dict([param.split("=") for param in params.split("&")])
-            if "race_id" in params:
-                race_id = params["race_id"]
-                if race_id not in raceids:
-                    raceids[race_id] = Page.objects.get_or_create(race_id=race_id, category=category)[0]
-
-    def read_html(self):
-        return gzip.decompress(self.html).decode()
+        extract_raceids(driver)
 
     @ensure_driver
     def update_html(self, driver):
         if self.__class__ == Page:
             raise NotImplementedError("Pageクラスは直接使えません。")
         
-        if self.url is not None:
-            if not driver.current_url.startswith(self.url):
-                driver.get(self.url)
-            if "premium_new" in driver.current_url:
-                self.loggined = False
-                self.save()
-                raise PermissionError("ログインが必要です。")
-            self.html = gzip.compress(driver.page_source.encode())
-            self.extract_raceids(driver)
+        driver.get(self.url)
+        if "premium_new" in driver.current_url:
+            self.loggined = False
+            self.save()
+            raise PermissionError("ログインが必要です。")
+        self.html = gzip.compress(driver.page_source.encode())
+
+
+        extract_raceids(driver)
 
         self.save_base(raw=True)
 
@@ -159,6 +167,7 @@ class PageYosoCp(Page):
             gzip.decompress(self.html_pedigree).decode(),
         ]
 
+    @ensure_driver
     def update_html(self, driver):
         try:
             self.__update_html(driver)
