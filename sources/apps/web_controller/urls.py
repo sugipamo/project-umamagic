@@ -1,6 +1,6 @@
 # urls.py
 from django.urls import path
-from web_controller import views
+from . import views
 from django.views.generic import TemplateView
 
 app_name = 'web_controller'

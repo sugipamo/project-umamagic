@@ -1,6 +1,5 @@
 from django.db import models
-from django.db.models import Q
-from web_controller.apps import TimeCounter, WebDriver
+from apps.web_controller.apps import TimeCounter, WebDriver
 import gzip
 import traceback
 from functools import wraps

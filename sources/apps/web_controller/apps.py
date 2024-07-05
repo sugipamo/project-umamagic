@@ -7,7 +7,7 @@ from pathlib import Path
 
 class WebControllerConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'web_controller'
+    name = 'apps.web_controller'
 
 
 COOKIEPATH = Path(__file__).parent / "cookies"

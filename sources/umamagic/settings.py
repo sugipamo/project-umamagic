@@ -41,9 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'account',
-    'event_schedules',
-    'web_controller',
-    'web_netkeiba_pagesources',
+    'apps.event_schedules',
+    'apps.web_controller',
+    'apps.web_netkeiba_pagesources',
 ]
 
 MIDDLEWARE = [
