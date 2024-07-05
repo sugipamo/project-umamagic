@@ -1,8 +1,7 @@
 # views.py
 from django.shortcuts import render, redirect
-from django.views import View
-from web_controller.forms import LoginForScrapingDetailForm
-from web_controller.models import LoginForScraping
+from .forms import LoginForScrapingDetailForm
+from .models import LoginForScraping
 from django.views.generic import ListView
 from pathlib import Path
 
