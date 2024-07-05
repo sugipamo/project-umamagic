@@ -52,7 +52,10 @@ class WebDriver():
         self.quit_functions = []
 
         if "url" in kwargs:
-            self.driver.get(kwargs["url"])
+            try:
+                self.driver.get(kwargs["url"])
+            except:
+                pass
 
         if "domain" in kwargs and type(kwargs["domain"]) == str:
             kwargs["domain"] = [kwargs["domain"]]
