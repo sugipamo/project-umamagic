@@ -11,6 +11,7 @@
                     <tr>
                         <th class="text-center">状態</th>
                         <th class="text-center">タイトル</th>
+                        <th class="text-center">次回実行</th>
                         <th class="text-center">詳細</th>
                         <th class="text-center">エラー解除</th>
                     </tr>
@@ -20,6 +21,7 @@
                     <tr class="odd gradeX text-center">
                         <td class="text-center" width="100">{{ item.get_status_display }}</td>
                         <td class="text-center">{{ item.event_function }}</td>
+                        <td class="text-center">{{ item.nextexecutedatetime }}</td>
                         <td class="text-center" width="50">
                             <a class="btn btn-primary"
                                 href="{% url 'event_schedules:event_schedule_doevent_history' item.pk %}">詳細</a>
