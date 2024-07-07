@@ -1,5 +1,5 @@
 from django.db import models
-from apps.db_netkeiba_race.models import NetkeibaRace
+from apps.web_netkeiba_pagesources.models import PageResult
 
 # Define the ambiguous names and their corresponding official names
 TICKET_NAMES = {
@@ -17,16 +17,49 @@ TICKET_NAMES = {
 TICKET_NAME_DICT = {ambiguous_name: name for name, ambiguous_names in TICKET_NAMES.items() for ambiguous_name in ambiguous_names}
 
 
+class HorseRacingTicketParser(models.Model):
+    page_source = models.ForeignKey(PageResult, on_delete=models.CASCADE, verbose_name='取得元ページ')
+    need_update_at = models.DateTimeField(null=True, verbose_name='次回更新日時')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
+
+    @classmethod
+    def next(cls):
+        unused_sources = PageResult.objects.exclude(race_id__in=cls.objects.values_list('race_id', flat=True))
+        unused_source = unused_sources.order_by("created_at").first()
+        if unused_source:
+            parser = cls(
+                page_source = unused_source,
+            )
+            return parser
+        
+        return None
+
+    @classmethod
+    def new_win_ticket(cls):
+        parser = cls.next()
+        if not parser:
+            return None
+
+        
+
+
+
+
+
 class HorseRacingTicketName(models.Model):
     name = models.CharField(max_length=255, verbose_name='馬券名')
     description = models.TextField(verbose_name='説明')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
 
     def __str__(self):
         return self.name
 
-# ビット列で馬券を表現する
+# ビット列で馬券的中範囲を表現する
 class HorseRacingTicket(models.Model):
-    race = models.ForeignKey(NetkeibaRace, on_delete=models.CASCADE, verbose_name='レース')
+    parser = models.ForeignKey(HorseRacingTicketParser, on_delete=models.CASCADE, verbose_name='取得元')
+    race_id = models.CharField(max_length=255, verbose_name='レースID')
     official_name = models.ForeignKey(HorseRacingTicketName, on_delete=models.CASCADE, verbose_name='馬券名')
     ambiguous_name = models.CharField(max_length=255, verbose_name='あいまいな馬券名')
     win_str = models.CharField(max_length=255, verbose_name='当選条件')
@@ -34,6 +67,13 @@ class HorseRacingTicket(models.Model):
     second = models.IntegerField(verbose_name='2着')
     third = models.IntegerField(verbose_name='3着')
     refund = models.IntegerField(verbose_name='払戻金')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
+
+    def save(self):
+        if self.refund <= 0:
+            raise ValueError("Refund must be positive if you want to save this ticket.")
+        super().save()
 
     def __str__(self):
         return f'{self.official_name}-{self.win_str}'
@@ -123,5 +163,3 @@ class HorseRacingTicket(models.Model):
             ticket.third = ticket.__make_bytelist(parts[2])
         
         return ticket
-    
-

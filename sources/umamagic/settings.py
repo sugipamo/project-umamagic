@@ -44,8 +44,7 @@ INSTALLED_APPS = [
     'apps.event_schedules',
     'apps.web_controller',
     'apps.web_netkeiba_pagesources',
-    'apps.db_netkeiba_ticket',
-    'apps.db_netkeiba_race',
+    'apps.db_netkeiba_tickets',
 ]
 
 MIDDLEWARE = [

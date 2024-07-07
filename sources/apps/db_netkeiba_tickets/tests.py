@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from apps.db_netkeiba_ticket.models import HorseRacingTicket, HorseRacingTicketName
+from apps.db_netkeiba_tickets.models import HorseRacingTicket, HorseRacingTicketName
 from django.test import TestCase
 from .models import HorseRacingTicketName, HorseRacingTicket
 
