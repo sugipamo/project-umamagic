@@ -4,7 +4,18 @@ from .models import PageCategory
 from .models import Page
 from .models import PageShutuba, PageResult, PageDbNetkeiba, PageYoso, PageYosoPro, PageYosoCp, PageOikiri
 
-class TestNewPage(TestCase):
+class MakeDummyDataTest(TestCase):
+    def test_make_dummy_data(self):
+        PageShutuba.make_dummy_instance()
+        self.assertTrue(PageShutuba.objects.all().count() > 0)
+        # self.assertTrue(PageResult.objects.all().count() > 0)
+        # self.assertTrue(PageDbNetkeiba.objects.all().count() > 0)
+        # self.assertTrue(PageYoso.objects.all().count() > 0)
+        # self.assertTrue(PageYosoPro.objects.all().count() > 0)
+        # self.assertTrue(PageYosoCp.objects.all().count() > 0)
+        # self.assertTrue(PageOikiri.objects.all().count() > 0)
+
+class NewPageTest(TestCase):
     def setUp(self):
         Page.extract_raceids()
         self.assertTrue(Page.objects.all().count() > 0)
@@ -37,3 +48,5 @@ class TestNewPage(TestCase):
     def test_PageOikiri(self):
         PageOikiri.new_page()
         self.assertTrue(PageOikiri.objects.all().count() > 0)
+
+

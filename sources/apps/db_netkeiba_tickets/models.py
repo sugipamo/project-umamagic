@@ -1,4 +1,7 @@
 from django.db import models
+from django.utils import timezone
+from bs4 import BeautifulSoup as bs
+import lxml
 from apps.web_netkeiba_pagesources.models import PageResult
 
 # Define the ambiguous names and their corresponding official names
@@ -35,21 +38,48 @@ class HorseRacingTicketParser(models.Model):
         
         return None
 
+    def __parser_init(self):
+        self.need_update_at = timezone.now() + timezone.timedelta(days=1)
+        
+        soup = bs(self.page_source.read_html(), 'html.parser')
+        etree = lxml.etree.HTML(str(soup))
+
+        race_date = etree.xpath('//dd[@class="Active"]/a')
+        if not race_date:
+            return None
+        
+        race_date_href = race_date.get('href', "")
+        race_date_split = race_date_href.split("?")
+        if len(race_date_split) < 2:
+            return None
+        race_date_params = race_date_split[1].split("&")
+        kaisai_date = {k: v for race_date_param in race_date_params for k, v in race_date_param.split("=")}
+        kaisai_date = kaisai_date.get("kaisai_date", "")
+        if not kaisai_date:
+            return None
+        
+        need_update_at = timezone.datetime.strptime(kaisai_date, "%Y%m%d") + timezone.timedelta(days=1)
+        self.need_update_at = need_update_at
+
+        return etree
+
     @classmethod
-    def new_win_ticket(cls):
+    def new_win_tickets(cls):
         parser = cls.next()
         if not parser:
             return None
-
         
+        etree = parser.__parser_init()
 
-
-
+        ResultPayBackWrapper = etree.xpath('//div[@class="ResultPayBackWrapper"]')
+        if not ResultPayBackWrapper:
+            return None
+        
+        
 
 
 class HorseRacingTicketName(models.Model):
     name = models.CharField(max_length=255, verbose_name='馬券名')
-    description = models.TextField(verbose_name='説明')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
 

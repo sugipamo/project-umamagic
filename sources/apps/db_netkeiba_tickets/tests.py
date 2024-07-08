@@ -1,19 +1,29 @@
+from pathlib import Path
 from django.test import TestCase
+from unittest.mock import Mock
+from .models import HorseRacingTicketParser
+from .models import HorseRacingTicket, HorseRacingTicketName
+from apps.web_netkeiba_pagesources.models import PageResult
 
-from apps.db_netkeiba_tickets.models import HorseRacingTicket, HorseRacingTicketName
-from django.test import TestCase
-from .models import HorseRacingTicketName, HorseRacingTicket
+class HorseRacingTicketParserTest(TestCase):
+
+    def test_parser_parse(self):
+        result = PageResult.make_dummy_instance()
+        with open(Path(__file__).parent / "page_sources" / "race.netkeiba.com" / "200603020811.bin", "rb") as f:
+            result.html = f.read()
+        parser = HorseRacingTicketParser(page_source=result)
+        self.assertEqual(parser._HorseRacingTicketParser__parser_init(), None)
 
 
 class HorseRacingTicketNameTest(TestCase):
     def test_str(self):
-        ticket_name = HorseRacingTicketName.objects.create(name='Win', description='Win Ticket')
+        ticket_name = HorseRacingTicketName.objects.create(name='Win')
         self.assertEqual(str(ticket_name), 'Win')
 
 class HorseRacingTicketTest(TestCase):
     def setUp(self):
-        self.win_name = HorseRacingTicketName.objects.create(name='win', description='Win Ticket')
-        self.exacta_name = HorseRacingTicketName.objects.create(name='exacta', description='Exacta Ticket')
+        self.win_name = HorseRacingTicketName.objects.create(name='win')
+        self.exacta_name = HorseRacingTicketName.objects.create(name='exacta')
     
     def test_make_bytelist(self):
         ticket = HorseRacingTicket()

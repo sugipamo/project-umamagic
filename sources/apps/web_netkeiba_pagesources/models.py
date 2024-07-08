@@ -110,7 +110,16 @@ class Page(models.Model):
             page.update_html()
             page.save_base(raw=True)
         return page
-
+    
+    @classmethod
+    def make_dummy_instance(cls):
+        from random import choice, randint
+        category = PageCategory.objects.get_or_create(name=choice(["nar.netkeiba.com", "race.netkeiba.com"]))[0]
+        page = Page(str(randint(1000000, 9999999)), category=category)
+        page.save()
+        page_instance = cls(page_ptr=page)
+        page_instance.save_base(raw=True)
+        return page_instance
 
 class PageShutuba(Page):
     html = models.BinaryField(null=True, blank=True)
