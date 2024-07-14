@@ -6,14 +6,16 @@ from .models import HorseRacingTicket, HorseRacingTicketName
 from apps.web_netkeiba_pagesources.models import PageResult
 
 class HorseRacingTicketParserTest(TestCase):
+    def setUp(self):
+        result = PageResult.make_dummy_instance(category='nar', race_id='202444070902')
+        self.parser = HorseRacingTicketParser(page_source=result)
+        
+    def test_parser_parser_init(self):
+        self.assertTrue(self.parser._HorseRacingTicketParser__parser_init() is not None)
 
-    def test_parser_parse(self):
-        result = PageResult.make_dummy_instance()
-        with open(Path(__file__).parent / "page_sources" / "race.netkeiba.com" / "200603020811.bin", "rb") as f:
-            result.html = f.read()
-        parser = HorseRacingTicketParser(page_source=result)
-        self.assertEqual(parser._HorseRacingTicketParser__parser_init(), None)
-
+    def test_new_win_tickets(self):
+        HorseRacingTicketParser.new_win_tickets()
+        self.assertTrue(HorseRacingTicket.objects.all().exists())
 
 class HorseRacingTicketNameTest(TestCase):
     def test_str(self):

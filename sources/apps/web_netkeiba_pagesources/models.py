@@ -47,9 +47,10 @@ def extract_raceids(driver):
     raceids = {}
     race_categorys = {}
     for url in urls:
-        race_category = url.split("/")[2]
-        if race_category not in {"nar.netkeiba.com", "race.netkeiba.com"}:
+        domain_name = url.split("/")[2]
+        if domain_name not in {"nar.netkeiba.com", "race.netkeiba.com"}:
             continue
+        race_category = domain_name.split(".")[0]
         category = race_categorys.get(race_category, PageCategory.objects.get_or_create(name=race_category)[0])
         params = url.split("?")[-1]
         params = dict([param.split("=") for param in params.split("&")])
@@ -112,12 +113,17 @@ class Page(models.Model):
         return page
     
     @classmethod
-    def make_dummy_instance(cls):
+    def make_dummy_instance(cls, category=None, race_id=None):
         from random import choice, randint
-        category = PageCategory.objects.get_or_create(name=choice(["nar.netkeiba.com", "race.netkeiba.com"]))[0]
-        page = Page(str(randint(1000000, 9999999)), category=category)
+        category_name = category or choice(["nar", "race"])
+        page = Page(
+            race_id = (race_id or str(randint(1000000, 9999999))), 
+            category=PageCategory.objects.get_or_create(name=category_name)[0]
+        )
         page.save()
         page_instance = cls(page_ptr=page)
+        if category or race_id:
+            page_instance.update_html()
         page_instance.save_base(raw=True)
         return page_instance
 
@@ -125,13 +131,13 @@ class PageShutuba(Page):
     html = models.BinaryField(null=True, blank=True)
     @property
     def url(self):
-        return f"https://{self.page_ptr.category.name}/race/shutuba.html?race_id={self.page_ptr.race_id}"
+        return f"https://{self.page_ptr.category.name}.netkeiba.com/race/shutuba.html?race_id={self.page_ptr.race_id}"
 
 class PageResult(Page):
     html = models.BinaryField(null=True, blank=True)
     @property
     def url(self):
-        return f"https://{self.page_ptr.category.name}/race/result.html?race_id={self.page_ptr.race_id}"
+        return f"https://{self.page_ptr.category.name}.netkeiba.com/race/result.html?race_id={self.page_ptr.race_id}"
     
 class PageDbNetkeiba(Page):
     html = models.BinaryField(null=True, blank=True)
@@ -144,7 +150,7 @@ class PageYoso(Page):
     need_login = True
     @property
     def url(self):
-        return f"https://{self.page_ptr.category.name}/yoso/mark_list.html?race_id={self.page_ptr.race_id}"
+        return f"https://{self.page_ptr.category.name}.netkeiba.com/yoso/mark_list.html?race_id={self.page_ptr.race_id}"
 
 
 
@@ -153,7 +159,7 @@ class PageYosoPro(Page):
     need_login = True
     @property
     def url(self):
-        return f"https://{self.page_ptr.category.name}/yoso/yoso_pro_opinion_list.html?race_id={self.page_ptr.race_id}"
+        return f"https://{self.page_ptr.category.name}.netkeiba.com/yoso/yoso_pro_opinion_list.html?race_id={self.page_ptr.race_id}"
 
 
 class PageYosoCp(Page):
@@ -166,7 +172,7 @@ class PageYosoCp(Page):
     need_login = True
     @property
     def url(self):
-        return f"https://{self.page_ptr.category.name}/yoso/yoso_cp.html?race_id={self.page_ptr.race_id}"
+        return f"https://{self.page_ptr.category.name}.netkeiba.com/yoso/yoso_cp.html?race_id={self.page_ptr.race_id}"
     
     def read_html(self):
         return [
@@ -231,43 +237,43 @@ class PageOikiri(Page):
 #     html = models.BinaryField(null=True, blank=True)
 #     @property
 #     def url(self):
-#         return f"https://{self.page_ptr.category.name}/odds/index.html?type=b1&race_id={self.page_ptr.race_id}"
+#         return f"https://{self.page_ptr.category.name}.netkeiba.com/odds/index.html?type=b1&race_id={self.page_ptr.race_id}"
 
 # class PageOddsB3(Page):
 #     html = models.BinaryField(null=True, blank=True)
 #     @property
 #     def url(self):
-#         return f"https://{self.page_ptr.category.name}/odds/index.html?type=b3&race_id={self.page_ptr.race_id}"
+#         return f"https://{self.page_ptr.category.name}.netkeiba.com/odds/index.html?type=b3&race_id={self.page_ptr.race_id}"
 
 # class PageOddsB4(Page):
 #     html = models.BinaryField(null=True, blank=True)
 #     @property
 #     def url(self):
-#         return f"https://{self.page_ptr.category.name}/odds/index.html?type=b4&race_id={self.page_ptr.race_id}"
+#         return f"https://{self.page_ptr.category.name}.netkeiba.com/odds/index.html?type=b4&race_id={self.page_ptr.race_id}"
 
 # class PageOddsB5(Page):
 #     html = models.BinaryField(null=True, blank=True)
 #     @property
 #     def url(self):
-#         return f"https://{self.page_ptr.category.name}/odds/index.html?type=b5&race_id={self.page_ptr.race_id}"
+#         return f"https://{self.page_ptr.category.name}.netkeiba.com/odds/index.html?type=b5&race_id={self.page_ptr.race_id}"
     
 # class PageOddsB6(Page):
 #     html = models.BinaryField(null=True, blank=True)
 #     @property
 #     def url(self):
-#         return f"https://{self.page_ptr.category.name}/odds/index.html?type=b6&race_id={self.page_ptr.race_id}"
+#         return f"https://{self.page_ptr.category.name}.netkeiba.com/odds/index.html?type=b6&race_id={self.page_ptr.race_id}"
     
 # class PageOddsB7(Page):
 #     html = models.BinaryField(null=True, blank=True)
 #     @property
 #     def url(self):
-#         return f"https://{self.page_ptr.category.name}/odds/index.html?type=b7&race_id={self.page_ptr.race_id}"
+#         return f"https://{self.page_ptr.category.name}.netkeiba.com/odds/index.html?type=b7&race_id={self.page_ptr.race_id}"
     
 # class PageOddsB8(Page):
 #     html = models.BinaryField(null=True, blank=True)
 #     @property
 #     def url(self):
-#         return f"https://{self.page_ptr.category.name}/odds/index.html?type=b8&race_id={self.page_ptr.race_id}"
+#         return f"https://{self.page_ptr.category.name}.netkeiba.com/odds/index.html?type=b8&race_id={self.page_ptr.race_id}"
     
 # class PageOddsB9(Page):
 #     html = models.BinaryField(null=True, blank=True)
@@ -275,7 +281,7 @@ class PageOikiri(Page):
 #     def url(self):
 #         if self.page_ptr.category.name == "race.netkeiba.com":
 #             raise URLError("race.netkeiba.comには枠単がありません。")
-#         return f"https://{self.page_ptr.category.name}/odds/index.html?type=b9&race_id={self.page_ptr.race_id}"
+#         return f"https://{self.page_ptr.category.name}.netkeiba.com/odds/index.html?type=b9&race_id={self.page_ptr.race_id}"
     
 
 class Pages():
