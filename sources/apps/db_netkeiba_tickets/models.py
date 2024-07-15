@@ -5,6 +5,7 @@ from urllib.parse import urlparse, parse_qs
 import lxml
 import datetime
 from apps.web_netkeiba_pagesources.models import PageResult
+from apps.web_netkeiba_pagesources.models import BasePageSourceParser
 
 TICKET_NAMES = {
     "win": ["単勝"],
@@ -50,33 +51,23 @@ def win_str_replacer(win_str):
         win_str = win_str.replace(u, v)
     return win_str
 
-class HorseRacingTicketParser(models.Model):
+class HorseRacingTicketParser(BasePageSourceParser):
     page_source = models.ForeignKey(PageResult, on_delete=models.CASCADE, verbose_name='取得元ページ')
-    need_update_at = models.DateTimeField(null=True, verbose_name='次回更新日時')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
 
     @classmethod
     def next(cls):
-        unupdated_parsers = cls.objects.filter(need_update_at__lte=timezone.now())
-        unupdated_parser = unupdated_parsers.order_by("need_update_at").first()
-        if unupdated_parser is not None:
-            return unupdated_parser
+        return super().next(PageResult)
 
-        unused_sources = PageResult.objects.exclude(page_ptr_id__in=cls.objects.values_list('page_source_id', flat=True))
-        unused_source = unused_sources.order_by("created_at").first()
-        if unused_source is not None:
-            parser = cls(
-                page_source = unused_source,
-            )
-            return parser
-        
-        return None
-
-    def __parser_init(self):
+    def parser_init(self):
         self.need_update_at = timezone.now() + timezone.timedelta(days=1)
         
-        soup = bs(self.page_source.read_html(), 'html.parser')
+        html = self.page_source.read_html()
+        if html is None:
+            self.need_update_at = None
+            self.save()
+            return
+        
+        soup = bs(html, 'html.parser')
         etree = lxml.etree.HTML(str(soup))
 
         race_date = etree.xpath('//dd[@class="Active"]/a')
@@ -102,7 +93,10 @@ class HorseRacingTicketParser(models.Model):
         if not parser:
             return None
         
-        etree = parser.__parser_init()
+        etree = parser.parser_init()
+
+        if not etree:
+            return None
 
         result_pay_backs = etree.xpath('//table[@class="Payout_Detail_Table"]/tbody/tr')
         if not result_pay_backs:
@@ -154,6 +148,7 @@ class HorseRacingTicketParser(models.Model):
 
         if tickets:
             parser.need_update_at = None
+            parser.success_parsing = True
             parser.save()
         for ticket in tickets:
             ticket.parser = parser

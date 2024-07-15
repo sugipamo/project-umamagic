@@ -1651,3 +1651,575 @@ Traceback (most recent call last):
   File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 235, in __update_html
     raise PermissionError("ログインが必要です。")
 PermissionError: ログインが必要です。
+2024-07-15 14:07:07.479882+00:00: 'NoneType' object has no attribute 'xpath'
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 148, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 129, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 122, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_win_tickets.py", line 5, in main
+    HorseRacingTicketParser.new_win_tickets()
+  File "/home/user/sources/apps/db_netkeiba_tickets/models.py", line 108, in new_win_tickets
+    result_pay_backs = etree.xpath('//table[@class="Payout_Detail_Table"]/tbody/tr')
+AttributeError: 'NoneType' object has no attribute 'xpath'
+
+
+2024-07-15 14:14:33.620881+00:00: (1451, 'Cannot delete or update a parent row: a foreign key constraint fails (`umamagic`.`web_netkeiba_pagesources_pageoikiri`, CONSTRAINT `web_netkeiba_pagesou_page_ptr_id_28c63980_fk_web_netke` FOREIGN KEY (`page_ptr_id`) REFERENCES `web_netkeiba_pagesources_page` (`i)')
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+MySQLdb.IntegrityError: (1451, 'Cannot delete or update a parent row: a foreign key constraint fails (`umamagic`.`web_netkeiba_pagesources_pageoikiri`, CONSTRAINT `web_netkeiba_pagesou_page_ptr_id_28c63980_fk_web_netke` FOREIGN KEY (`page_ptr_id`) REFERENCES `web_netkeiba_pagesources_page` (`i)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 148, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 129, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 122, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_pageyoso_tips.py", line 5, in main
+    HorseRacingTipParserForPageYoso.new_tips()
+  File "/home/user/sources/apps/db_netkeiba_tips/models.py", line 85, in new_tips
+    parser = cls.next()
+  File "/home/user/sources/apps/db_netkeiba_tips/models.py", line 81, in next
+    return super().next(PageYoso)
+  File "/home/user/sources/apps/db_netkeiba_tips/models.py", line 37, in next
+    unupdated_parser.page_source.break_down()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 123, in break_down
+    self.delete()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1183, in delete
+    return collector.delete()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/deletion.py", line 506, in delete
+    count = query.delete_batch(pk_list, self.using)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/subqueries.py", line 42, in delete_batch
+    num_deleted += self.do_query(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/subqueries.py", line 20, in do_query
+    cursor = self.get_compiler(using).execute_sql(CURSOR)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+django.db.utils.IntegrityError: (1451, 'Cannot delete or update a parent row: a foreign key constraint fails (`umamagic`.`web_netkeiba_pagesources_pageoikiri`, CONSTRAINT `web_netkeiba_pagesou_page_ptr_id_28c63980_fk_web_netke` FOREIGN KEY (`page_ptr_id`) REFERENCES `web_netkeiba_pagesources_page` (`i)')
+
+
+2024-07-15 14:15:33.811011+00:00: 'NoneType' object has no attribute 'xpath'
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 148, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 129, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 122, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_win_tickets.py", line 5, in main
+    HorseRacingTicketParser.new_win_tickets()
+  File "/home/user/sources/apps/db_netkeiba_tickets/models.py", line 107, in new_win_tickets
+    result_pay_backs = etree.xpath('//table[@class="Payout_Detail_Table"]/tbody/tr')
+AttributeError: 'NoneType' object has no attribute 'xpath'
+
+
+2024-07-15 14:15:38.672605+00:00: (1451, 'Cannot delete or update a parent row: a foreign key constraint fails (`umamagic`.`web_netkeiba_pagesources_pageoikiri`, CONSTRAINT `web_netkeiba_pagesou_page_ptr_id_28c63980_fk_web_netke` FOREIGN KEY (`page_ptr_id`) REFERENCES `web_netkeiba_pagesources_page` (`i)')
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+MySQLdb.IntegrityError: (1451, 'Cannot delete or update a parent row: a foreign key constraint fails (`umamagic`.`web_netkeiba_pagesources_pageoikiri`, CONSTRAINT `web_netkeiba_pagesou_page_ptr_id_28c63980_fk_web_netke` FOREIGN KEY (`page_ptr_id`) REFERENCES `web_netkeiba_pagesources_page` (`i)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 148, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 129, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 122, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_pageyoso_tips.py", line 5, in main
+    HorseRacingTipParserForPageYoso.new_tips()
+  File "/home/user/sources/apps/db_netkeiba_tips/models.py", line 86, in new_tips
+    parser = cls.next()
+  File "/home/user/sources/apps/db_netkeiba_tips/models.py", line 82, in next
+    return super().next(PageYoso)
+  File "/home/user/sources/apps/db_netkeiba_tips/models.py", line 38, in next
+    unupdated_parser.page_source.break_down()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 123, in break_down
+    self.delete()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1183, in delete
+    return collector.delete()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/deletion.py", line 506, in delete
+    count = query.delete_batch(pk_list, self.using)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/subqueries.py", line 42, in delete_batch
+    num_deleted += self.do_query(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/subqueries.py", line 20, in do_query
+    cursor = self.get_compiler(using).execute_sql(CURSOR)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+django.db.utils.IntegrityError: (1451, 'Cannot delete or update a parent row: a foreign key constraint fails (`umamagic`.`web_netkeiba_pagesources_pageoikiri`, CONSTRAINT `web_netkeiba_pagesou_page_ptr_id_28c63980_fk_web_netke` FOREIGN KEY (`page_ptr_id`) REFERENCES `web_netkeiba_pagesources_page` (`i)')
+
+
+2024-07-15 14:16:08.656914+00:00: 'NoneType' object has no attribute 'xpath'
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 148, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 129, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 122, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_pageyosocp_tips.py", line 5, in main
+    HorseRacingTipParserForPageYosoCp.new_tips()
+  File "/home/user/sources/apps/db_netkeiba_tips/models.py", line 163, in new_tips
+    etrees = parser.parser_init()
+  File "/home/user/sources/apps/db_netkeiba_tips/models.py", line 140, in parser_init
+    race_date = etree.xpath('//dd[@class="Active"]/a')
+AttributeError: 'NoneType' object has no attribute 'xpath'
+
+
+2024-07-15 14:35:50.121703+00:00: (1451, 'Cannot delete or update a parent row: a foreign key constraint fails (`umamagic`.`web_netkeiba_pagesources_pageoikiri`, CONSTRAINT `web_netkeiba_pagesou_page_ptr_id_28c63980_fk_web_netke` FOREIGN KEY (`page_ptr_id`) REFERENCES `web_netkeiba_pagesources_page` (`i)')
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+MySQLdb.IntegrityError: (1451, 'Cannot delete or update a parent row: a foreign key constraint fails (`umamagic`.`web_netkeiba_pagesources_pageoikiri`, CONSTRAINT `web_netkeiba_pagesou_page_ptr_id_28c63980_fk_web_netke` FOREIGN KEY (`page_ptr_id`) REFERENCES `web_netkeiba_pagesources_page` (`i)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 148, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 129, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 122, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_pageyoso_tips.py", line 5, in main
+    HorseRacingTipParserForPageYoso.new_tips()
+  File "/home/user/sources/apps/db_netkeiba_tips/models.py", line 87, in new_tips
+    parser = cls.next()
+  File "/home/user/sources/apps/db_netkeiba_tips/models.py", line 83, in next
+    return super().next(PageYoso)
+  File "/home/user/sources/apps/db_netkeiba_tips/models.py", line 39, in next
+    unupdated_parser.page_source.break_down()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 161, in break_down
+    self.delete()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1183, in delete
+    return collector.delete()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/deletion.py", line 506, in delete
+    count = query.delete_batch(pk_list, self.using)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/subqueries.py", line 42, in delete_batch
+    num_deleted += self.do_query(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/subqueries.py", line 20, in do_query
+    cursor = self.get_compiler(using).execute_sql(CURSOR)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+django.db.utils.IntegrityError: (1451, 'Cannot delete or update a parent row: a foreign key constraint fails (`umamagic`.`web_netkeiba_pagesources_pageoikiri`, CONSTRAINT `web_netkeiba_pagesou_page_ptr_id_28c63980_fk_web_netke` FOREIGN KEY (`page_ptr_id`) REFERENCES `web_netkeiba_pagesources_page` (`i)')
+
+
+2024-07-15 14:39:05.319675+00:00: (1451, 'Cannot delete or update a parent row: a foreign key constraint fails (`umamagic`.`web_netkeiba_pagesources_pageoikiri`, CONSTRAINT `web_netkeiba_pagesou_page_ptr_id_28c63980_fk_web_netke` FOREIGN KEY (`page_ptr_id`) REFERENCES `web_netkeiba_pagesources_page` (`i)')
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+MySQLdb.IntegrityError: (1451, 'Cannot delete or update a parent row: a foreign key constraint fails (`umamagic`.`web_netkeiba_pagesources_pageoikiri`, CONSTRAINT `web_netkeiba_pagesou_page_ptr_id_28c63980_fk_web_netke` FOREIGN KEY (`page_ptr_id`) REFERENCES `web_netkeiba_pagesources_page` (`i)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 148, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 129, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 122, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_pageyoso_tips.py", line 5, in main
+    HorseRacingTipParserForPageYoso.new_tips()
+  File "/home/user/sources/apps/db_netkeiba_tips/models.py", line 85, in new_tips
+    parser = cls.next()
+  File "/home/user/sources/apps/db_netkeiba_tips/models.py", line 81, in next
+    return super().next(PageYoso)
+  File "/home/user/sources/apps/db_netkeiba_tips/models.py", line 37, in next
+    unupdated_parser.page_source.delete()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1183, in delete
+    return collector.delete()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/deletion.py", line 506, in delete
+    count = query.delete_batch(pk_list, self.using)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/subqueries.py", line 42, in delete_batch
+    num_deleted += self.do_query(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/subqueries.py", line 20, in do_query
+    cursor = self.get_compiler(using).execute_sql(CURSOR)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+django.db.utils.IntegrityError: (1451, 'Cannot delete or update a parent row: a foreign key constraint fails (`umamagic`.`web_netkeiba_pagesources_pageoikiri`, CONSTRAINT `web_netkeiba_pagesou_page_ptr_id_28c63980_fk_web_netke` FOREIGN KEY (`page_ptr_id`) REFERENCES `web_netkeiba_pagesources_page` (`i)')
+
+
+2024-07-15 14:39:45.274992+00:00: 'NoneType' object has no attribute 'xpath'
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 148, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 129, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 122, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_win_tickets.py", line 5, in main
+    HorseRacingTicketParser.new_win_tickets()
+  File "/home/user/sources/apps/db_netkeiba_tickets/models.py", line 107, in new_win_tickets
+    result_pay_backs = etree.xpath('//table[@class="Payout_Detail_Table"]/tbody/tr')
+AttributeError: 'NoneType' object has no attribute 'xpath'
+
+
+2024-07-15 14:39:50.277100+00:00: 'NoneType' object has no attribute 'xpath'
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 148, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 129, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 122, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_pageyosocp_tips.py", line 5, in main
+    HorseRacingTipParserForPageYosoCp.new_tips()
+  File "/home/user/sources/apps/db_netkeiba_tips/models.py", line 164, in new_tips
+    etrees = parser.parser_init()
+  File "/home/user/sources/apps/db_netkeiba_tips/models.py", line 141, in parser_init
+    race_date = etree.xpath('//dd[@class="Active"]/a')
+AttributeError: 'NoneType' object has no attribute 'xpath'
+
+
+2024-07-15 14:40:00.302151+00:00: 'NoneType' object has no attribute 'xpath'
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 148, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 129, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 122, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_win_tickets.py", line 5, in main
+    HorseRacingTicketParser.new_win_tickets()
+  File "/home/user/sources/apps/db_netkeiba_tickets/models.py", line 107, in new_win_tickets
+    result_pay_backs = etree.xpath('//table[@class="Payout_Detail_Table"]/tbody/tr')
+AttributeError: 'NoneType' object has no attribute 'xpath'
+
+
+2024-07-15 14:44:35.648820+00:00: 'NoneType' object has no attribute 'xpath'
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 148, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 129, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 122, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_win_tickets.py", line 5, in main
+    HorseRacingTicketParser.new_win_tickets()
+  File "/home/user/sources/apps/db_netkeiba_tickets/models.py", line 111, in new_win_tickets
+    result_pay_backs = etree.xpath('//table[@class="Payout_Detail_Table"]/tbody/tr')
+AttributeError: 'NoneType' object has no attribute 'xpath'
+
+
+2024-07-15 14:57:21.534147+00:00: (1451, 'Cannot delete or update a parent row: a foreign key constraint fails (`umamagic`.`web_netkeiba_pagesources_pageoikiri`, CONSTRAINT `web_netkeiba_pagesou_page_ptr_id_28c63980_fk_web_netke` FOREIGN KEY (`page_ptr_id`) REFERENCES `web_netkeiba_pagesources_page` (`i)')
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+MySQLdb.IntegrityError: (1451, 'Cannot delete or update a parent row: a foreign key constraint fails (`umamagic`.`web_netkeiba_pagesources_pageoikiri`, CONSTRAINT `web_netkeiba_pagesou_page_ptr_id_28c63980_fk_web_netke` FOREIGN KEY (`page_ptr_id`) REFERENCES `web_netkeiba_pagesources_page` (`i)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 148, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 129, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 122, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_pageyoso_tips.py", line 5, in main
+    HorseRacingTipParserForPageYoso.new_tips()
+  File "/home/user/sources/apps/db_netkeiba_tips/models.py", line 69, in new_tips
+    parser = cls.next()
+  File "/home/user/sources/apps/db_netkeiba_tips/models.py", line 65, in next
+    return super().next(PageYoso)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 28, in next
+    unupdated_parser.page_source.delete()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1183, in delete
+    return collector.delete()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/deletion.py", line 506, in delete
+    count = query.delete_batch(pk_list, self.using)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/subqueries.py", line 42, in delete_batch
+    num_deleted += self.do_query(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/subqueries.py", line 20, in do_query
+    cursor = self.get_compiler(using).execute_sql(CURSOR)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+django.db.utils.IntegrityError: (1451, 'Cannot delete or update a parent row: a foreign key constraint fails (`umamagic`.`web_netkeiba_pagesources_pageoikiri`, CONSTRAINT `web_netkeiba_pagesou_page_ptr_id_28c63980_fk_web_netke` FOREIGN KEY (`page_ptr_id`) REFERENCES `web_netkeiba_pagesources_page` (`i)')
+
+
+2024-07-15 15:00:11.696181+00:00: (1054, "Unknown column 'web_netkeiba_pagesources_page.need_update' in 'field list'")
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+MySQLdb.OperationalError: (1054, "Unknown column 'web_netkeiba_pagesources_page.need_update' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 148, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 129, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 122, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_pageyosocp_tips.py", line 5, in main
+    HorseRacingTipParserForPageYosoCp.new_tips()
+  File "/home/user/sources/apps/db_netkeiba_tips/models.py", line 149, in new_tips
+    parser = cls.next()
+  File "/home/user/sources/apps/db_netkeiba_tips/models.py", line 114, in next
+    return super().next(PageYosoCp)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 31, in next
+    unused_source = unused_sources.order_by("created_at").first()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 1097, in first
+    for obj in queryset[:1]:
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 400, in __iter__
+    self._fetch_all()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 1928, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'web_netkeiba_pagesources_page.need_update' in 'field list'")
+
+
+2024-07-15 15:00:16.595775+00:00: (1054, "Unknown column 'web_netkeiba_pagesources_page.need_update' in 'field list'")
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+MySQLdb.OperationalError: (1054, "Unknown column 'web_netkeiba_pagesources_page.need_update' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 148, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 129, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 122, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_win_tickets.py", line 5, in main
+    HorseRacingTicketParser.new_win_tickets()
+  File "/home/user/sources/apps/db_netkeiba_tickets/models.py", line 90, in new_win_tickets
+    parser = cls.next()
+  File "/home/user/sources/apps/db_netkeiba_tickets/models.py", line 59, in next
+    return super().next(PageResult)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 31, in next
+    unused_source = unused_sources.order_by("created_at").first()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 1097, in first
+    for obj in queryset[:1]:
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 400, in __iter__
+    self._fetch_all()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 1928, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'web_netkeiba_pagesources_page.need_update' in 'field list'")
+
+
+2024-07-15 15:07:07.545506+00:00: obsolete_eventは存在しません。
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 148, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 113, in doevent
+    raise ScheduleExecutuionError(f"{self.event_function}は存在しません。")
+apps.event_schedules.models.ScheduleExecutuionError: obsolete_eventは存在しません。
+
+

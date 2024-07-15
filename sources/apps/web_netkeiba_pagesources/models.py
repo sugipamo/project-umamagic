@@ -1,6 +1,7 @@
 from django.db import models
 from apps.web_controller.apps import TimeCounter, WebDriver
 from apps.web_controller.models import LoginForScraping
+from django.utils import timezone
 import gzip
 import traceback
 import pickle
@@ -10,6 +11,36 @@ from urllib.error import URLError
 
 NETKEIBA_BASE_URL = "https://www.netkeiba.com/"
 NETKEIBA_DOMAIN = ".netkeiba.com"
+
+class BasePageSourceParser(models.Model):
+    success_parsing = models.BooleanField(default=False, verbose_name='パース成功フラグ')
+    need_update_at = models.DateTimeField(null=True, verbose_name='次回更新日時')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return self.page_source.race_id
+
+    @classmethod
+    def next(cls, relate_model):
+        unupdated_parsers = cls.objects.filter(need_update_at__lte=timezone.now())
+        for unupdated_parser in unupdated_parsers:
+            unupdated_parser.page_source.need_update = True
+
+        unused_sources = relate_model.objects.exclude(page_ptr_id__in=cls.objects.values_list('page_source_id', flat=True))
+        unused_source = unused_sources.order_by("created_at").first()
+        if unused_source is not None:
+            parser = cls(
+                page_source = unused_source,
+                need_update_at = timezone.now() + timezone.timedelta(days=1)
+            )
+            parser.save()
+            return parser
+
+        return None
 
 class PageCategory(models.Model):
     name = models.CharField(max_length=255)
@@ -68,6 +99,15 @@ class Page(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+
+class BasePage(models.Model):
+    class Meta:
+        abstract = True
+
+    need_update = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     url = NETKEIBA_BASE_URL
     need_login = False
 
@@ -75,6 +115,8 @@ class Page(models.Model):
         return self.race_id
 
     def read_html(self):
+        if self.html is None:
+            return None
         return gzip.decompress(self.html).decode()
 
     @classmethod
@@ -104,12 +146,17 @@ class Page(models.Model):
 
     @classmethod
     def next(cls):
+        need_update_races = cls.objects.filter(need_update=True)
+        if need_update_races:
+            need_update_race = need_update_races.first()
+            need_update_race.need_update = False
+            return need_update_race
+
         unused_races = Page.objects.exclude(race_id__in=cls.objects.values_list('race_id', flat=True))
         unused_race = unused_races.order_by("created_at").first()
         if unused_race:
             race = cls(page_ptr=unused_race)
             return race
-        
         return None
     
     @classmethod
@@ -157,35 +204,36 @@ class Page(models.Model):
                 page_instance.make_pickle_for_dummy()
         page_instance.save_base(raw=True)
         return page_instance
+    
+    def break_down(self):
+        self.delete()
 
-class PageShutuba(Page):
+class PageShutuba(Page, BasePage):
     html = models.BinaryField(null=True, blank=True)
     @property
     def url(self):
         return f"https://{self.page_ptr.category.name}.netkeiba.com/race/shutuba.html?race_id={self.page_ptr.race_id}"
 
-class PageResult(Page):
+class PageResult(Page, BasePage):
     html = models.BinaryField(null=True, blank=True)
     @property
     def url(self):
         return f"https://{self.page_ptr.category.name}.netkeiba.com/race/result.html?race_id={self.page_ptr.race_id}"
     
-class PageDbNetkeiba(Page):
+class PageDbNetkeiba(Page, BasePage):
     html = models.BinaryField(null=True, blank=True)
     @property
     def url(self):
         return f"https://db.netkeiba.com/race/{self.page_ptr.race_id}"
     
-class PageYoso(Page):
+class PageYoso(Page, BasePage):
     html = models.BinaryField(null=True, blank=True)
     need_login = True
     @property
     def url(self):
         return f"https://{self.page_ptr.category.name}.netkeiba.com/yoso/mark_list.html?race_id={self.page_ptr.race_id}"
 
-
-
-class PageYosoPro(Page):
+class PageYosoPro(Page, BasePage):
     html = models.BinaryField(null=True, blank=True)
     need_login = True
     @property
@@ -193,7 +241,7 @@ class PageYosoPro(Page):
         return f"https://{self.page_ptr.category.name}.netkeiba.com/yoso/yoso_pro_opinion_list.html?race_id={self.page_ptr.race_id}"
 
 
-class PageYosoCp(Page):
+class PageYosoCp(Page, BasePage):
     html_rising = models.BinaryField(null=True, blank=True)
     html_precede = models.BinaryField(null=True, blank=True)
     html_spurt = models.BinaryField(null=True, blank=True)
@@ -265,7 +313,7 @@ class PageYosoCp(Page):
         self.html_trainer = data.html_trainer
         self.html_pedigree = data.html_pedigree
 
-class PageOikiri(Page):
+class PageOikiri(Page, BasePage):
     html = models.BinaryField(null=True, blank=True)
     need_login = True
     @property
@@ -275,49 +323,49 @@ class PageOikiri(Page):
         return f"https://race.netkeiba.com/race/oikiri.html?race_id={self.page_ptr.race_id}&type=2"
 
 
-# class PageOddsB1(Page):
+# class PageOddsB1(Page, BasePage):
 #     html = models.BinaryField(null=True, blank=True)
 #     @property
 #     def url(self):
 #         return f"https://{self.page_ptr.category.name}.netkeiba.com/odds/index.html?type=b1&race_id={self.page_ptr.race_id}"
 
-# class PageOddsB3(Page):
+# class PageOddsB3(Page, BasePage):
 #     html = models.BinaryField(null=True, blank=True)
 #     @property
 #     def url(self):
 #         return f"https://{self.page_ptr.category.name}.netkeiba.com/odds/index.html?type=b3&race_id={self.page_ptr.race_id}"
 
-# class PageOddsB4(Page):
+# class PageOddsB4(Page, BasePage):
 #     html = models.BinaryField(null=True, blank=True)
 #     @property
 #     def url(self):
 #         return f"https://{self.page_ptr.category.name}.netkeiba.com/odds/index.html?type=b4&race_id={self.page_ptr.race_id}"
 
-# class PageOddsB5(Page):
+# class PageOddsB5(Page, BasePage):
 #     html = models.BinaryField(null=True, blank=True)
 #     @property
 #     def url(self):
 #         return f"https://{self.page_ptr.category.name}.netkeiba.com/odds/index.html?type=b5&race_id={self.page_ptr.race_id}"
     
-# class PageOddsB6(Page):
+# class PageOddsB6(Page, BasePage):
 #     html = models.BinaryField(null=True, blank=True)
 #     @property
 #     def url(self):
 #         return f"https://{self.page_ptr.category.name}.netkeiba.com/odds/index.html?type=b6&race_id={self.page_ptr.race_id}"
     
-# class PageOddsB7(Page):
+# class PageOddsB7(Page, BasePage):
 #     html = models.BinaryField(null=True, blank=True)
 #     @property
 #     def url(self):
 #         return f"https://{self.page_ptr.category.name}.netkeiba.com/odds/index.html?type=b7&race_id={self.page_ptr.race_id}"
     
-# class PageOddsB8(Page):
+# class PageOddsB8(Page, BasePage):
 #     html = models.BinaryField(null=True, blank=True)
 #     @property
 #     def url(self):
 #         return f"https://{self.page_ptr.category.name}.netkeiba.com/odds/index.html?type=b8&race_id={self.page_ptr.race_id}"
     
-# class PageOddsB9(Page):
+# class PageOddsB9(Page, BasePage):
 #     html = models.BinaryField(null=True, blank=True)
 #     @property
 #     def url(self):

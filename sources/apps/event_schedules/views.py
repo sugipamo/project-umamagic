@@ -12,7 +12,7 @@ class EventScheduleListView(ListView):
     model = Schedule
     template_name = 'event_schedules/event_schedule_list.html'
     def queryset(self):
-        return Schedule.objects.all().order_by('latestcalled_at')
+        return Schedule.objects.all().order_by('event_function')
 
 class ScheduleDoEventHistoryListView(ListView):
     model = ScheduleDoeventHistory

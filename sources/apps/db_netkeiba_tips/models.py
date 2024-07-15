@@ -1,4 +1,5 @@
 from django.db import models
+from apps.web_netkeiba_pagesources.models import BasePageSourceParser
 from apps.web_netkeiba_pagesources.models import PageYoso, PageYosoCp, PageYosoPro
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -22,35 +23,20 @@ MARKS = {
     **{mark: name for name, marks in MARKS.items() for mark in marks},
 }
 
-class BaseHorseRacingTipParser(models.Model):
-    need_update_at = models.DateTimeField(null=True, verbose_name='次回更新日時')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
-
+class BaseHorseRacingTipParser(BasePageSourceParser):
     class Meta:
         abstract = True
-
-    @classmethod
-    def next(cls, relate_model):
-        unupdated_parsers = cls.objects.filter(need_update_at__lte=timezone.now())
-        unupdated_parser = unupdated_parsers.order_by("need_update_at").first()
-        if unupdated_parser is not None:
-            return unupdated_parser
-
-        unused_sources = relate_model.objects.exclude(page_ptr_id__in=cls.objects.values_list('page_source_id', flat=True))
-        unused_source = unused_sources.order_by("created_at").first()
-        if unused_source is not None:
-            parser = cls(
-                page_source = unused_source,
-            )
-            return parser
-        
-        return None
 
     def parser_init(self):
         self.need_update_at = timezone.now() + timezone.timedelta(days=1)
         
-        soup = bs(self.page_source.read_html(), 'html.parser')
+        html = self.page_source.read_html()
+        if html is None:
+            self.need_update_at = None
+            self.save()
+            return None
+        
+        soup = bs(html, 'html.parser')
         etree = lxml.etree.HTML(str(soup).replace("<br/>", "").replace("<br>", "").replace("<br />", ""))
 
         race_date = etree.xpath('//dd[@class="Active"]/a')
@@ -117,6 +103,7 @@ class HorseRacingTipParserForPageYoso(BaseHorseRacingTipParser):
 
         if tips:
             parser.need_update_at = None
+            parser.success_parsing = True
             parser.save()
         for tip in tips:
             tip.save()
@@ -133,9 +120,16 @@ class HorseRacingTipParserForPageYosoCp(BaseHorseRacingTipParser):
     def parser_init(self):
         self.need_update_at = timezone.now() + timezone.timedelta(days=1)
         
-        soups = {name: bs(source, 'html.parser') for name, source in self.page_source.read_html().items()}
+        soups = {name: bs(source, 'html.parser') for name, source in self.page_source.read_html().items() if source is not None}
         etrees = {name: lxml.etree.HTML(str(soup).replace("<br/>", "").replace("<br>", "").replace("<br />", "")) for name, soup in soups.items()}
+
+        if not etrees:
+            return None
+
         etree = list(etrees.values())[0]
+
+        if etree is None:
+            return None
 
         race_date = etree.xpath('//dd[@class="Active"]/a')
         if not race_date:
@@ -241,7 +235,7 @@ class HorseRacingTipParserForPageYosoCp(BaseHorseRacingTipParser):
                     mark = HorseRacingTipMark.objects.get_or_create(mark=mark)[0],
                 )
                 tips.append(tip)
-                print(f'check_values("{tip.race_id}", "{tip.author.name}", {tip.horse_number}, "{tip.mark.mark}")')
+                # print(f'check_values("{tip.race_id}", "{tip.author.name}", {tip.horse_number}, "{tip.mark.mark}")')
 
 
         if tips:

@@ -1,5 +1,5 @@
 from apps.web_netkeiba_pagesources.models import Pages
-SCHEDULE_STR = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,360,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2600"
+SCHEDULE_STR = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,360,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2600,"
 
 def main():
     models = Pages.PageClasses
