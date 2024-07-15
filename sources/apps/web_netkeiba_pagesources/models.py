@@ -206,14 +206,14 @@ class PageYosoCp(Page):
         return f"https://{self.page_ptr.category.name}.netkeiba.com/yoso/yoso_cp.html?race_id={self.page_ptr.race_id}"
     
     def read_html(self):
-        return [
-            gzip.decompress(self.html_rising).decode(),
-            gzip.decompress(self.html_precede).decode(),
-            gzip.decompress(self.html_spurt).decode(),
-            gzip.decompress(self.html_jockey).decode(),
-            gzip.decompress(self.html_trainer).decode(),
-            gzip.decompress(self.html_pedigree).decode(),
-        ]
+        return {
+            "rising": gzip.decompress(self.html_rising).decode(),
+            "precede": gzip.decompress(self.html_precede).decode(),
+            "spurt": gzip.decompress(self.html_spurt).decode(),
+            "jockey": gzip.decompress(self.html_jockey).decode(),
+            "trainer": gzip.decompress(self.html_trainer).decode(),
+            "pedigree": gzip.decompress(self.html_pedigree).decode(),
+        }
 
     @ensure_driver
     def update_html(self, driver):

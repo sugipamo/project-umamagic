@@ -10,10 +10,10 @@ import datetime
 
 
 MARKS = {
-    "First": ["◎", "Icon_Shirushi Icon_Honmei"],
-    "Second": ["〇", "○", "Icon_Shirushi Icon_Taikou"],
-    "Third": ["▲", "Icon_Shirushi Icon_Kurosan"],
-    "Fourth": ["△", "Icon_Shirushi Icon_Osae"],
+    "First": ["◎", "Icon_Shirushi Icon_Honmei", "Icon_Shirushi Icon_Shirushi1"],
+    "Second": ["〇", "○", "Icon_Shirushi Icon_Taikou", "Icon_Shirushi Icon_Shirushi2"],
+    "Third": ["▲", "Icon_Shirushi Icon_Kurosan", "Icon_Shirushi Icon_Shirushi3"],
+    "Fourth": ["△", "Icon_Shirushi Icon_Osae", "Icon_Shirushi Icon_Shirushi4"],
     "Star": ["☆", "Icon_Shirushi Icon_Hoshi"],
 }
 
@@ -133,9 +133,9 @@ class HorseRacingTipParserForPageYosoCp(BaseHorseRacingTipParser):
     def parser_init(self):
         self.need_update_at = timezone.now() + timezone.timedelta(days=1)
         
-        soups = [bs(source, 'html.parser') for source in self.page_source.read_html()]
-        etrees = [lxml.etree.HTML(str(soup).replace("<br/>", "").replace("<br>", "").replace("<br />", "")) for soup in soups]
-        etree = etrees[0]
+        soups = {name: bs(source, 'html.parser') for name, source in self.page_source.read_html().items()}
+        etrees = {name: lxml.etree.HTML(str(soup).replace("<br/>", "").replace("<br>", "").replace("<br />", "")) for name, soup in soups.items()}
+        etree = list(etrees.values())[0]
 
         race_date = etree.xpath('//dd[@class="Active"]/a')
         if not race_date:
@@ -165,9 +165,84 @@ class HorseRacingTipParserForPageYosoCp(BaseHorseRacingTipParser):
         if etrees is None:
             return None
         
-    
         tips = []
+
+        first_run = True
         
+        for cp_name, etree in etrees.items():
+            cp_name = cp_name
+            horse_data_table = etree.xpath("//table[@id='YosoMarkTable01']")
+            if not horse_data_table:
+                continue
+            horse_data_table = horse_data_table[0]
+
+            if first_run:
+                headers = horse_data_table.xpath("./thead/tr[@class='CP_Result']/th")
+                headers = [h for h in headers if len(h.attrib) == 0]
+                def extract_text(h):
+                    text = h.text
+                    if text is None:
+                        div = h.xpath(".//div")
+                        if div:
+                            text = div[0].text
+                    if text is None:
+                        text = ""
+                    return text
+                headers = [extract_text(h) for h in headers]
+
+                cp_results_tr = horse_data_table.xpath("./tbody/tr[@class='CP_Result']")
+                cp_results_td = [cp_result.xpath(".//td[@class='Mark_Pro']") for cp_result in cp_results_tr]
+                def extract_span(cp):
+                    span = cp.xpath(".//span")
+                    if not span:
+                        return ""
+                    mark = span[0].attrib.get('class', "")
+                    if mark not in MARKS:
+                        return ""
+                    return MARKS[mark]
+
+                cp_results = [[extract_span(cp) for cp in cp_result] for cp_result in cp_results_td]
+
+                for i in range(len(cp_results)):
+                    for j in range(-len(headers), 0, 1):
+                        mark = cp_results[i][j]
+                        if mark not in MARKS:
+                            continue
+                        horse_number = i + 1
+                        tip = HorseRacingTip(
+                            parser = parser,
+                            race_id = parser.page_source.race_id,
+                            horse_number = horse_number,
+                            author = HorseRacingTipAuthor.objects.get_or_create(name=headers[j])[0],
+                            mark = HorseRacingTipMark.objects.get_or_create(mark=mark)[0],
+                        )
+                        tips.append(tip)
+
+                first_run = False
+
+            for i, cp_result in enumerate(horse_data_table.xpath("./tbody/tr[@class='CP_Result']")):
+                horse_number = i + 1
+                mark_td = cp_result.xpath(".//td[@class='Mark_Pro']")
+                if not mark_td:
+                    continue
+                mark_span = mark_td[0].xpath(".//span")
+                if not mark_span:
+                    continue
+                mark = mark_span[0].attrib.get('class', "")
+                if mark not in MARKS:
+                    continue
+
+                mark = MARKS[mark]
+                tip = HorseRacingTip(
+                    parser = parser,
+                    race_id = parser.page_source.race_id,
+                    horse_number = horse_number,
+                    author = HorseRacingTipAuthor.objects.get_or_create(name=cp_name)[0],
+                    mark = HorseRacingTipMark.objects.get_or_create(mark=mark)[0],
+                )
+                tips.append(tip)
+                print(f'check_values("{tip.race_id}", "{tip.author.name}", {tip.horse_number}, "{tip.mark.mark}")')
+
 
         if tips:
             parser.need_update_at = None
