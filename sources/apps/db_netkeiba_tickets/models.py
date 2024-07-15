@@ -6,11 +6,11 @@ import lxml
 import datetime
 from apps.web_netkeiba_pagesources.models import PageResult
 
-# Define the ambiguous names and their corresponding official names
 TICKET_NAMES = {
     "win": ["単勝"],
     "place": ["複勝"],
     "bracket_quinella": ["枠連"],
+    "bracket_exacta": ["枠単"],
     "quinella": ["馬連"],
     "quinella_place": ["ワイド"],
     "exacta": ["馬単"],
@@ -18,9 +18,37 @@ TICKET_NAMES = {
     "trifecta": ["三連単", "3連単"],
 }
 
-# Create a dictionary to map ambiguous names to official names
-TICKET_NAME_DICT = {ambiguous_name: name for name, ambiguous_names in TICKET_NAMES.items() for ambiguous_name in ambiguous_names}
+TICKET_NAME_DICT = {
+    **{name: name for name in TICKET_NAMES},
+    **{ambiguous_name: name for name, ambiguous_names in TICKET_NAMES.items() for ambiguous_name in ambiguous_names}
+}
 
+TICKET_TYPES = {
+    name: dict(zip(["horse_count", "length", "is_fixed", "is_bracket"], args)) 
+    for name, args in {
+        "win": (1, 1, True, False),
+        "exacta": (2, 2, True, False),
+        "trifecta": (3, 3, True, False),
+        "quinella": (2, 2, False, False),
+        "trio": (3, 3, False, False),
+        "place": (1, 3, False, False),
+        "quinella_place": (2, 3, False, False),
+        "bracket_quinella": (2, 2, False, True),
+        "bracket_exacta": (2, 2, True, True),
+    }.items()
+}
+
+
+def win_str_replacer(win_str):
+    replaces = [
+        ('１', '1'), ('２', '2'), ('３', '3'), ('４', '4'), ('５', '5'),
+        ('６', '6'), ('７', '7'), ('８', '8'), ('９', '9'), ('０', '0'),
+        ('－', ' '), ('ー', ' '), ('―', ' '), ('→', ' '), ('　', ' '), ("-", " "),
+    ]
+
+    for u, v in replaces:
+        win_str = win_str.replace(u, v)
+    return win_str
 
 class HorseRacingTicketParser(models.Model):
     page_source = models.ForeignKey(PageResult, on_delete=models.CASCADE, verbose_name='取得元ページ')
@@ -86,17 +114,12 @@ class HorseRacingTicketParser(models.Model):
                 raise NoElemsError
             return elems
         
-        ticketnames = {"単勝", "馬連", "馬単", "3連複", "3連単"}
-        ticket_num_counts = {
-            "単勝": 1, "複勝": 1, "枠連": 2, "枠単": 2, "馬連": 2, "ワイド": 2, "馬単": 2, "3連複": 3, "3連単": 3
-        }
-
         tickets = []
         for result_pay_back in result_pay_backs:
             try:
                 ticket_name_elem = get_elems(result_pay_back, './th')[0]
                 ticket_name = ticket_name_elem.text
-                if ticket_name not in ticketnames:
+                if ticket_name not in TICKET_NAME_DICT:
                     continue
                 
                 result_elem = get_elems(result_pay_back, './/td[@class="Result"]')[0]
@@ -109,9 +132,9 @@ class HorseRacingTicketParser(models.Model):
                 payout_texts = get_elems(lxml.etree.HTML(payout_raw_text), './/span')[0].text.split("___")
                 payout_texts = [t.replace(",", "").replace("円", "") for t in payout_texts if t]
 
-                ticket_num_count = ticket_num_counts.get(ticket_name)
+                ticket_horse_count = TICKET_TYPES[TICKET_NAME_DICT[ticket_name]]["horse_count"]
                 for i, payout_text in enumerate(payout_texts):
-                    win_str = " ".join(result_texts[i * ticket_num_count:i + ticket_num_count])
+                    win_str = " ".join(result_texts[i * ticket_horse_count:i * ticket_horse_count + ticket_horse_count])
                     ticket = HorseRacingTicket.from_win_str(
                         ticket_name, 
                         win_str, 
@@ -131,6 +154,74 @@ class HorseRacingTicketParser(models.Model):
         return 
                 
 
+class HorseRacingTicketCompare():
+    def __init__(self, ticket_name, *win_str):
+        if ticket_name not in TICKET_NAME_DICT:
+            raise ValueError(f"'{ticket_name}' is not recognized.")
+        self.ticket_name = TICKET_NAME_DICT[ticket_name]
+        ticket_type = TICKET_TYPES[self.ticket_name]
+        self.horse_count = ticket_type["horse_count"]
+        self.length = ticket_type["length"]
+        self.is_fixed = ticket_type["is_fixed"]
+        self.is_bracket = ticket_type["is_bracket"]
+
+        if len(win_str) == 1 and type(win_str[0]) == str:
+            win_nums = list(map(int, win_str_replacer(win_str[0]).split()))
+        else:
+            win_nums = list(map(int, win_str))
+
+        if len(win_nums) < self.horse_count:
+            raise ValueError(f"Invalid number of win numbers. Expected {self.length}, but got {len(win_nums)}.")
+        self.win_nums = win_nums[:self.length]
+
+    @classmethod
+    def from_ticket_model(cls, ticket):
+        return cls(ticket.official_name.name, ticket.win_str)
+    
+    def is_win(self, *race_results):
+        """take a race result, and return whether this ticket is win or not."""
+
+
+        if len(race_results) < self.length:
+            raise ValueError(f"Invalid number of arguments. Expected {self.length}, but got {len(race_results)}.")
+        
+        if self.is_bracket:
+            raise NotImplementedError("Bracket ticket is not supported yet.")
+        
+        if self.is_fixed:
+            win_nums = list(self.win_nums)
+            race_results_ = list(race_results[:self.length])
+            while race_results_ and win_nums:
+                r = race_results_.pop()
+                w = win_nums.pop()
+                if r != w:
+                    win_nums.append(w)
+            if win_nums:
+                return False
+
+        else:
+            winset = set(self.win_nums)
+            for i in race_results[:self.length]:
+                if i in winset:
+                    winset.remove(i)
+            if winset:
+                return False
+            
+        return True
+
+    
+    def __eq__(self, other):
+        return self.ticket_name == other.ticket_name and self.win_nums == other.win_nums
+    
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __contains__(self, other):
+        if self.is_bracket or other.is_bracket:
+            raise NotImplementedError("Bracket ticket is not supported yet.")
+
+        raise NotImplementedError("This method is not implemented yet.")
+    
 
 class HorseRacingTicketName(models.Model):
     name = models.CharField(max_length=255, verbose_name='馬券名')
@@ -140,16 +231,12 @@ class HorseRacingTicketName(models.Model):
     def __str__(self):
         return self.name
 
-# ビット列で馬券的中範囲を表現する
 class HorseRacingTicket(models.Model):
     parser = models.ForeignKey(HorseRacingTicketParser, on_delete=models.CASCADE, verbose_name='取得元')
     race_id = models.CharField(max_length=255, verbose_name='レースID')
     official_name = models.ForeignKey(HorseRacingTicketName, on_delete=models.CASCADE, verbose_name='馬券名')
     ambiguous_name = models.CharField(max_length=255, verbose_name='あいまいな馬券名')
     win_str = models.CharField(max_length=255, verbose_name='当選条件')
-    first = models.IntegerField(verbose_name='1着')
-    second = models.IntegerField(verbose_name='2着')
-    third = models.IntegerField(verbose_name='3着')
     refund = models.IntegerField(verbose_name='払戻金')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
@@ -161,90 +248,22 @@ class HorseRacingTicket(models.Model):
 
     def __str__(self):
         return f'{self.official_name} - {self.win_str} - {self.refund}'
-
-    def __contains__(self, other):
-        for me, you in zip([self.first, self.second, self.third], [other.first, other.second, other.third]):
-            if me & you != you:
-                return False
-        return True
-
-    def __make_bytelist(self, nums):
-        if nums == "inf":
-            return 1 << 21 - 1
-        if type(nums) is int:
-            nums = [nums]
-
-        num = 0
-        for n in nums:
-            num |= 1 << n
-        return num
-
-
-    def __win_str_replacer(self, win_str):
-        replaces = [
-            ('１', '1'), ('２', '2'), ('３', '3'), ('４', '4'), ('５', '5'),
-            ('６', '6'), ('７', '7'), ('８', '8'), ('９', '9'), ('０', '0'),
-            ('－', ' '), ('ー', ' '), ('―', ' '), ('→', ' '), ('　', ' '), ("-", " "),
-        ]
-
-        for u, v in replaces:
-            win_str = win_str.replace(u, v)
-        return win_str
+    
+    def is_win(self, *race_results):
+        return HorseRacingTicketCompare.from_ticket_model(self).is_win(*race_results)
 
     @classmethod
     def from_win_str(cls, ticket_name, win_str, refund, **kwargs):
         ticket = cls(**kwargs)
-        ticket.win_str = ticket.__win_str_replacer(win_str)
-        parts = ticket.win_str.split()
-        ticket.ambiguous_name, parts = ticket_name, [int(part) - 1 for part in parts]
-        official_name_key = TICKET_NAME_DICT.get(ticket.ambiguous_name)
-        if not official_name_key:
+        ticket.win_str = win_str_replacer(win_str)
+        ticket.ambiguous_name = ticket_name
+        if ticket.ambiguous_name not in TICKET_NAME_DICT:
             raise ValueError(f"'{ticket.ambiguous_name}' is not recognized.")
+        official_name_key = TICKET_NAME_DICT.get(ticket.ambiguous_name)
+        if len(ticket.win_str.split()) != TICKET_TYPES[official_name_key]["horse_count"]:
+            raise ValueError(f"Invalid number of win numbers. Expected {TICKET_TYPES[official_name_key]['horse_count']}, but got {len(ticket.win_str.split())}.")
+
         ticket.official_name = HorseRacingTicketName.objects.get_or_create(name=official_name_key)[0]
         ticket.refund = refund
 
-        if "win" == official_name_key:
-            if len(parts) != 1:
-                raise ValueError("Win ticket must have only one part.")
-            ticket.first = ticket.__make_bytelist(parts)
-            ticket.second = ticket.__make_bytelist("inf")
-            ticket.third = ticket.__make_bytelist("inf")
-
-        elif "place" == official_name_key:
-            raise ValueError("Place ticket is not supported.")
-        
-        elif "bracket_quinella" == official_name_key:
-            raise ValueError("Bracket quinella ticket is not supported.")
-
-        elif "quinella_place" == official_name_key:
-            raise ValueError("Quinella place ticket is not supported.")
-        
-        elif "quinella" == official_name_key:
-            if len(parts) != 2:
-                raise ValueError("Quinella ticket must have two parts.")
-            ticket.first = ticket.__make_bytelist(parts)
-            ticket.second = ticket.__make_bytelist(parts)
-            ticket.third = ticket.__make_bytelist("inf")
-
-        elif "exacta" == official_name_key:
-            if len(parts) != 2:
-                raise ValueError("Exacta ticket must have two parts.")
-            ticket.first = ticket.__make_bytelist(parts[0])
-            ticket.second = ticket.__make_bytelist(parts[1])
-            ticket.third = ticket.__make_bytelist("inf")
-
-        elif "trio" == official_name_key:
-            if len(parts) != 3:
-                raise ValueError("Trio ticket must have three parts.")
-            ticket.first = ticket.__make_bytelist(parts)
-            ticket.second = ticket.__make_bytelist(parts)
-            ticket.third = ticket.__make_bytelist(parts)
-
-        elif "trifecta" == official_name_key:
-            if len(parts) != 3:
-                raise ValueError("Trifecta ticket must have three parts.")
-            ticket.first = ticket.__make_bytelist(parts[0])
-            ticket.second = ticket.__make_bytelist(parts[1])
-            ticket.third = ticket.__make_bytelist(parts[2])
-        
         return ticket
