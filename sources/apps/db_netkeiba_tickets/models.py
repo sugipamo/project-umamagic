@@ -88,6 +88,7 @@ class HorseRacingTicketParser(models.Model):
         if kaisai_date:
             self.need_update_at = timezone.make_aware(datetime.datetime.strptime(kaisai_date, "%Y%m%d")) + timezone.timedelta(days=1)
 
+        self.save()
         return etree
 
     @classmethod
@@ -101,7 +102,6 @@ class HorseRacingTicketParser(models.Model):
         result_pay_backs = etree.xpath('//table[@class="Payout_Detail_Table"]/tbody/tr')
         if not result_pay_backs:
             return None
-        
         
         class NoElemsError(Exception):
             """Exception raised when there are no elements in the result_pay_back."""
@@ -145,7 +145,10 @@ class HorseRacingTicketParser(models.Model):
             except NoElemsError:
                 continue
 
+
+
         if tickets:
+            parser.need_update_at = None
             parser.save()
         for ticket in tickets:
             ticket.parser = parser

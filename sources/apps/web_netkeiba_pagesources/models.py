@@ -86,10 +86,14 @@ class Page(models.Model):
         
         if not driver.current_url.startswith(self.url):
             driver.get(self.url)
+        elif self.need_login:
+            driver.refresh()
+
         if "premium_new" in driver.current_url:
             self.loggined = False
             self.save()
             raise PermissionError("ログインが必要です。")
+        
         self.html = gzip.compress(driver.page_source.encode())
 
         extract_raceids(driver)

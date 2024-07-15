@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'apps.web_controller',
     'apps.web_netkeiba_pagesources',
     'apps.db_netkeiba_tickets',
+    'apps.db_netkeiba_tips',
 ]
 
 MIDDLEWARE = [
