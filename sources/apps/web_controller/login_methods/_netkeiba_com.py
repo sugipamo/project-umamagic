@@ -1,4 +1,4 @@
-from web_controller.apps import  WebDriver
+from apps.web_controller.apps import  WebDriver
 
 NETKEIBA_DOMAIN = ".netkeiba.com"
 

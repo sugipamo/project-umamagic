@@ -82,18 +82,22 @@ class Schedule(models.Model):
 
         if self.status == 2:
             self.save()
-            raise ScheduleExecutuionError(f"{self.title}は実行中です。")
+            raise ScheduleExecutuionError(f"{self.event_function}は実行中です。")
         if self.status == 3:
             self.save()
-            raise ScheduleExecutuionError(f"{self.title}は既に完了しています。")
+            raise ScheduleExecutuionError(f"{self.event_function}は既に完了しています。")
         if self.status == 4:
             self.save()
-            raise ScheduleExecutuionError(f"{self.title}はエラーが発生しています。")
+            raise ScheduleExecutuionError(f"{self.event_function}はエラーが発生しています。")
         if not self.nextexecutedatetime is None and self.nextexecutedatetime > timezone.now():
             self.save()
-            raise ScheduleExecutuionError(f"{self.title}はまだ実行できません。")
+            raise ScheduleExecutuionError(f"{self.event_function}はまだ実行できません。")
         
         event_function = event_functions.get(self.event_function)
+        if event_function is None:
+            self.status = 4
+            self.save()
+            raise ScheduleExecutuionError(f"{self.event_function}は存在しません。")
         schedule_str_default = event_function.SCHEDULE_STR
 
         needdo, nextexecutedatetime, schedule_str = self.__parse_schedule_str(self.schedule_str, schedule_str_default)

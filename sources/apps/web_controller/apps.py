@@ -73,7 +73,10 @@ class WebDriver():
             self.driver.get(domain)
 
         with open(self.cookiepath, "rb") as f:
-            cookies = pickle.load(f)
+            try:
+                cookies = pickle.load(f)
+            except:
+                cookies = []
 
         if type(cookies) != list:
             cookies = []

@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.utils import timezone
 
 from django.http import HttpResponse
 from django.shortcuts import redirect
@@ -11,7 +12,7 @@ class EventScheduleListView(ListView):
     model = Schedule
     template_name = 'event_schedules/event_schedule_list.html'
     def queryset(self):
-        return Schedule.objects.all().order_by('latestcalled_at').reverse()
+        return Schedule.objects.all().order_by('latestcalled_at')
 
 class ScheduleDoEventHistoryListView(ListView):
     model = ScheduleDoeventHistory
@@ -29,6 +30,14 @@ def event_schedule_solve_error(request, pk):
     event_schedule.status = 1
     event_schedule.save()
     return redirect('event_schedules:event_schedule_list')
+
+def event_schedule_manual_doevent(request, pk):
+    event_schedule = Schedule.objects.get(pk=pk)
+    event_schedule.nextexecutedatetime = timezone.now()
+    return_value = event_schedule.doevent()
+    return HttpResponse("<html><body>"+ str(return_value).replace("\n", "<br>") + "</body></html>")
+    return redirect('event_schedules:event_schedule_list')
+
 
 def event_schedule_doevent(request):
     return HttpResponse("<html><body>"+ str(doevent()).replace("\n", "<br>") + "</body></html>")

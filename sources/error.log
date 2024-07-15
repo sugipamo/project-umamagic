@@ -850,3 +850,804 @@ Stacktrace:
 
 
 
+2024-07-15 09:13:04.804518+00:00: Message: invalid cookie domain
+  (Session info: chrome=125.0.6422.76)
+Stacktrace:
+#0 0x5652a82a8e9a <unknown>
+#1 0x5652a7f922a1 <unknown>
+#2 0x5652a803304b <unknown>
+#3 0x5652a80014b2 <unknown>
+#4 0x5652a80202cc <unknown>
+#5 0x5652a8001253 <unknown>
+#6 0x5652a7fd11c7 <unknown>
+#7 0x5652a7fd1b3e <unknown>
+#8 0x5652a826f2db <unknown>
+#9 0x5652a8273387 <unknown>
+#10 0x5652a825be0e <unknown>
+#11 0x5652a8273e52 <unknown>
+#12 0x5652a82407af <unknown>
+#13 0x5652a8298188 <unknown>
+#14 0x5652a829835b <unknown>
+#15 0x5652a82a7fcc <unknown>
+#16 0x7f24ea696ac3 <unknown>
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 145, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 112, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 105, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_page_with_login.py", line 8, in main
+    models[0].new_page()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 115, in new_page
+    page.update_html()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 34, in wrapper
+    with WebDriver(**new_kwargs) as driver:
+  File "/home/user/sources/apps/web_controller/apps.py", line 64, in __init__
+    self.__cookie_init(domain)
+  File "/home/user/sources/apps/web_controller/apps.py", line 83, in __cookie_init
+    self.driver.add_cookie(cookie)
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 641, in add_cookie
+    self.execute(Command.ADD_COOKIE, {"cookie": cookie_dict})
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 354, in execute
+    self.error_handler.check_response(response)
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/errorhandler.py", line 229, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.InvalidCookieDomainException: Message: invalid cookie domain
+  (Session info: chrome=125.0.6422.76)
+Stacktrace:
+#0 0x5652a82a8e9a <unknown>
+#1 0x5652a7f922a1 <unknown>
+#2 0x5652a803304b <unknown>
+#3 0x5652a80014b2 <unknown>
+#4 0x5652a80202cc <unknown>
+#5 0x5652a8001253 <unknown>
+#6 0x5652a7fd11c7 <unknown>
+#7 0x5652a7fd1b3e <unknown>
+#8 0x5652a826f2db <unknown>
+#9 0x5652a8273387 <unknown>
+#10 0x5652a825be0e <unknown>
+#11 0x5652a8273e52 <unknown>
+#12 0x5652a82407af <unknown>
+#13 0x5652a8298188 <unknown>
+#14 0x5652a829835b <unknown>
+#15 0x5652a82a7fcc <unknown>
+#16 0x7f24ea696ac3 <unknown>
+
+
+
+2024-07-15 09:20:05.254586+00:00: Message: invalid cookie domain
+  (Session info: chrome=125.0.6422.76)
+Stacktrace:
+#0 0x5597863b0e9a <unknown>
+#1 0x55978609a2a1 <unknown>
+#2 0x55978613b04b <unknown>
+#3 0x5597861094b2 <unknown>
+#4 0x5597861282cc <unknown>
+#5 0x559786109253 <unknown>
+#6 0x5597860d91c7 <unknown>
+#7 0x5597860d9b3e <unknown>
+#8 0x5597863772db <unknown>
+#9 0x55978637b387 <unknown>
+#10 0x559786363e0e <unknown>
+#11 0x55978637be52 <unknown>
+#12 0x5597863487af <unknown>
+#13 0x5597863a0188 <unknown>
+#14 0x5597863a035b <unknown>
+#15 0x5597863affcc <unknown>
+#16 0x7f8cdd9cbac3 <unknown>
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 149, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 116, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 109, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_page_with_login.py", line 8, in main
+    models[0].new_page()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 115, in new_page
+    page.update_html()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 34, in wrapper
+    with WebDriver(**new_kwargs) as driver:
+  File "/home/user/sources/apps/web_controller/apps.py", line 64, in __init__
+    self.__cookie_init(domain)
+  File "/home/user/sources/apps/web_controller/apps.py", line 83, in __cookie_init
+    self.driver.add_cookie(cookie)
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 641, in add_cookie
+    self.execute(Command.ADD_COOKIE, {"cookie": cookie_dict})
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 354, in execute
+    self.error_handler.check_response(response)
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/errorhandler.py", line 229, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.InvalidCookieDomainException: Message: invalid cookie domain
+  (Session info: chrome=125.0.6422.76)
+Stacktrace:
+#0 0x5597863b0e9a <unknown>
+#1 0x55978609a2a1 <unknown>
+#2 0x55978613b04b <unknown>
+#3 0x5597861094b2 <unknown>
+#4 0x5597861282cc <unknown>
+#5 0x559786109253 <unknown>
+#6 0x5597860d91c7 <unknown>
+#7 0x5597860d9b3e <unknown>
+#8 0x5597863772db <unknown>
+#9 0x55978637b387 <unknown>
+#10 0x559786363e0e <unknown>
+#11 0x55978637be52 <unknown>
+#12 0x5597863487af <unknown>
+#13 0x5597863a0188 <unknown>
+#14 0x5597863a035b <unknown>
+#15 0x5597863affcc <unknown>
+#16 0x7f8cdd9cbac3 <unknown>
+
+
+
+2024-07-15 09:26:39.754002+00:00: get() returned more than one PageCategory -- it returned 2!
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 149, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 116, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 109, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_page.py", line 8, in main
+    models[0].new_page()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 115, in new_page
+    page.update_html()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 36, in wrapper
+    return method(self_or_cls, *args, **kwargs)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 99, in update_html
+    extract_raceids(driver)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 54, in extract_raceids
+    category = race_categorys.get(race_category, PageCategory.objects.get_or_create(name=race_category)[0])
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 948, in get_or_create
+    return self.get(**kwargs), False
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 652, in get
+    raise self.model.MultipleObjectsReturned(
+apps.web_netkeiba_pagesources.models.PageCategory.MultipleObjectsReturned: get() returned more than one PageCategory -- it returned 2!
+
+
+(1048, "Column 'category_id' cannot be null")
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+MySQLdb.IntegrityError: (1048, "Column 'category_id' cannot be null")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 194, in update_html
+    self.__update_html(driver)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 208, in __update_html
+    self.save()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 822, in save
+    self.save_base(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 906, in save_base
+    parent_inserted = self._save_parents(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 959, in _save_parents
+    updated = self._save_table(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1040, in _save_table
+    updated = self._do_update(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1105, in _do_update
+    return filtered._update(values) > 0
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 1278, in _update
+    return query.get_compiler(self.db).execute_sql(CURSOR)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1990, in execute_sql
+    cursor = super().execute_sql(result_type)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+django.db.utils.IntegrityError: (1048, "Column 'category_id' cannot be null")
+(1048, "Column 'category_id' cannot be null")
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+MySQLdb.IntegrityError: (1048, "Column 'category_id' cannot be null")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 194, in update_html
+    self.__update_html(driver)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 208, in __update_html
+    self.save()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 822, in save
+    self.save_base(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 906, in save_base
+    parent_inserted = self._save_parents(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 959, in _save_parents
+    updated = self._save_table(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1040, in _save_table
+    updated = self._do_update(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1105, in _do_update
+    return filtered._update(values) > 0
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 1278, in _update
+    return query.get_compiler(self.db).execute_sql(CURSOR)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1990, in execute_sql
+    cursor = super().execute_sql(result_type)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+django.db.utils.IntegrityError: (1048, "Column 'category_id' cannot be null")
+(1048, "Column 'category_id' cannot be null")
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+MySQLdb.IntegrityError: (1048, "Column 'category_id' cannot be null")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 194, in update_html
+    self.__update_html(driver)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 208, in __update_html
+    self.save()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 822, in save
+    self.save_base(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 906, in save_base
+    parent_inserted = self._save_parents(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 959, in _save_parents
+    updated = self._save_table(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1040, in _save_table
+    updated = self._do_update(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1105, in _do_update
+    return filtered._update(values) > 0
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 1278, in _update
+    return query.get_compiler(self.db).execute_sql(CURSOR)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1990, in execute_sql
+    cursor = super().execute_sql(result_type)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+django.db.utils.IntegrityError: (1048, "Column 'category_id' cannot be null")
+(1048, "Column 'category_id' cannot be null")
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+MySQLdb.IntegrityError: (1048, "Column 'category_id' cannot be null")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 194, in update_html
+    self.__update_html(driver)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 208, in __update_html
+    self.save()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 822, in save
+    self.save_base(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 906, in save_base
+    parent_inserted = self._save_parents(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 959, in _save_parents
+    updated = self._save_table(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1040, in _save_table
+    updated = self._do_update(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1105, in _do_update
+    return filtered._update(values) > 0
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 1278, in _update
+    return query.get_compiler(self.db).execute_sql(CURSOR)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1990, in execute_sql
+    cursor = super().execute_sql(result_type)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+django.db.utils.IntegrityError: (1048, "Column 'category_id' cannot be null")
+(1048, "Column 'category_id' cannot be null")
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+MySQLdb.IntegrityError: (1048, "Column 'category_id' cannot be null")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 194, in update_html
+    self.__update_html(driver)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 208, in __update_html
+    self.save()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 822, in save
+    self.save_base(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 906, in save_base
+    parent_inserted = self._save_parents(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 959, in _save_parents
+    updated = self._save_table(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1040, in _save_table
+    updated = self._do_update(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1105, in _do_update
+    return filtered._update(values) > 0
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 1278, in _update
+    return query.get_compiler(self.db).execute_sql(CURSOR)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1990, in execute_sql
+    cursor = super().execute_sql(result_type)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+django.db.utils.IntegrityError: (1048, "Column 'category_id' cannot be null")
+(1048, "Column 'category_id' cannot be null")
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+MySQLdb.IntegrityError: (1048, "Column 'category_id' cannot be null")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 194, in update_html
+    self.__update_html(driver)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 208, in __update_html
+    self.save()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 822, in save
+    self.save_base(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 906, in save_base
+    parent_inserted = self._save_parents(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 959, in _save_parents
+    updated = self._save_table(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1040, in _save_table
+    updated = self._do_update(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1105, in _do_update
+    return filtered._update(values) > 0
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 1278, in _update
+    return query.get_compiler(self.db).execute_sql(CURSOR)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1990, in execute_sql
+    cursor = super().execute_sql(result_type)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+django.db.utils.IntegrityError: (1048, "Column 'category_id' cannot be null")
+(1048, "Column 'category_id' cannot be null")
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+MySQLdb.IntegrityError: (1048, "Column 'category_id' cannot be null")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 194, in update_html
+    self.__update_html(driver)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 208, in __update_html
+    self.save()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 822, in save
+    self.save_base(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 906, in save_base
+    parent_inserted = self._save_parents(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 959, in _save_parents
+    updated = self._save_table(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1040, in _save_table
+    updated = self._do_update(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1105, in _do_update
+    return filtered._update(values) > 0
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 1278, in _update
+    return query.get_compiler(self.db).execute_sql(CURSOR)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1990, in execute_sql
+    cursor = super().execute_sql(result_type)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+django.db.utils.IntegrityError: (1048, "Column 'category_id' cannot be null")
+(1048, "Column 'category_id' cannot be null")
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+MySQLdb.IntegrityError: (1048, "Column 'category_id' cannot be null")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 217, in update_html
+    self.__update_html(driver)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 231, in __update_html
+    self.save()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 822, in save
+    self.save_base(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 906, in save_base
+    parent_inserted = self._save_parents(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 959, in _save_parents
+    updated = self._save_table(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1040, in _save_table
+    updated = self._do_update(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1105, in _do_update
+    return filtered._update(values) > 0
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 1278, in _update
+    return query.get_compiler(self.db).execute_sql(CURSOR)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1990, in execute_sql
+    cursor = super().execute_sql(result_type)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+django.db.utils.IntegrityError: (1048, "Column 'category_id' cannot be null")
+(1048, "Column 'category_id' cannot be null")
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+MySQLdb.IntegrityError: (1048, "Column 'category_id' cannot be null")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 217, in update_html
+    self.__update_html(driver)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 231, in __update_html
+    self.save()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 822, in save
+    self.save_base(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 906, in save_base
+    parent_inserted = self._save_parents(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 959, in _save_parents
+    updated = self._save_table(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1040, in _save_table
+    updated = self._do_update(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1105, in _do_update
+    return filtered._update(values) > 0
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 1278, in _update
+    return query.get_compiler(self.db).execute_sql(CURSOR)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1990, in execute_sql
+    cursor = super().execute_sql(result_type)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+django.db.utils.IntegrityError: (1048, "Column 'category_id' cannot be null")
+(1048, "Column 'category_id' cannot be null")
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+MySQLdb.IntegrityError: (1048, "Column 'category_id' cannot be null")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 217, in update_html
+    self.__update_html(driver)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 231, in __update_html
+    self.save()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 822, in save
+    self.save_base(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 906, in save_base
+    parent_inserted = self._save_parents(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 959, in _save_parents
+    updated = self._save_table(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1040, in _save_table
+    updated = self._do_update(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1105, in _do_update
+    return filtered._update(values) > 0
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 1278, in _update
+    return query.get_compiler(self.db).execute_sql(CURSOR)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1990, in execute_sql
+    cursor = super().execute_sql(result_type)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+django.db.utils.IntegrityError: (1048, "Column 'category_id' cannot be null")
+(1048, "Column 'category_id' cannot be null")
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+MySQLdb.IntegrityError: (1048, "Column 'category_id' cannot be null")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 217, in update_html
+    self.__update_html(driver)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 231, in __update_html
+    self.save()
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 822, in save
+    self.save_base(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 906, in save_base
+    parent_inserted = self._save_parents(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 959, in _save_parents
+    updated = self._save_table(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1040, in _save_table
+    updated = self._do_update(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/base.py", line 1105, in _do_update
+    return filtered._update(values) > 0
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 1278, in _update
+    return query.get_compiler(self.db).execute_sql(CURSOR)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1990, in execute_sql
+    cursor = super().execute_sql(result_type)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/usr/local/lib/python3.10/site-packages/MySQLdb/connections.py", line 261, in query
+    _mysql.connection.query(self, query)
+django.db.utils.IntegrityError: (1048, "Column 'category_id' cannot be null")
+ログインが必要です。
+Traceback (most recent call last):
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 217, in update_html
+    self.__update_html(driver)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 232, in __update_html
+    raise PermissionError("ログインが必要です。")
+PermissionError: ログインが必要です。
+ログインが必要です。
+Traceback (most recent call last):
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 219, in update_html
+    self.__update_html(driver)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 235, in __update_html
+    raise PermissionError("ログインが必要です。")
+PermissionError: ログインが必要です。

@@ -1,7 +1,10 @@
 from django.db import models
 from apps.web_controller.apps import TimeCounter, WebDriver
+from apps.web_controller.models import LoginForScraping
 import gzip
 import traceback
+import pickle
+from pathlib import Path
 from functools import wraps
 from urllib.error import URLError
 
@@ -90,8 +93,9 @@ class Page(models.Model):
             driver.refresh()
 
         if "premium_new" in driver.current_url:
-            self.loggined = False
-            self.save()
+            login, _ = LoginForScraping.objects.get_or_create(domain=NETKEIBA_DOMAIN)
+            login.loggined = False
+            login.save()
             raise PermissionError("ログインが必要です。")
         
         self.html = gzip.compress(driver.page_source.encode())
@@ -116,6 +120,24 @@ class Page(models.Model):
             page.save_base(raw=True)
         return page
     
+    @property
+    def html_pickle_for_dummy_path(self):
+        path = Path(__file__).parent / "html_pickles" / f"{self.__class__.__name__}_{self.page_ptr.race_id}.pickle"
+        path.parent.mkdir(exist_ok=True)
+        return path
+
+    def make_pickle_for_dummy(self):
+        with open(self.html_pickle_for_dummy_path, "wb") as f:
+            pickle.dump(self, f)
+
+    def read_pickle_for_dummy(self):
+        path = self.html_pickle_for_dummy_path
+        if not path.exists():
+            return 
+        with open(path, "rb") as f:
+            data = pickle.load(f)
+        self.html = data.html
+    
     @classmethod
     def make_dummy_instance(cls, category=None, race_id=None):
         from random import choice, randint
@@ -127,7 +149,12 @@ class Page(models.Model):
         page.save()
         page_instance = cls(page_ptr=page)
         if category or race_id:
-            page_instance.update_html()
+            path = page_instance.html_pickle_for_dummy_path
+            if path.exists():
+                page_instance.read_pickle_for_dummy()
+            else:
+                page_instance.update_html()
+                page_instance.make_pickle_for_dummy()
         page_instance.save_base(raw=True)
         return page_instance
 
@@ -195,7 +222,6 @@ class PageYosoCp(Page):
         except Exception as e:
             with open("error.log", "a") as f:
                 f.write(f"{str(e)}\n{traceback.format_exc()}")
-        self.save_base(raw=True)
 
     def __update_html(self, driver):
         try:
@@ -204,8 +230,9 @@ class PageYosoCp(Page):
             return
         
         if "premium_new" in driver.current_url:
-            self.loggined = False
-            self.save()
+            login, _ = LoginForScraping.objects.get_or_create(domain=NETKEIBA_DOMAIN)
+            login.loggined = False
+            login.save()
             raise PermissionError("ログインが必要です。")
 
 
@@ -225,7 +252,18 @@ class PageYosoCp(Page):
         
         self.html_rising, self.html_precede, self.html_spurt, self.html_jockey, self.html_trainer, self.html_pedigree = htmls
         
-
+    def read_pickle_for_dummy(self):
+        path = self.html_pickle_for_dummy_path
+        if not path.exists():
+            return 
+        with open(path, "rb") as f:
+            data = pickle.load(f)
+        self.html_rising = data.html_rising
+        self.html_precede = data.html_precede
+        self.html_spurt = data.html_spurt
+        self.html_jockey = data.html_jockey
+        self.html_trainer = data.html_trainer
+        self.html_pedigree = data.html_pedigree
 
 class PageOikiri(Page):
     html = models.BinaryField(null=True, blank=True)

@@ -11,12 +11,12 @@ class LoginForScraping(models.Model):
         return self.domain
     
     def login(self, **kwargs):
-        login_method = import_module("web_controller.login_methods.{}".format(self.domain.replace(".", "_")))
+        login_method = import_module("apps.web_controller.login_methods.{}".format(self.domain.replace(".", "_")))
         self.loggined = login_method.login(self, **kwargs)
         self.save()
 
     def update_logined(self, driver):
-        login_method = import_module("web_controller.login_methods.{}".format(self.domain.replace(".", "_")))
+        login_method = import_module("apps.web_controller.login_methods.{}".format(self.domain.replace(".", "_")))
         loggined = login_method.update_logined(self)
 
         if self.loggined != loggined:

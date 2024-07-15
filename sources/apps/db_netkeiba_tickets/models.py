@@ -58,6 +58,11 @@ class HorseRacingTicketParser(models.Model):
 
     @classmethod
     def next(cls):
+        unupdated_parsers = cls.objects.filter(need_update_at__lte=timezone.now())
+        unupdated_parser = unupdated_parsers.order_by("need_update_at").first()
+        if unupdated_parser is not None:
+            return unupdated_parser
+
         unused_sources = PageResult.objects.exclude(page_ptr_id__in=cls.objects.values_list('page_source_id', flat=True))
         unused_source = unused_sources.order_by("created_at").first()
         if unused_source is not None:

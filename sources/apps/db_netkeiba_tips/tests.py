@@ -1,8 +1,26 @@
 from django.test import TestCase
 
-from apps.db_netkeiba_tips.models import HorseRacingTipParserForPageYoso
+from apps.db_netkeiba_tips.models import HorseRacingTipParserForPageYoso, HorseRacingTipParserForPageYosoCp
 from apps.db_netkeiba_tips.models import HorseRacingTip
-from apps.web_netkeiba_pagesources.models import PageYoso
+from apps.web_netkeiba_pagesources.models import PageYoso, PageYosoCp
+
+
+class HorseRacingTipParserForPageYosoCPNarTest(TestCase):
+    def test_new_tips(self):
+        page_source = PageYosoCp.make_dummy_instance(category='nar', race_id='202444070902')
+        self.assertTrue(HorseRacingTipParserForPageYosoCp(page_source=page_source).parser_init() is not None)
+        HorseRacingTipParserForPageYosoCp.objects.all().delete()
+        HorseRacingTipParserForPageYosoCp.new_tips()
+        self.assertTrue(HorseRacingTipParserForPageYosoCp.objects.all().exists())
+
+
+class HorseRacingTipParserForPageYosoCPRaceTest(TestCase):
+    def test_new_tips(self):
+        page_source = PageYosoCp.make_dummy_instance(category='race', race_id='202408040811')
+        self.assertTrue(HorseRacingTipParserForPageYosoCp(page_source=page_source).parser_init() is not None)
+        HorseRacingTipParserForPageYosoCp.objects.all().delete()
+        HorseRacingTipParserForPageYosoCp.new_tips()
+        self.assertTrue(HorseRacingTipParserForPageYosoCp.objects.all().exists())
 
 
 
