@@ -783,3 +783,70 @@ Traceback (most recent call last):
 AttributeError: 'str' object has no attribute 'starts_with'
 
 
+2024-07-14 10:22:22.101493+00:00: Message: invalid cookie domain
+  (Session info: chrome=125.0.6422.76)
+Stacktrace:
+#0 0x55c137381e9a <unknown>
+#1 0x55c13706b2a1 <unknown>
+#2 0x55c13710c04b <unknown>
+#3 0x55c1370da4b2 <unknown>
+#4 0x55c1370f92cc <unknown>
+#5 0x55c1370da253 <unknown>
+#6 0x55c1370aa1c7 <unknown>
+#7 0x55c1370aab3e <unknown>
+#8 0x55c1373482db <unknown>
+#9 0x55c13734c387 <unknown>
+#10 0x55c137334e0e <unknown>
+#11 0x55c13734ce52 <unknown>
+#12 0x55c1373197af <unknown>
+#13 0x55c137371188 <unknown>
+#14 0x55c13737135b <unknown>
+#15 0x55c137380fcc <unknown>
+#16 0x7f22be942ac3 <unknown>
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 145, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 112, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 105, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_page_with_login.py", line 8, in main
+    models[0].new_page()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 111, in new_page
+    page.update_html()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 34, in wrapper
+    with WebDriver(**new_kwargs) as driver:
+  File "/home/user/sources/apps/web_controller/apps.py", line 64, in __init__
+    self.__cookie_init(domain)
+  File "/home/user/sources/apps/web_controller/apps.py", line 82, in __cookie_init
+    self.driver.add_cookie(cookie)
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 641, in add_cookie
+    self.execute(Command.ADD_COOKIE, {"cookie": cookie_dict})
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 354, in execute
+    self.error_handler.check_response(response)
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/errorhandler.py", line 229, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.InvalidCookieDomainException: Message: invalid cookie domain
+  (Session info: chrome=125.0.6422.76)
+Stacktrace:
+#0 0x55c137381e9a <unknown>
+#1 0x55c13706b2a1 <unknown>
+#2 0x55c13710c04b <unknown>
+#3 0x55c1370da4b2 <unknown>
+#4 0x55c1370f92cc <unknown>
+#5 0x55c1370da253 <unknown>
+#6 0x55c1370aa1c7 <unknown>
+#7 0x55c1370aab3e <unknown>
+#8 0x55c1373482db <unknown>
+#9 0x55c13734c387 <unknown>
+#10 0x55c137334e0e <unknown>
+#11 0x55c13734ce52 <unknown>
+#12 0x55c1373197af <unknown>
+#13 0x55c137371188 <unknown>
+#14 0x55c13737135b <unknown>
+#15 0x55c137380fcc <unknown>
+#16 0x7f22be942ac3 <unknown>
+
+
+
