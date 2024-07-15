@@ -8,6 +8,20 @@ from urllib.parse import urlparse, parse_qs
 from django.utils import timezone
 import datetime
 
+
+MARKS = {
+    "First": ["◎", "Icon_Shirushi Icon_Honmei"],
+    "Second": ["〇", "○", "Icon_Shirushi Icon_Taikou"],
+    "Third": ["▲", "Icon_Shirushi Icon_Kurosan"],
+    "Fourth": ["△", "Icon_Shirushi Icon_Osae"],
+    "Star": ["☆", "Icon_Shirushi Icon_Hoshi"],
+}
+
+MARKS = {
+    **{name: name for name in MARKS},
+    **{mark: name for name, marks in MARKS.items() for mark in marks},
+}
+
 class BaseHorseRacingTipParser(models.Model):
     need_update_at = models.DateTimeField(null=True, verbose_name='次回更新日時')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')
@@ -32,7 +46,7 @@ class BaseHorseRacingTipParser(models.Model):
         self.need_update_at = timezone.now() + timezone.timedelta(days=1)
         
         soup = bs(self.page_source.read_html(), 'html.parser')
-        etree = lxml.etree.HTML(str(soup))
+        etree = lxml.etree.HTML(str(soup).replace("<br/>", "").replace("<br>", "").replace("<br />", ""))
 
         race_date = etree.xpath('//dd[@class="Active"]/a')
         if not race_date:
@@ -63,13 +77,46 @@ class HorseRacingTipParserForPageYoso(BaseHorseRacingTipParser):
         return super().next(PageYoso)
 
     @classmethod
-    def new_tip(cls):
+    def new_tips(cls):
         parser = cls.next()
         if not parser:
             return None
         
         etree = parser.parser_init()
 
+        if etree is None:
+            return None
+        
+        yoso_table_wrap = etree.xpath("//div[@class='YosoTableWrap']")
+        if not yoso_table_wrap:
+            return None
+        
+        tips = []
+        
+        for yosoka in yoso_table_wrap[0].xpath(".//dl[@class='Yosoka']"):
+            yosoka_name = yosoka.xpath(".//p[@class='yosoka_name']")[0].text
+            for i, icon in enumerate(yosoka.xpath(".//li/span")):
+                icon_name = icon.attrib.get('class', "")
+                if icon_name not in MARKS:
+                    continue
+                mark = MARKS[icon_name]
+                horse_number = i + 1
+                tip = HorseRacingTip(
+                    parser = parser,
+                    race_id = parser.page_source.race_id,
+                    horse_number = horse_number,
+                    author = HorseRacingTipAuthor.objects.get_or_create(name=yosoka_name)[0],
+                    mark = HorseRacingTipMark.objects.get_or_create(mark=mark)[0],
+                )
+                tips.append(tip)
+
+        if tips:
+            parser.need_update_at = None
+            parser.save()
+        for tip in tips:
+            tip.save()
+
+        return tips
 
 class HorseRacingTipParserForPageYosoCp(BaseHorseRacingTipParser):
     page_source = models.ForeignKey(PageYosoCp, on_delete=models.CASCADE, verbose_name='取得元ページ')
@@ -93,6 +140,10 @@ class HorseRacingTip(models.Model):
     parser = GenericForeignKey('parser_type', 'parser_id')
     race_id = models.CharField(max_length=255, verbose_name='レースID')
     horse_number = models.IntegerField(verbose_name='馬番')
+    author = models.ForeignKey(HorseRacingTipAuthor, on_delete=models.CASCADE, verbose_name='予想家')
     mark = models.ForeignKey(HorseRacingTipMark, on_delete=models.CASCADE, verbose_name='印')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
+
+    def __str__(self):
+        return f"{self.race_id} {self.author.name} {self.horse_number} {self.mark.mark}"
