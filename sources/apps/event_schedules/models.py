@@ -4,6 +4,8 @@ import traceback
 from pathlib import Path
 import importlib
 
+EVENT_FREEZE_TIME = 5
+
 event_functions = {}
 
 class ScheduleExecutuionError(Exception):
@@ -77,22 +79,7 @@ class Schedule(models.Model):
             schedule_str = None
         return needdo, nextexecutedatetime, schedule_str
 
-    def doevent(self):
-        self.latestcalled_at = timezone.now()
-
-        if self.status == 2:
-            self.save()
-            raise ScheduleExecutuionError(f"{self.event_function}は実行中です。")
-        if self.status == 3:
-            self.save()
-            raise ScheduleExecutuionError(f"{self.event_function}は既に完了しています。")
-        if self.status == 4:
-            self.save()
-            raise ScheduleExecutuionError(f"{self.event_function}はエラーが発生しています。")
-        if not self.nextexecutedatetime is None and self.nextexecutedatetime > timezone.now():
-            self.save()
-            raise ScheduleExecutuionError(f"{self.event_function}はまだ実行できません。")
-        
+    def __find_event_function(self):
         if len(event_functions) == 0:
             for event_function in Path("apps/event_schedules/events").glob("*.py"):
                 event_function = event_function.stem
@@ -111,6 +98,28 @@ class Schedule(models.Model):
             self.status = 4
             self.save()
             raise ScheduleExecutuionError(f"{self.event_function}は存在しません。")
+        
+        return event_function
+
+
+    def doevent(self):
+        self.latestcalled_at = timezone.now()
+
+        if self.status == 2:
+            if self.latestcalled_at + timezone.timedelta(seconds=EVENT_FREEZE_TIME) < timezone.now():
+                self.save()
+                raise ScheduleExecutuionError(f"{self.event_function}は実行中です。")
+        if self.status == 3:
+            self.save()
+            raise ScheduleExecutuionError(f"{self.event_function}は既に完了しています。")
+        if self.status == 4:
+            self.save()
+            raise ScheduleExecutuionError(f"{self.event_function}はエラーが発生しています。")
+        if not self.nextexecutedatetime is None and self.nextexecutedatetime > timezone.now():
+            self.save()
+            raise ScheduleExecutuionError(f"{self.event_function}はまだ実行できません。")
+        
+        event_function = self.__find_event_function()
         schedule_str_default = event_function.SCHEDULE_STR
 
         needdo, nextexecutedatetime, schedule_str = self.__parse_schedule_str(self.schedule_str, schedule_str_default)

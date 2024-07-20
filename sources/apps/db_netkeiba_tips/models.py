@@ -15,7 +15,7 @@ MARKS = {
     "Second": ["〇", "○", "Icon_Shirushi Icon_Taikou", "Icon_Shirushi Icon_Shirushi2"],
     "Third": ["▲", "Icon_Shirushi Icon_Kurosan", "Icon_Shirushi Icon_Shirushi3"],
     "Fourth": ["△", "Icon_Shirushi Icon_Osae", "Icon_Shirushi Icon_Shirushi4"],
-    "Star": ["☆", "Icon_Shirushi Icon_Hoshi"],
+    "Star": ["☆", "Icon_Shirushi Icon_Hoshi", "Icon_Shirushi Icon_Shirushi5"],
 }
 
 MARKS = {
@@ -83,9 +83,13 @@ class HorseRacingTipParserForPageYoso(BaseHorseRacingTipParser):
             return None
         
         tips = []
-        
+
+        exists_authors = HorseRacingTip.objects.filter(race_id=parser.page_source.race_id)
+        exists_authors = {tip.author.name for tip in exists_authors}
         for yosoka in yoso_table_wrap[0].xpath(".//dl[@class='Yosoka']"):
             yosoka_name = yosoka.xpath(".//p[@class='yosoka_name']")[0].text
+            if yosoka_name in exists_authors:
+                continue
             for i, icon in enumerate(yosoka.xpath(".//li/span")):
                 icon_name = icon.attrib.get('class', "")
                 if icon_name not in MARKS:
@@ -252,6 +256,51 @@ class HorseRacingTipParserForPageYosoPro(BaseHorseRacingTipParser):
     @classmethod
     def next(cls):
         return super().next(PageYosoPro)
+    
+    @classmethod
+    def new_tips(cls):
+        parser = cls.next()
+        if not parser:
+            return None
+
+
+        etree = parser.parser_init()
+
+        if etree is None:
+            return None
+        
+        tips = []
+        exists_authors = HorseRacingTip.objects.filter(race_id=parser.page_source.race_id)
+        exists_authors = {tip.author.name for tip in exists_authors}
+        pro_yoso_boxes = etree.xpath("//section[@class='ProYosoMark_Block']")
+        for pro_yoso_box in pro_yoso_boxes:
+            author_name = pro_yoso_box.xpath(".//p[@class='YosoDeTailName']")[0].text
+            if author_name in exists_authors:
+                continue
+            for yoso_shirushi_tr in pro_yoso_box.xpath(".//div[@class='YosoDeTailItem YosoDeTailItem2']/table/tbody/tr"):
+                mark_class = yoso_shirushi_tr.xpath(".//th/span")[0].attrib.get('class', "")
+                if mark_class not in MARKS:
+                    continue
+                mark = MARKS[mark_class]
+                horse_num_class = yoso_shirushi_tr.xpath(".//td/span")[0].text
+                horse_number = int(horse_num_class)
+                tip = HorseRacingTip(
+                    parser = parser,
+                    race_id = parser.page_source.race_id,
+                    horse_number = horse_number,
+                    author = HorseRacingTipAuthor.objects.get_or_create(name=author_name)[0],
+                    mark = HorseRacingTipMark.objects.get_or_create(mark=mark)[0],
+                )
+                tips.append(tip)
+
+        if tips:
+            parser.need_update_at = None
+            parser.success_parsing = True
+            parser.save()
+        for tip in tips:
+            tip.save()
+
+        return tips
 
 class HorseRacingTipAuthor(models.Model):
     name = models.CharField(max_length=255, verbose_name='予想家名')

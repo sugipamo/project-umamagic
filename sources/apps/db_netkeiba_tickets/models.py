@@ -95,7 +95,7 @@ class HorseRacingTicketParser(BasePageSourceParser):
         
         etree = parser.parser_init()
 
-        if not etree:
+        if etree is None:
             return None
 
         result_pay_backs = etree.xpath('//table[@class="Payout_Detail_Table"]/tbody/tr')

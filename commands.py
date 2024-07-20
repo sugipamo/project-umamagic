@@ -16,7 +16,7 @@ COMMANDS = {
     "test_start": "docker compose exec django python manage.py runserver 0.0.0.0:8000",
     "test": "docker compose exec django bash -c 'python manage.py test'",
     "pytest": "docker compose exec django bash -c 'pytest -v -n auto'",  
-    "open_chrome": "start http://localhost/novnc/vnc.html?resize=remote^&path=novnc/websockify",  
+    "open_chrome": "start http://localhost/novnc/vnc.html?resize=remote^&path=novnc/websockify^&autoconnect=1^&resize=scale^&password=secret",  
 }
 
 

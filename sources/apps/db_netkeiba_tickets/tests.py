@@ -87,7 +87,7 @@ class HorseRacingTicketNarParserTest(TestCase):
     def test_new_win_tickets(self):
         result = PageResult.make_dummy_instance(category='nar', race_id='202444070902')
         self.assertTrue(HorseRacingTicketParser.next())
-        self.assertTrue(HorseRacingTicketParser(page_source=result)._HorseRacingTicketParser__parser_init() is not None)
+        self.assertTrue(HorseRacingTicketParser(page_source=result).parser_init() is not None)
         HorseRacingTicketParser.objects.all().delete()
         HorseRacingTicketParser.new_win_tickets()
         self.assertTrue(HorseRacingTicket.objects.all().exists())
@@ -118,7 +118,7 @@ class HorseRacingTicketRaceParserTest(TestCase):
     def test_new_win_tickets(self):
         result = PageResult.make_dummy_instance(category='race', race_id='202402010911')
         self.assertTrue(HorseRacingTicketParser.next())
-        self.assertTrue(HorseRacingTicketParser(page_source=result)._HorseRacingTicketParser__parser_init() is not None)
+        self.assertTrue(HorseRacingTicketParser(page_source=result).parser_init() is not None)
         HorseRacingTicketParser.objects.all().delete()
         HorseRacingTicketParser.new_win_tickets()
         self.assertTrue(HorseRacingTicket.objects.all().exists())

@@ -26,21 +26,22 @@ class BasePageSourceParser(models.Model):
 
     @classmethod
     def next(cls, relate_model):
-        unupdated_parsers = cls.objects.filter(need_update_at__lte=timezone.now())
-        for unupdated_parser in unupdated_parsers:
-            unupdated_parser.page_source.need_update = True
-
+        parser = None
         unused_sources = relate_model.objects.exclude(page_ptr_id__in=cls.objects.values_list('page_source_id', flat=True))
-        unused_source = unused_sources.order_by("created_at").first()
+        unused_source = unused_sources.filter(need_update=False).order_by("created_at").last()
         if unused_source is not None:
             parser = cls(
                 page_source = unused_source,
                 need_update_at = timezone.now() + timezone.timedelta(days=1)
             )
             parser.save()
-            return parser
 
-        return None
+        unupdated_parsers = cls.objects.filter(need_update_at__lte=timezone.now())
+        for unupdated_parser in unupdated_parsers:
+            unupdated_parser.page_source.need_update = True
+            unupdated_parser.delete()
+
+        return parser
 
 class PageCategory(models.Model):
     name = models.CharField(max_length=255)
@@ -89,27 +90,35 @@ def extract_raceids(driver):
         params = url.split("?")[-1]
         params = dict([param.split("=") for param in params.split("&")])
         if "race_id" in params:
-            race_id = params["race_id"]
+            race_id = params["race_id"].replace(" ", "")
+            if race_id == "":
+                continue
             if race_id not in raceids:
                 raceids[race_id] = Page.objects.get_or_create(race_id=race_id, category=category)[0]
+
+
 
 class Page(models.Model):
     race_id = models.CharField(max_length=255)
     category = models.ForeignKey(PageCategory, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    url = NETKEIBA_BASE_URL
+    need_login = False
 
+    @classmethod
+    @ensure_driver
+    def extract_raceids(cls, driver):
+        extract_raceids(driver)
 
 class BasePage(models.Model):
-    class Meta:
-        abstract = True
-
     need_update = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    url = NETKEIBA_BASE_URL
     need_login = False
+
+    class Meta:
+        abstract = True
 
     def __str__(self):
         return self.race_id
@@ -118,11 +127,6 @@ class BasePage(models.Model):
         if self.html is None:
             return None
         return gzip.decompress(self.html).decode()
-
-    @classmethod
-    @ensure_driver
-    def extract_raceids(cls, driver):
-        extract_raceids(driver)
 
     @ensure_driver
     def update_html(self, driver):
@@ -140,16 +144,20 @@ class BasePage(models.Model):
             login.save()
             raise PermissionError("ログインが必要です。")
         
-        self.html = gzip.compress(driver.page_source.encode())
-
+        self.extract_html_from_driver(driver=driver)
+        self.need_update = False
+        self.save_base(raw=True)
+        
         extract_raceids(driver)
+
+    def extract_html_from_driver(self, driver):
+        self.html = gzip.compress(driver.page_source.encode())
 
     @classmethod
     def next(cls):
         need_update_races = cls.objects.filter(need_update=True)
         if need_update_races:
             need_update_race = need_update_races.first()
-            need_update_race.need_update = False
             return need_update_race
 
         unused_races = Page.objects.exclude(race_id__in=cls.objects.values_list('race_id', flat=True))
@@ -164,7 +172,6 @@ class BasePage(models.Model):
         page = cls.next()
         if page:
             page.update_html()
-            page.save_base(raw=True)
         return page
     
     @property
@@ -264,26 +271,14 @@ class PageYosoCp(Page, BasePage):
         }
 
     @ensure_driver
-    def update_html(self, driver):
+    def extract_html_from_driver(self, driver):
         try:
-            self.__update_html(driver)
+            self.__extract_html_from_driver(driver)
         except Exception as e:
             with open("error.log", "a") as f:
                 f.write(f"{str(e)}\n{traceback.format_exc()}")
 
-    def __update_html(self, driver):
-        try:
-            driver.get(self.url)
-        except URLError as e:
-            return
-        
-        if "premium_new" in driver.current_url:
-            login, _ = LoginForScraping.objects.get_or_create(domain=NETKEIBA_DOMAIN)
-            login.loggined = False
-            login.save()
-            raise PermissionError("ログインが必要です。")
-
-
+    def __extract_html_from_driver(self, driver):
         htmls = [self.html_rising, self.html_precede, self.html_spurt, self.html_jockey, self.html_trainer, self.html_pedigree]
         for i in range(len(htmls)):
             with TimeCounter() as tc:

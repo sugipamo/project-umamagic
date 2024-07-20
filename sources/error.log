@@ -2223,3 +2223,193 @@ Traceback (most recent call last):
 apps.event_schedules.models.ScheduleExecutuionError: obsolete_eventは存在しません。
 
 
+2024-07-20 05:54:19.241734+00:00: type object 'Page' has no attribute 'extract_raceids'
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 148, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 129, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 122, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_raceids.py", line 5, in main
+    Page.extract_raceids()
+AttributeError: type object 'Page' has no attribute 'extract_raceids'
+
+
+2024-07-20 05:58:29.371004+00:00: Page.extract_raceids() missing 1 required positional argument: 'self_or_cls'
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 148, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 129, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 122, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_raceids.py", line 5, in main
+    Page.extract_raceids()
+TypeError: Page.extract_raceids() missing 1 required positional argument: 'self_or_cls'
+
+
+2024-07-20 05:59:09.551348+00:00: type object 'Page' has no attribute 'url'
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 148, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 129, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 122, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_raceids.py", line 5, in main
+    Page.extract_raceids()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 57, in wrapper
+    new_kwargs = {"url": self_or_cls.url}
+AttributeError: type object 'Page' has no attribute 'url'
+
+
+2024-07-20 05:59:29.440774+00:00: type object 'Page' has no attribute 'url'
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 148, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 129, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 122, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_raceids.py", line 5, in main
+    Page.extract_raceids()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 57, in wrapper
+    new_kwargs = {"url": self_or_cls.url}
+AttributeError: type object 'Page' has no attribute 'url'
+
+
+2024-07-20 06:01:54.575850+00:00: type object 'Page' has no attribute 'need_login'
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 148, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 129, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 122, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_raceids.py", line 5, in main
+    Page.extract_raceids()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 66, in wrapper
+    if self_or_cls.need_login:
+AttributeError: type object 'Page' has no attribute 'need_login'
+
+
+2024-07-20 07:45:51.615102+00:00: Unsupported lookup 'gre' for DateTimeField or join on the field not permitted, perhaps you meant gte?
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 148, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 129, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 122, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_pageyoso_tips.py", line 5, in main
+    HorseRacingTipParserForPageYoso.new_tips()
+  File "/home/user/sources/apps/db_netkeiba_tips/models.py", line 72, in new_tips
+    parser = cls.next()
+  File "/home/user/sources/apps/db_netkeiba_tips/models.py", line 68, in next
+    return super().next(PageYoso)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 29, in next
+    unupdated_parsers = cls.objects.filter(need_update_at__gre=timezone.now())
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 1476, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 1494, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/query.py", line 1501, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1613, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1645, in _add_q
+    child_clause, needed_inner = self.build_filter(
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1559, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1383, in build_lookup
+    lhs = self.try_transform(lhs, lookup_name)
+  File "/usr/local/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1427, in try_transform
+    raise FieldError(
+django.core.exceptions.FieldError: Unsupported lookup 'gre' for DateTimeField or join on the field not permitted, perhaps you meant gte?
+
+
+2024-07-20 08:27:36.612869+00:00: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=125.0.6422.76)
+Stacktrace:
+#0 0x55f177696e9a <unknown>
+#1 0x55f17738045c <unknown>
+#2 0x55f177355a84 <unknown>
+#3 0x55f1773f795d <unknown>
+#4 0x55f17740dc76 <unknown>
+#5 0x55f1773ef253 <unknown>
+#6 0x55f1773bf1c7 <unknown>
+#7 0x55f1773bfb3e <unknown>
+#8 0x55f17765d2db <unknown>
+#9 0x55f177661387 <unknown>
+#10 0x55f177649e0e <unknown>
+#11 0x55f177661e52 <unknown>
+#12 0x55f17762e7af <unknown>
+#13 0x55f177686188 <unknown>
+#14 0x55f17768635b <unknown>
+#15 0x55f177695fcc <unknown>
+#16 0x7f39782efac3 <unknown>
+
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 157, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 138, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 131, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_page.py", line 8, in main
+    models[0].new_page()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 172, in new_page
+    page.update_html()
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 71, in wrapper
+    return method(self_or_cls, *args, **kwargs)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 149, in update_html
+    extract_raceids(driver)
+  File "/home/user/sources/apps/web_netkeiba_pagesources/models.py", line 78, in extract_raceids
+    elems = tc.do(driver.find_elements, "xpath", ".//a")
+  File "/home/user/sources/apps/web_controller/apps.py", line 37, in do
+    result = func(*args, **kwargs)
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 778, in find_elements
+    return self.execute(Command.FIND_ELEMENTS, {"using": by, "value": value})["value"] or []
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 354, in execute
+    self.error_handler.check_response(response)
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/errorhandler.py", line 229, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.NoSuchWindowException: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=125.0.6422.76)
+Stacktrace:
+#0 0x55f177696e9a <unknown>
+#1 0x55f17738045c <unknown>
+#2 0x55f177355a84 <unknown>
+#3 0x55f1773f795d <unknown>
+#4 0x55f17740dc76 <unknown>
+#5 0x55f1773ef253 <unknown>
+#6 0x55f1773bf1c7 <unknown>
+#7 0x55f1773bfb3e <unknown>
+#8 0x55f17765d2db <unknown>
+#9 0x55f177661387 <unknown>
+#10 0x55f177649e0e <unknown>
+#11 0x55f177661e52 <unknown>
+#12 0x55f17762e7af <unknown>
+#13 0x55f177686188 <unknown>
+#14 0x55f17768635b <unknown>
+#15 0x55f177695fcc <unknown>
+#16 0x7f39782efac3 <unknown>
+
+
+
+2024-07-20 08:58:25.628880+00:00: obsolete_eventは存在しません。
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 157, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 122, in doevent
+    event_function = self.__find_event_function()
+  File "/home/user/sources/apps/event_schedules/models.py", line 100, in __find_event_function
+    raise ScheduleExecutuionError(f"{self.event_function}は存在しません。")
+apps.event_schedules.models.ScheduleExecutuionError: obsolete_eventは存在しません。
+
+
