@@ -2413,3 +2413,18 @@ Traceback (most recent call last):
 apps.event_schedules.models.ScheduleExecutuionError: obsolete_eventは存在しません。
 
 
+2024-07-21 12:43:39.956783+00:00: local variable 'ticket' referenced before assignment
+Traceback (most recent call last):
+  File "/home/user/sources/apps/event_schedules/models.py", line 158, in doevent
+    return event.first().doevent()
+  File "/home/user/sources/apps/event_schedules/models.py", line 139, in doevent
+    raise e
+  File "/home/user/sources/apps/event_schedules/models.py", line 132, in doevent
+    event_function.main()
+  File "/home/user/sources/apps/event_schedules/events/new_win_tickets.py", line 5, in main
+    HorseRacingTicketParser.new_win_tickets()
+  File "/home/user/sources/apps/db_netkeiba_tickets/models.py", line 146, in new_win_tickets
+    ticket=ticket,
+UnboundLocalError: local variable 'ticket' referenced before assignment
+
+

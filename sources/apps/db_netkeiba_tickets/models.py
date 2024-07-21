@@ -114,6 +114,7 @@ class HorseRacingTicketParser(BasePageSourceParser):
             return elems
         
         tickets = []
+        ticket_touchs = []
         for result_pay_back in result_pay_backs:
             try:
                 ticket_name_elem = get_elems(result_pay_back, './th')[0]
@@ -139,8 +140,17 @@ class HorseRacingTicketParser(BasePageSourceParser):
                         win_str, 
                         int(payout_text),
                         race_id=parser.page_source.race_id,
+                        parser=parser,
                     )
                     tickets.append(ticket)
+                    for j, horse_number in enumerate(map(int, win_str.split())): 
+                        ticket_touch = HorseRacingTicketTouchNumber(
+                            ticket=ticket,
+                            horse_number=horse_number,
+                            ticket_number_order=j+1
+                        )
+                        ticket_touchs.append(ticket_touch)
+
 
             except NoElemsError:
                 continue
@@ -152,8 +162,9 @@ class HorseRacingTicketParser(BasePageSourceParser):
             parser.success_parsing = True
             parser.save()
         for ticket in tickets:
-            ticket.parser = parser
             ticket.save()
+        for ticket_touch in ticket_touchs:
+            ticket_touch.save()
 
         return 
                 
@@ -273,3 +284,16 @@ class HorseRacingTicket(models.Model):
         return ticket
     
 
+class HorseRacingTicketTouchNumber(models.Model):
+    ticket = models.ForeignKey(HorseRacingTicket, on_delete=models.CASCADE, verbose_name='馬券')
+    horse_number = models.IntegerField(verbose_name='馬番号')
+    ticket_number_order = models.IntegerField(verbose_name='馬券内順序')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
+
+    def __str__(self):
+        return f'{self.ticket} - {self.horse_number} - {self.ticket_number_order}'
+    
+    class Meta:
+        unique_together = ('ticket', 'horse_number', 'ticket_number_order')
+    
