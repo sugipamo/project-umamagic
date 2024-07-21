@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'apps.web_netkeiba_pagesources',
     'apps.db_netkeiba_tickets',
     'apps.db_netkeiba_tips',
+    'apps.logic_tips_refund_rates',
 ]
 
 MIDDLEWARE = [

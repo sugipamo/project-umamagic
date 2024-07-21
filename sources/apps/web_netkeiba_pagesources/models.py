@@ -80,23 +80,25 @@ def extract_raceids(driver):
     elems = driver.find_elements("xpath", ".//a[contains(@href, 'race_id')]")
     urls = {elem.get_attribute("href") for elem in elems}
 
-    raceids = {}
-    race_categorys = {}
+    raceids = set()
     for url in urls:
         domain_name = url.split("/")[2]
         if domain_name not in {"nar.netkeiba.com", "race.netkeiba.com"}:
             continue
         race_category = domain_name.split(".")[0]
-        category = race_categorys.get(race_category, PageCategory.objects.get_or_create(name=race_category)[0])
+        category, _ = PageCategory.objects.get_or_create(name=race_category)
         params = url.split("?")[-1]
         params = dict([param.split("=") for param in params.split("&")])
         if "race_id" in params:
             race_id = params["race_id"].replace(" ", "")
             if race_id == "":
                 continue
-            if race_id not in raceids:
-                raceids[race_id] = Page.objects.get_or_create(race_id=race_id, category=category)[0]
+            raceids.add(race_id)
 
+    unregisted_raceids = raceids - set(Page.objects.values_list())
+    for race_id in unregisted_raceids:
+        page = Page(race_id=race_id, category=category)
+        page.save()
 
 
 class Page(models.Model):
@@ -111,6 +113,9 @@ class Page(models.Model):
     @ensure_driver
     def extract_raceids(cls, driver):
         extract_raceids(driver)
+
+    def __str__(self):
+        return f"{self.race_id} - {self.category.name}"
 
 class BasePage(models.Model):
     need_update = models.BooleanField(default=False)

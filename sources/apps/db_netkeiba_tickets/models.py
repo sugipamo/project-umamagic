@@ -283,6 +283,11 @@ class HorseRacingTicket(models.Model):
 
         return ticket
     
+    @classmethod
+    def make_dummy_tickets(cls, category=None, race_id=None):
+        PageResult.make_dummy_instance(category=category, race_id=race_id)
+        HorseRacingTicketParser.new_win_tickets()
+        return cls.objects.all()
 
 class HorseRacingTicketTouchNumber(models.Model):
     ticket = models.ForeignKey(HorseRacingTicket, on_delete=models.CASCADE, verbose_name='馬券')
@@ -291,9 +296,11 @@ class HorseRacingTicketTouchNumber(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
 
-    def __str__(self):
-        return f'{self.ticket} - {self.horse_number} - {self.ticket_number_order}'
-    
     class Meta:
         unique_together = ('ticket', 'horse_number', 'ticket_number_order')
+
+    def __str__(self):
+        return f'{self.ticket.race_id} - {self.horse_number} - {self.ticket_number_order}'
+    
+
     

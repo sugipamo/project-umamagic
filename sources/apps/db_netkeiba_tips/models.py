@@ -325,3 +325,15 @@ class HorseRacingTip(models.Model):
 
     def __str__(self):
         return f"{self.race_id} {self.author.name} {self.horse_number} {self.mark.mark}"
+    
+    @classmethod
+    def make_dummy_tips(cls, category=None, race_id=None):
+        pages = [PageYoso, PageYosoCp, PageYosoPro]
+        for page in pages:
+            page.make_dummy_instance(category=category,race_id=race_id)
+
+        parsers = [HorseRacingTipParserForPageYoso, HorseRacingTipParserForPageYosoCp, HorseRacingTipParserForPageYosoPro]
+        for parser in parsers:
+            parser.new_tips()
+
+        return HorseRacingTip.objects.all()
