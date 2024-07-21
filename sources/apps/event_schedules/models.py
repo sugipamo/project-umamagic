@@ -4,6 +4,8 @@ import traceback
 from pathlib import Path
 import importlib
 
+EVENT_FREEZE_TIME = 5
+
 event_functions = {}
 
 class ScheduleExecutuionError(Exception):
@@ -20,6 +22,7 @@ class ScheduleDoeventHistory(models.Model):
         self.event_function = self.schedule.event_function
         variables = [
             "---------------",
+            "result: " + ["Success", "Error"][int(bool(self.error_message))],
             "doevent datetime: " + str(timezone.now()),
             "schedule: " + str(self.schedule.event_function),
             "nextexecutedatetime: " + str(self.schedule.nextexecutedatetime),
@@ -77,23 +80,47 @@ class Schedule(models.Model):
             schedule_str = None
         return needdo, nextexecutedatetime, schedule_str
 
+    def __find_event_function(self):
+        if len(event_functions) == 0:
+            for event_function in Path("apps/event_schedules/events").glob("*.py"):
+                event_function = event_function.stem
+                if event_function == "__init__":
+                    continue
+                event_functions[event_function] = importlib.import_module("apps.event_schedules.events." + event_function)
+
+            for event_function in event_functions:
+                Schedule.objects.get_or_create(event_function=event_function)
+
+            schedules_to_delete = set(Schedule.objects.values_list('event_function', flat=True)) - set(event_functions.keys())
+            Schedule.objects.filter(event_function__in=schedules_to_delete).delete()
+
+        event_function = event_functions.get(self.event_function)
+        if event_function is None:
+            self.status = 4
+            self.save()
+            raise ScheduleExecutuionError(f"{self.event_function}は存在しません。")
+        
+        return event_function
+
+
     def doevent(self):
         self.latestcalled_at = timezone.now()
 
         if self.status == 2:
-            self.save()
-            raise ScheduleExecutuionError(f"{self.title}は実行中です。")
+            if self.latestcalled_at + timezone.timedelta(seconds=EVENT_FREEZE_TIME) < timezone.now():
+                self.save()
+                raise ScheduleExecutuionError(f"{self.event_function}は実行中です。")
         if self.status == 3:
             self.save()
-            raise ScheduleExecutuionError(f"{self.title}は既に完了しています。")
+            raise ScheduleExecutuionError(f"{self.event_function}は既に完了しています。")
         if self.status == 4:
             self.save()
-            raise ScheduleExecutuionError(f"{self.title}はエラーが発生しています。")
+            raise ScheduleExecutuionError(f"{self.event_function}はエラーが発生しています。")
         if not self.nextexecutedatetime is None and self.nextexecutedatetime > timezone.now():
             self.save()
-            raise ScheduleExecutuionError(f"{self.title}はまだ実行できません。")
+            raise ScheduleExecutuionError(f"{self.event_function}はまだ実行できません。")
         
-        event_function = event_functions.get(self.event_function)
+        event_function = self.__find_event_function()
         schedule_str_default = event_function.SCHEDULE_STR
 
         needdo, nextexecutedatetime, schedule_str = self.__parse_schedule_str(self.schedule_str, schedule_str_default)
@@ -125,20 +152,6 @@ class Schedule(models.Model):
 
 
 def doevent():
-    if len(event_functions) == 0:
-        for event_function in Path("apps/event_schedules/events").glob("*.py"):
-            event_function = event_function.stem
-            if event_function == "__init__":
-                continue
-            event_functions[event_function] = importlib.import_module("apps.event_schedules.events." + event_function)
-
-        for event_function in event_functions:
-            Schedule.objects.get_or_create(event_function=event_function)
-
-        schedules_to_delete = set(Schedule.objects.values_list('event_function', flat=True)) - set(event_functions.keys())
-        Schedule.objects.filter(event_function__in=schedules_to_delete).delete()
-        
-
     event = Schedule.objects.filter(status=1, nextexecutedatetime__lte=timezone.now()).order_by("latestcalled_at")
     if event.exists():
         try:

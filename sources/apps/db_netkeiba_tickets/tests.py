@@ -84,28 +84,64 @@ class WinStrReplacerTest(TestCase):
         self.assertEqual(win_str_replacer('１ー２―３→４　５'), '1 2 3 4 5')
 
 class HorseRacingTicketNarParserTest(TestCase):
-    def setUp(self):
-        result = PageResult.make_dummy_instance(category='nar', race_id='202444070902')
-        self.parser = HorseRacingTicketParser(page_source=result)
-        
-    def test_parser_parser_init(self):
-        self.assertTrue(self.parser._HorseRacingTicketParser__parser_init() is not None)
-
     def test_new_win_tickets(self):
+        result = PageResult.make_dummy_instance(category='nar', race_id='202444070902')
+        self.assertTrue(HorseRacingTicketParser.next())
+        self.assertTrue(HorseRacingTicketParser(page_source=result).parser_init() is not None)
+        HorseRacingTicketParser.objects.all().delete()
         HorseRacingTicketParser.new_win_tickets()
         self.assertTrue(HorseRacingTicket.objects.all().exists())
+
+        def ticket_values_check(name, ambiguous_name, win_str, refund):
+            ticket = HorseRacingTicket.objects.filter(official_name__name=name, win_str=win_str).first()
+            self.assertTrue(ticket.official_name.name == name)
+            self.assertTrue(ticket.ambiguous_name == ambiguous_name)
+            self.assertTrue(ticket.win_str == win_str)
+            self.assertTrue(ticket.refund == refund)
+
+        ticket_values_check('win', '単勝', '13', 120)
+        ticket_values_check('place', '複勝', '13', 110)
+        ticket_values_check('place', '複勝', '7', 550)
+        ticket_values_check('place', '複勝', '8', 300)
+        ticket_values_check('bracket_quinella', '枠連', '5 8', 1060)
+        ticket_values_check('quinella', '馬連', '7 13', 3710)
+        ticket_values_check('quinella_place', 'ワイド', '7 13', 1060)
+        ticket_values_check('quinella_place', 'ワイド', '8 13', 390)
+        ticket_values_check('quinella_place', 'ワイド', '7 8', 4170)
+        ticket_values_check('bracket_exacta', '枠単', '8 5', 1060)
+        ticket_values_check('exacta', '馬単', '13 7', 5610)
+        ticket_values_check('trio', '3連複', '7 8 13', 13040)
+        ticket_values_check('trifecta', '3連単', '13 7 8', 40450)
+
 
 class HorseRacingTicketRaceParserTest(TestCase):
-    def setUp(self):
-        result = PageResult.make_dummy_instance(category='race', race_id='202402010911')
-        self.parser = HorseRacingTicketParser(page_source=result)
-        
-    def test_parser_parser_init(self):
-        self.assertTrue(self.parser._HorseRacingTicketParser__parser_init() is not None)
-
     def test_new_win_tickets(self):
+        result = PageResult.make_dummy_instance(category='race', race_id='202402010911')
+        self.assertTrue(HorseRacingTicketParser.next())
+        self.assertTrue(HorseRacingTicketParser(page_source=result).parser_init() is not None)
+        HorseRacingTicketParser.objects.all().delete()
         HorseRacingTicketParser.new_win_tickets()
         self.assertTrue(HorseRacingTicket.objects.all().exists())
+
+        def ticket_values_check(name, ambiguous_name, win_str, refund):
+            ticket = HorseRacingTicket.objects.filter(official_name__name=name, win_str=win_str).first()
+            self.assertTrue(ticket.official_name.name == name)
+            self.assertTrue(ticket.ambiguous_name == ambiguous_name)
+            self.assertTrue(ticket.win_str == win_str)
+            self.assertTrue(ticket.refund == refund)
+
+        ticket_values_check('win', '単勝', '3', 710)
+        ticket_values_check('place', '複勝', '3', 180)
+        ticket_values_check('place', '複勝', '5', 170)
+        ticket_values_check('place', '複勝', '6', 170)
+        ticket_values_check('bracket_quinella', '枠連', '3 4', 530)
+        ticket_values_check('quinella', '馬連', '3 6', 1680)
+        ticket_values_check('quinella_place', 'ワイド', '3 6', 700)
+        ticket_values_check('quinella_place', 'ワイド', '3 5', 520)
+        ticket_values_check('quinella_place', 'ワイド', '5 6', 530)
+        ticket_values_check('exacta', '馬単', '3 6', 3330)
+        ticket_values_check('trio', '3連複', '3 5 6', 2440)
+        ticket_values_check('trifecta', '3連単', '3 6 5', 14560)
 
 class HorseRacingTicketNameTest(TestCase):
     def test_str(self):

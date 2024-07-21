@@ -13,6 +13,7 @@
                         <th class="text-center">タイトル</th>
                         <th class="text-center">次回実行</th>
                         <th class="text-center">詳細</th>
+                        <th class="text-center">手動実行</th>
                         <th class="text-center">エラー解除</th>
                     </tr>
                 </thead>
@@ -26,6 +27,9 @@
                             <a class="btn btn-primary"
                                 href="{% url 'event_schedules:event_schedule_doevent_history' item.pk %}">詳細</a>
                         </td>
+                        <td class="text-center" width="50">
+                            <a class="btn btn-primary"
+                                href="{% url 'event_schedules:event_schedule_manual_doevent' item.pk %}">手動実行</a>
                         <td class="text-center" width="50">
                             <a class="btn btn-primary"
                                 href="{% url 'event_schedules:event_schedule_solve_error' item.pk %}">エラー解除</a>

@@ -14,14 +14,14 @@ class AutoExecutionTests(TestCase):
     def test_schedule_deletion(self):
         Schedule.objects.create(
             status=1,
-            event_function="obsolete_event",
+            event_function="test_event",
             nextexecutedatetime=timezone.now()
         )
 
-        doevent()  # 新しいイベント関数で更新し、古いスケジュールを削除
+        doevent()
 
         with self.assertRaises(Schedule.DoesNotExist):
-            Schedule.objects.get(event_function="obsolete_event")
+            Schedule.objects.get(event_function="test_event")
 
 class ScheduleModelTests(TestCase):
     

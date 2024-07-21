@@ -64,6 +64,7 @@ class WebDriver():
             self.__cookie_init(domain)
 
     def __cookie_init(self, domain):
+        self.quit_functions.append(lambda :self.__cookie_save(domain))
         self.cookiepath = COOKIEPATH / (domain + "_cookies.pkl")
         if not self.cookiepath.exists():
             return
@@ -72,7 +73,10 @@ class WebDriver():
             self.driver.get(domain)
 
         with open(self.cookiepath, "rb") as f:
-            cookies = pickle.load(f)
+            try:
+                cookies = pickle.load(f)
+            except:
+                cookies = []
 
         if type(cookies) != list:
             cookies = []
@@ -80,8 +84,6 @@ class WebDriver():
         for cookie in cookies:
             if cookie["domain"] == domain:
                 self.driver.add_cookie(cookie)
-
-        self.quit_functions.append(lambda :self.__cookie_save(domain))
 
     def __cookie_save(self, domain):
         with open(self.cookiepath, "wb") as f:
