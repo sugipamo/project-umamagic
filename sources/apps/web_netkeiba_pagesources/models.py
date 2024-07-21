@@ -39,6 +39,7 @@ class BasePageSourceParser(models.Model):
         unupdated_parsers = cls.objects.filter(need_update_at__lte=timezone.now())
         for unupdated_parser in unupdated_parsers:
             unupdated_parser.page_source.need_update = True
+            unupdated_parser.page_source.save()
             unupdated_parser.delete()
 
         return parser
@@ -122,6 +123,10 @@ class BasePage(models.Model):
 
     def __str__(self):
         return self.race_id
+    
+    @property
+    def race_id(self):
+        return self.page_ptr.race_id
 
     def read_html(self):
         if self.html is None:

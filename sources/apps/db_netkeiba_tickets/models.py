@@ -137,7 +137,8 @@ class HorseRacingTicketParser(BasePageSourceParser):
                     ticket = HorseRacingTicket.from_win_str(
                         ticket_name, 
                         win_str, 
-                        int(payout_text)
+                        int(payout_text),
+                        race_id=parser.page_source.race_id,
                     )
                     tickets.append(ticket)
 
@@ -270,3 +271,5 @@ class HorseRacingTicket(models.Model):
         ticket.refund = refund
 
         return ticket
+    
+

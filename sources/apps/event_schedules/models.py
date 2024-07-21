@@ -22,6 +22,7 @@ class ScheduleDoeventHistory(models.Model):
         self.event_function = self.schedule.event_function
         variables = [
             "---------------",
+            "result: " + ["Success", "Error"][int(bool(self.error_message))],
             "doevent datetime: " + str(timezone.now()),
             "schedule: " + str(self.schedule.event_function),
             "nextexecutedatetime: " + str(self.schedule.nextexecutedatetime),
