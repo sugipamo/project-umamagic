@@ -1,46 +1,38 @@
 from django.db import models
 from apps.db_netkeiba_tickets.models import HorseRacingTicket
 from apps.db_netkeiba_tips.models import HorseRacingTip
+from apps.db_netkeiba_tips.models import HorseRacingTipParserForPageYoso, HorseRacingTipParserForPageYosoCp, HorseRacingTipParserForPageYosoPro
 
-class HorseRacingTouchTipManager(models.Model):
-    tip = models.ForeignKey(HorseRacingTip, on_delete=models.CASCADE)
+class HorseRacingTipRefundManager(models.Model):
+    race_id = models.CharField(max_length=255, verbose_name='レースID')
+    need_update = models.BooleanField(default=True, verbose_name='更新が必要かどうか')
 
     @classmethod
     def next(cls):
-        unused_tips = HorseRacingTip.objects.exclude(id__in=cls.objects.values_list('tip_id', flat=True))
-        unused_tip = unused_tips.first()
-        return unused_tip
-    
-    @classmethod
-    def new_touch_tip(cls):
-        tip = cls.next()
-        if tip is None:
-            return False
+        need_updates = cls.objects.filter(need_update=True)
+        if need_updates.exists():
+            return need_updates.first()
+
+        parsers = [
+            HorseRacingTipParserForPageYoso.objects.select_related('page_source').all(),
+            HorseRacingTipParserForPageYosoCp.objects.select_related('page_source').all(),
+            HorseRacingTipParserForPageYosoPro.objects.select_related('page_source').all()
+        ]
         
-        tickets = HorseRacingTicket.objects.filter(race_id=tip.race_id)
+        # HorseRacingTipRefundManagerに既に存在するrace_idを取得
+        existing_race_ids = set(cls.objects.values_list('race_id', flat=True))
+        
+        # 各parserからrace_idを取得し、既に存在するrace_idを除外
+        race_ids_list = [
+            set(p.page_source.race_id for p in parser) - existing_race_ids
+            for parser in parsers
+        ]
 
-        touch_tips = []
-        for ticket in tickets:
-            for i, horse_number in enumerate(ticket.win_str.split()):
-                i = int(i) + 1
-                horse_number = int(horse_number)
+        common_race_ids = set.intersection(*race_ids_list) if race_ids_list else set()
 
-                if tip.horse_number == horse_number:
-                    touch_tip = HorseRacingTouchTip(race_id=tip.race_id, tip=tip, ticket=ticket, touch_order=i + 1)
-                    touch_tips.append(touch_tip)
-                
-        cls(tip=tip).save()
-        for touch_tip in touch_tips:
-            touch_tip.save()
-
-        return True
-
-class HorseRacingTouchTip(models.Model):
-    race_id = models.CharField(max_length=255)
-    tip = models.ForeignKey(HorseRacingTip, on_delete=models.CASCADE)
-    ticket = models.ForeignKey(HorseRacingTicket, on_delete=models.CASCADE)
-    touch_order = models.PositiveIntegerField(default=0)
-
-    def __str__(self):
-        return f'{self.tip} - {self.ticket}'
+        return_value = None
+        for race_id in common_race_ids:  
+            return_value = cls.objects.create(race_id=race_id)
+        
+        return return_value
     
