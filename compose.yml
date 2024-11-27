@@ -2,11 +2,11 @@ version: '3.8'
 services:
   django:
     build:
-      context: ./Dockerfile/django
+      context: ./django
       dockerfile: Dockerfile
     image: my_django_app
     volumes:
-      - ./sources:/home/user/sources
+      - ./django/sources:/home/user/sources
     tty: true
     ports:
       - 8000:8000
@@ -20,7 +20,7 @@ services:
 
   cron:
     build:
-      context: ./Dockerfile/cron
+      context: ./cron
       dockerfile: Dockerfile
     image: my_cron_app
     env_file:

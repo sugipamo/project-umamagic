@@ -32,4 +32,5 @@ COPY --from=base /usr/local/bin /usr/local/bin
 
 # Set working directory
 USER $USERNAME
+COPY sources /home/$USERNAME
 WORKDIR /home/$USERNAME/sources
