@@ -58,7 +58,6 @@ jobs:
       # Deploy to K3s (本番環境)
       - name: Deploy to K3s
         run: |
-          kubectl delete -f deployment.yaml
           kubectl apply -f deployment.yaml
 
   # テスト環境へのデプロイ
@@ -109,5 +108,4 @@ jobs:
       # Deploy to K3s (テスト環境)
       - name: Deploy to K3s
         run: |
-          kubectl delete -f deployment.yaml
           kubectl apply -f deployment.yaml
