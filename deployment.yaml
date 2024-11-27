@@ -42,11 +42,6 @@ spec:
         tty: true
         command: ["gunicorn"]
         args: ["--workers", "4", "--threads", "2", "umamagic.wsgi:application", "--bind", "0.0.0.0:8000"]
-      volumes:
-      - name: django-sources
-        hostPath:
-          path: ./sources
-          type: Directory
 
 ---
 apiVersion: apps/v1
