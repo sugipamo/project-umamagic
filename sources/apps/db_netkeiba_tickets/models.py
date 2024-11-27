@@ -238,8 +238,12 @@ class HorseRacingTicketCompare():
         raise NotImplementedError("This method is not implemented yet.")
     
 
-class HorseRacingTicketName(models.Model):
+class HorseRacingTicketCategory(models.Model):
     name = models.CharField(max_length=255, verbose_name='馬券名')
+    horse_count = models.IntegerField(verbose_name='馬数')
+    length = models.IntegerField(verbose_name='当選範囲')
+    is_fixed = models.BooleanField(verbose_name='固定')
+    is_bracket = models.BooleanField(verbose_name='枠')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
 
@@ -249,12 +253,16 @@ class HorseRacingTicketName(models.Model):
 class HorseRacingTicket(models.Model):
     parser = models.ForeignKey(HorseRacingTicketParser, on_delete=models.CASCADE, verbose_name='取得元')
     race_id = models.CharField(max_length=255, verbose_name='レースID')
-    official_name = models.ForeignKey(HorseRacingTicketName, on_delete=models.CASCADE, verbose_name='馬券名')
+    category = models.ForeignKey(HorseRacingTicketCategory, on_delete=models.CASCADE, verbose_name='馬券名')
     ambiguous_name = models.CharField(max_length=255, verbose_name='あいまいな馬券名')
     win_str = models.CharField(max_length=255, verbose_name='当選条件')
     refund = models.IntegerField(verbose_name='払戻金')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
+
+    @property
+    def ticket_name(self):
+        return self.category.name
 
     def save(self):
         if self.refund <= 0:
@@ -262,7 +270,7 @@ class HorseRacingTicket(models.Model):
         super().save()
 
     def __str__(self):
-        return f'{self.official_name} - {self.win_str} - {self.refund}'
+        return f'{self.category} - {self.win_str} - {self.refund}'
     
     def is_win(self, *race_results):
         return HorseRacingTicketCompare.from_ticket_model(self).is_win(*race_results)
@@ -274,15 +282,26 @@ class HorseRacingTicket(models.Model):
         ticket.ambiguous_name = ticket_name
         if ticket.ambiguous_name not in TICKET_NAME_DICT:
             raise ValueError(f"'{ticket.ambiguous_name}' is not recognized.")
-        official_name_key = TICKET_NAME_DICT.get(ticket.ambiguous_name)
-        if len(ticket.win_str.split()) != TICKET_TYPES[official_name_key]["horse_count"]:
-            raise ValueError(f"Invalid number of win numbers. Expected {TICKET_TYPES[official_name_key]['horse_count']}, but got {len(ticket.win_str.split())}.")
+        category_key = TICKET_NAME_DICT.get(ticket.ambiguous_name)
+        if len(ticket.win_str.split()) != TICKET_TYPES[category_key]["horse_count"]:
+            raise ValueError(f"Invalid number of win numbers. Expected {TICKET_TYPES[category_key]['horse_count']}, but got {len(ticket.win_str.split())}.")
 
-        ticket.official_name = HorseRacingTicketName.objects.get_or_create(name=official_name_key)[0]
+        ticket.category, _ = HorseRacingTicketCategory.objects.get_or_create(
+            name=category_key,
+            horse_count=TICKET_TYPES[category_key]["horse_count"],
+            length=TICKET_TYPES[category_key]["length"],
+            is_fixed=TICKET_TYPES[category_key]["is_fixed"],
+            is_bracket=TICKET_TYPES[category_key]["is_bracket"],
+        )
         ticket.refund = refund
 
         return ticket
     
+    @classmethod
+    def make_dummy_tickets(cls, category=None, race_id=None):
+        PageResult.make_dummy_instance(category=category, race_id=race_id)
+        HorseRacingTicketParser.new_win_tickets()
+        return cls.objects.all()
 
 class HorseRacingTicketTouchNumber(models.Model):
     ticket = models.ForeignKey(HorseRacingTicket, on_delete=models.CASCADE, verbose_name='馬券')
@@ -291,9 +310,11 @@ class HorseRacingTicketTouchNumber(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
 
-    def __str__(self):
-        return f'{self.ticket} - {self.horse_number} - {self.ticket_number_order}'
-    
     class Meta:
         unique_together = ('ticket', 'horse_number', 'ticket_number_order')
+
+    def __str__(self):
+        return f'{self.ticket.race_id} - {self.horse_number} - {self.ticket_number_order}'
+    
+
     

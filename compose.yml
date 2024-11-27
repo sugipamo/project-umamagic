@@ -8,13 +8,10 @@ services:
     volumes:
       - ./sources:/home/user/sources
     tty: true
-    environment:
-      TZ: ${TZ}
-      LANG: ${LANG}
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
-      DEVELOP: ${DEVELOP}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      SELENIUM_URL: http://selenium:4444/wd/hub
+    ports:
+      - 8000:8000
+    env_file:
+      - .env
     depends_on:
       - mysql
       - selenium
@@ -26,6 +23,8 @@ services:
       context: ./Dockerfile/cron
       dockerfile: Dockerfile
     image: my_cron_app
+    env_file:
+      - .env
     networks:
       - web_network
 
@@ -33,58 +32,35 @@ services:
     image: mysql:8.0.36
     volumes:
       - mysql_data:/var/lib/mysql
-    environment:
-      TZ: ${TZ}
-      LANG: ${LANG}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
+    env_file:
+      - .env
     networks:
       - web_network
 
   selenium:
     image: selenium/standalone-chrome
-    # ports:
-    #   - 4444:4444
-    #   - 7900:7900
-    environment:
-      - SE_NODE_MAX_SESSIONS=100
-      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+    ports:
+      - 4444:4444
+      - 7900:7900
     volumes:
       - /dev/shm:/dev/shm
+    env_file:
+      - .env
     networks:
       - web_network
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    # ports:
-    #   - 8080:80
-    environment:
-      - PMA_HOST=${PMA_HOST}
-      - PMA_USER=${PMA_USER}
-      - PMA_PASSWORD=${MYSQL_ROOT_PASSWORD}
-    networks:
-      - web_network
-
-  nginx:
-    image: nginx:latest
     ports:
-      - '80:80'
-    tty: true
-    volumes:
-      - ./Dockerfile/nginx/uwsgi_params:/etc/nginx/uwsgi_params
-      - ./sources:/home/user/sources
-      - ./Dockerfile/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - django
-      - selenium
-      - phpmyadmin
+      - 8080:80
+    env_file:
+      - .env
     networks:
       - web_network
 
 volumes:
   mysql_data:
-
 
 networks:
   web_network:

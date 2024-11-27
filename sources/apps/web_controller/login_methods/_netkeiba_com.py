@@ -1,14 +1,18 @@
 from apps.web_controller.apps import  WebDriver
+from os import environ
 
 NETKEIBA_DOMAIN = ".netkeiba.com"
 
 def login(self, **kwargs):
     url = "https://regist.netkeiba.com/account/?pid=login"
-    username = kwargs.get("username")
-    password = kwargs.get("password")
+    environs = {}
+    for v in ["NETKEIBA_USERNAME", "NETKEIBA_PASSWORD"]:
+        if not v in environ:
+            raise ValueError(f"{v} is not set in environ")
+        environs[v] = kwargs.get(v, environ.get(v))
     with WebDriver(url=url, domain=NETKEIBA_DOMAIN) as driver:
-        driver.find_element("name", "login_id").send_keys(username)
-        driver.find_element("name", "pswd").send_keys(password)
+        driver.find_element("name", "login_id").send_keys(environs["NETKEIBA_USERNAME"])
+        driver.find_element("name", "pswd").send_keys(environs["NETKEIBA_PASSWORD"])
         driver.find_element("xpath", ".//div[@class='loginBtn__wrap']/input").click()
         if driver.find_elements("name", "login_id"):
             return False
