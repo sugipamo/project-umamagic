@@ -4,3 +4,4 @@
 .env.develop
 *cookies.pkl
 /sources/.*
+secret.yaml
