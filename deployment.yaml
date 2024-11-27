@@ -37,9 +37,9 @@ spec:
         - secretRef:
             name: app-secrets
         tty: true
-        command: ["gunicorn"]
-        args: ["--workers", "4", "--threads", "2", "umamagic.wsgi:application", "--bind", "0.0.0.0:8000"]
-
+        command: ["python"]
+        args: ["manage.py", "runserver", "0.0.0.0:8000"]
+        
 ---
 apiVersion: apps/v1
 kind: Deployment
