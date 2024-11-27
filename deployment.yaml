@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
       - name: django
-        image: my_django_app
+        image: django
         ports:
         - containerPort: 8000
         envFrom:
@@ -64,7 +64,7 @@ spec:
     spec:
       containers:
       - name: cron
-        image: my_cron_app
+        image: cron
         envFrom:
         - configMapRef:
             name: app-config
