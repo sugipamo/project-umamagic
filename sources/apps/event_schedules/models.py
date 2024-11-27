@@ -81,19 +81,6 @@ class Schedule(models.Model):
         return needdo, nextexecutedatetime, schedule_str
 
     def __find_event_function(self):
-        if len(event_functions) == 0:
-            for event_function in Path("apps/event_schedules/events").glob("*.py"):
-                event_function = event_function.stem
-                if event_function == "__init__":
-                    continue
-                event_functions[event_function] = importlib.import_module("apps.event_schedules.events." + event_function)
-
-            for event_function in event_functions:
-                Schedule.objects.get_or_create(event_function=event_function)
-
-            schedules_to_delete = set(Schedule.objects.values_list('event_function', flat=True)) - set(event_functions.keys())
-            Schedule.objects.filter(event_function__in=schedules_to_delete).delete()
-
         event_function = event_functions.get(self.event_function)
         if event_function is None:
             self.status = 4
@@ -152,6 +139,19 @@ class Schedule(models.Model):
 
 
 def doevent():
+    if len(event_functions) == 0:
+        for event_function in Path("apps/event_schedules/events").glob("*.py"):
+            event_function = event_function.stem
+            if event_function == "__init__":
+                continue
+            event_functions[event_function] = importlib.import_module("apps.event_schedules.events." + event_function)
+
+        for event_function in event_functions:
+            Schedule.objects.get_or_create(event_function=event_function)
+
+        schedules_to_delete = set(Schedule.objects.values_list('event_function', flat=True)) - set(event_functions.keys())
+        Schedule.objects.filter(event_function__in=schedules_to_delete).delete()
+
     event = Schedule.objects.filter(status=1, nextexecutedatetime__lte=timezone.now()).order_by("latestcalled_at")
     if event.exists():
         try:

@@ -152,7 +152,7 @@ class BasePage(models.Model):
             login, _ = LoginForScraping.objects.get_or_create(domain=NETKEIBA_DOMAIN)
             login.loggined = False
             login.save()
-            raise PermissionError("ログインが必要です。")
+            login.login()
         
         self.extract_html_from_driver(driver=driver)
         self.need_update = False

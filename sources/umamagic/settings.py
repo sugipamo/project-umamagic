@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 DEBUG = os.environ.get('DEVELOP', 'True').lower() != 'true'
 TESTING = any(['-c' in sys.argv, "test" in sys.argv, "pytest" in sys.argv])
 
-ALLOWED_HOSTS = ["django", "localhost", "127.0.0.1", "192.168.0.103"]
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS').split(',')
 
 AUTH_USER_MODEL = 'account.User'
 
@@ -86,10 +86,10 @@ WSGI_APPLICATION = 'umamagic.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'umamagic',
-        'USER': 'root',
+        'NAME': os.environ.get('MYSQL_DATABASE'),
+        'USER': os.environ.get('PMA_USER'),
         'PASSWORD': os.environ.get('MYSQL_ROOT_PASSWORD'),
-        'HOST': 'mysql',
+        'HOST': os.environ.get('PMA_HOST'),
         'PORT': '3306',
     }
 }
