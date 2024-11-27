@@ -66,6 +66,7 @@ spec:
       containers:
       - name: cron
         image: localhost:5000/cron:latest
+        imagePullPolicy: Always
         envFrom:
         - configMapRef:
             name: app-config
