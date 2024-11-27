@@ -13,7 +13,7 @@ jobs:
   # 本番環境へのデプロイ
   deploy_prod:
     if: github.event_name == 'push'  # push イベントのときのみ実行
-    runs-on: self-hosted
+    runs-on: [self-hosted, prod]
 
     steps:
       # Checkout code
@@ -63,7 +63,7 @@ jobs:
   # テスト環境へのデプロイ
   deploy_test:
     if: github.event_name == 'pull_request'  # PR イベントのときのみ実行
-    runs-on: self-hosted
+    runs-on: [self-hosted, test]
 
     steps:
       # Checkout code
