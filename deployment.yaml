@@ -27,7 +27,8 @@ spec:
     spec:
       containers:
       - name: django
-        image: django
+        image: localhost:5000/django:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8000
         envFrom:
@@ -64,7 +65,7 @@ spec:
     spec:
       containers:
       - name: cron
-        image: cron
+        image: localhost:5000/cron:latest
         envFrom:
         - configMapRef:
             name: app-config

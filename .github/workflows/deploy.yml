@@ -34,8 +34,8 @@ jobs:
       # Build Docker image
       - name: Build Docker image
         run: |
-          docker build -t django:latest ./Dockerfile/django
-          docker build -t cron:latest ./Dockerfile/cron
+          docker build --no-cache -t django:latest ./Dockerfile/django
+          docker build --no-cache -t cron:latest ./Dockerfile/cron
 
       # Tag Docker image
       - name: Tag Docker image
@@ -85,8 +85,8 @@ jobs:
       # Build Docker image
       - name: Build Docker image
         run: |
-          docker build -t django:latest ./Dockerfile/django
-          docker build -t cron:latest ./Dockerfile/cron
+          docker build --no-cache -t django:latest ./Dockerfile/django
+          docker build --no-cache -t cron:latest ./Dockerfile/cron
 
       # Tag Docker image
       - name: Tag Docker image
