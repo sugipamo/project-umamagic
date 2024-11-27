@@ -36,9 +36,6 @@ spec:
             name: app-config
         - secretRef:
             name: app-secrets
-        volumeMounts:
-        - mountPath: /home/user/sources
-          name: django-sources
         tty: true
         command: ["gunicorn"]
         args: ["--workers", "4", "--threads", "2", "umamagic.wsgi:application", "--bind", "0.0.0.0:8000"]
