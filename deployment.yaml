@@ -37,9 +37,10 @@ spec:
         - secretRef:
             name: app-secrets
         tty: true
-        command: ["python"]
-        args: ["manage.py", "runserver", "0.0.0.0:8000"]
-        
+        command: ["ls"]
+        # command: ["python"]
+        # args: ["sources", "manage.py", "runserver", "0.0.0.0:8000"]
+
 ---
 apiVersion: apps/v1
 kind: Deployment
