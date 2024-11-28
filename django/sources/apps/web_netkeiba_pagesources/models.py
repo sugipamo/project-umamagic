@@ -1,6 +1,5 @@
 from django.db import models
-from apps.web_controller.apps import TimeCounter, WebDriver
-from apps.web_controller.models import LoginForScraping
+from apps.web_controller.models import LoginForScraping, WebDriver, TimeCounter
 from django.utils import timezone
 import gzip
 import traceback

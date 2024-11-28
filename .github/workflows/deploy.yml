@@ -34,7 +34,7 @@ jobs:
       # Build Docker image
       - name: Build Docker image
         run: |
-          docker build --no-cache --build-arg SOURCE_DIR=./source -t django:latest ./django
+          docker build --no-cache -t django:latest ./django
           docker build --no-cache -t cron:latest ./cron
 
       # Tag Docker image
@@ -84,7 +84,7 @@ jobs:
       # Build Docker image
       - name: Build Docker image
         run: |
-          docker build --no-cache --build-arg SOURCE_DIR=./source -t django:latest ./django
+          docker build --no-cache -t django:latest ./django
           docker build --no-cache -t cron:latest ./cron
 
       # Tag Docker image

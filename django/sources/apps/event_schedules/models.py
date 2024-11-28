@@ -157,7 +157,7 @@ def doevent():
         try:
             return event.first().doevent()
         except Exception as e:
-            with open("error.log", "a") as f:
-                f.write(f"{timezone.now()}: {str(e)}\n{traceback.format_exc()}\n\n")
+            # with open("error.log", "a") as f:
+            #     f.write(f"{timezone.now()}: {str(e)}\n{traceback.format_exc()}\n\n")
             raise e
     return "Event has not been found."

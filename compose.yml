@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
     image: my_django_app
     volumes:
-      - ./django/sources:/home/user/sources
+      - ./django/sources:/sources
     tty: true
     ports:
       - 8000:8000

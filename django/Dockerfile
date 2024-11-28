@@ -30,7 +30,5 @@ RUN groupadd -g $GID $GROUPNAME && \
 COPY --from=base /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
 COPY --from=base /usr/local/bin /usr/local/bin
 
-# Set working directory
-USER $USERNAME
-COPY ./sources /home/$USERNAME
-WORKDIR /home/$USERNAME
+COPY ./sources ./sources
+WORKDIR /sources
