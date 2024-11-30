@@ -1,18 +1,8 @@
-from django.apps import AppConfig
+from django.db import models
+from importlib import import_module
 from selenium import webdriver
-from time import sleep, perf_counter
-import pickle
 import os
-from pathlib import Path
-
-class WebControllerConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'apps.web_controller'
-
-
-COOKIEPATH = Path(__file__).parent / "cookies"
-if not COOKIEPATH.exists():
-    COOKIEPATH.mkdir()
+from time import sleep, perf_counter
 
 class TimeCounter():
     def __init__(self):
@@ -65,19 +55,10 @@ class WebDriver():
 
     def __cookie_init(self, domain):
         self.quit_functions.append(lambda :self.__cookie_save(domain))
-        self.cookiepath = COOKIEPATH / (domain + "_cookies.pkl")
-        if not self.cookiepath.exists():
+        cookies = LoginForScraping.objects.filter(domain=domain).first()
+        if cookies is None:
             return
-        
-        if not domain in self.driver.current_url:
-            self.driver.get(domain)
-
-        with open(self.cookiepath, "rb") as f:
-            try:
-                cookies = pickle.load(f)
-            except:
-                cookies = []
-
+        cookies = cookies.cookie
         if type(cookies) != list:
             cookies = []
 
@@ -86,10 +67,12 @@ class WebDriver():
                 self.driver.add_cookie(cookie)
 
     def __cookie_save(self, domain):
-        with open(self.cookiepath, "wb") as f:
-            cookies = self.driver.get_cookies()
-            cookies = [cookie for cookie in cookies if cookie["domain"] == domain]
-            pickle.dump(cookies, f)
+        cookies = self.driver.get_cookies()
+        cookies = [cookie for cookie in cookies if cookie["domain"] == domain]
+        login = LoginForScraping.objects.get_or_create(domain=domain)
+        login = login[0]
+        login.cookie = cookies
+        login.save()
 
     def __enter__(self):
         return self.driver
@@ -98,3 +81,30 @@ class WebDriver():
         for func in self.quit_functions:
             func()
         self.driver.quit()
+
+class LoginForScraping(models.Model):
+    domain = models.CharField(max_length=255)
+    cookie = models.JSONField(default=list)
+    loggined = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.domain
+    
+    def login(self, **kwargs):
+        login_method = import_module("apps.web_controller.login_methods.{}".format(self.domain.replace(".", "_")))
+        self.loggined = login_method.login(self, **kwargs)
+        self.save()
+
+    def update_logined(self, driver):
+        login_method = import_module("apps.web_controller.login_methods.{}".format(self.domain.replace(".", "_")))
+        loggined = login_method.update_logined(self)
+
+        if self.loggined != loggined:
+            self.loggined = loggined
+            self.save()
+        return self.loggined
+
+
+

@@ -1,0 +1,181 @@
+Message: disconnected: not connected to DevTools
+  (failed to check if window was closed: disconnected: not connected to DevTools)
+  (Session info: chrome=131.0.6778.85)
+Stacktrace:
+#0 0x5c636871d31a <unknown>
+#1 0x5c63682336e0 <unknown>
+#2 0x5c636821a435 <unknown>
+#3 0x5c636821a313 <unknown>
+#4 0x5c6368235a02 <unknown>
+#5 0x5c63682c48b6 <unknown>
+#6 0x5c63682a6203 <unknown>
+#7 0x5c6368274cc0 <unknown>
+#8 0x5c6368275c9e <unknown>
+#9 0x5c63686ead0b <unknown>
+#10 0x5c63686eec92 <unknown>
+#11 0x5c63686d7b3c <unknown>
+#12 0x5c63686ef807 <unknown>
+#13 0x5c63686bd0df <unknown>
+#14 0x5c636870c578 <unknown>
+#15 0x5c636870c740 <unknown>
+#16 0x5c636871c196 <unknown>
+#17 0x718129585a94 <unknown>
+#18 0x718129612a34 __clone
+
+Traceback (most recent call last):
+  File "/sources/apps/web_netkeiba_pagesources/models.py", line 285, in extract_html_from_driver
+    self.__extract_html_from_driver(driver)
+  File "/sources/apps/web_netkeiba_pagesources/models.py", line 294, in __extract_html_from_driver
+    trs = tc.do(driver.find_elements, "xpath", ".//table[@class='CP_Setting']/tbody/tr")
+  File "/sources/apps/web_controller/models.py", line 27, in do
+    result = func(*args, **kwargs)
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 792, in find_elements
+    return self.execute(Command.FIND_ELEMENTS, {"using": by, "value": value})["value"] or []
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 384, in execute
+    self.error_handler.check_response(response)
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/errorhandler.py", line 232, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.WebDriverException: Message: disconnected: not connected to DevTools
+  (failed to check if window was closed: disconnected: not connected to DevTools)
+  (Session info: chrome=131.0.6778.85)
+Stacktrace:
+#0 0x5c636871d31a <unknown>
+#1 0x5c63682336e0 <unknown>
+#2 0x5c636821a435 <unknown>
+#3 0x5c636821a313 <unknown>
+#4 0x5c6368235a02 <unknown>
+#5 0x5c63682c48b6 <unknown>
+#6 0x5c63682a6203 <unknown>
+#7 0x5c6368274cc0 <unknown>
+#8 0x5c6368275c9e <unknown>
+#9 0x5c63686ead0b <unknown>
+#10 0x5c63686eec92 <unknown>
+#11 0x5c63686d7b3c <unknown>
+#12 0x5c63686ef807 <unknown>
+#13 0x5c63686bd0df <unknown>
+#14 0x5c636870c578 <unknown>
+#15 0x5c636870c740 <unknown>
+#16 0x5c636871c196 <unknown>
+#17 0x718129585a94 <unknown>
+#18 0x718129612a34 __clone
+
+Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=131.0.6778.85)
+Stacktrace:
+#0 0x628dd341631a <unknown>
+#1 0x628dd2f2c6e0 <unknown>
+#2 0x628dd2f0238f <unknown>
+#3 0x628dd2fa789d <unknown>
+#4 0x628dd2fbd88c <unknown>
+#5 0x628dd2f9f203 <unknown>
+#6 0x628dd2f6dcc0 <unknown>
+#7 0x628dd2f6ec9e <unknown>
+#8 0x628dd33e3d0b <unknown>
+#9 0x628dd33e7c92 <unknown>
+#10 0x628dd33d0b3c <unknown>
+#11 0x628dd33e8807 <unknown>
+#12 0x628dd33b60df <unknown>
+#13 0x628dd3405578 <unknown>
+#14 0x628dd3405740 <unknown>
+#15 0x628dd3415196 <unknown>
+#16 0x737ccca15a94 <unknown>
+#17 0x737cccaa2a34 __clone
+
+Traceback (most recent call last):
+  File "/sources/apps/web_netkeiba_pagesources/models.py", line 285, in extract_html_from_driver
+    self.__extract_html_from_driver(driver)
+  File "/sources/apps/web_netkeiba_pagesources/models.py", line 294, in __extract_html_from_driver
+    trs = tc.do(driver.find_elements, "xpath", ".//table[@class='CP_Setting']/tbody/tr")
+  File "/sources/apps/web_controller/models.py", line 27, in do
+    result = func(*args, **kwargs)
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 792, in find_elements
+    return self.execute(Command.FIND_ELEMENTS, {"using": by, "value": value})["value"] or []
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 384, in execute
+    self.error_handler.check_response(response)
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/errorhandler.py", line 232, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.NoSuchWindowException: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=131.0.6778.85)
+Stacktrace:
+#0 0x628dd341631a <unknown>
+#1 0x628dd2f2c6e0 <unknown>
+#2 0x628dd2f0238f <unknown>
+#3 0x628dd2fa789d <unknown>
+#4 0x628dd2fbd88c <unknown>
+#5 0x628dd2f9f203 <unknown>
+#6 0x628dd2f6dcc0 <unknown>
+#7 0x628dd2f6ec9e <unknown>
+#8 0x628dd33e3d0b <unknown>
+#9 0x628dd33e7c92 <unknown>
+#10 0x628dd33d0b3c <unknown>
+#11 0x628dd33e8807 <unknown>
+#12 0x628dd33b60df <unknown>
+#13 0x628dd3405578 <unknown>
+#14 0x628dd3405740 <unknown>
+#15 0x628dd3415196 <unknown>
+#16 0x737ccca15a94 <unknown>
+#17 0x737cccaa2a34 __clone
+
+Message: disconnected: not connected to DevTools
+  (failed to check if window was closed: disconnected: not connected to DevTools)
+  (Session info: chrome=131.0.6778.85)
+Stacktrace:
+#0 0x606642b2531a <unknown>
+#1 0x60664263b6e0 <unknown>
+#2 0x606642622435 <unknown>
+#3 0x606642622313 <unknown>
+#4 0x60664263da02 <unknown>
+#5 0x6066426cc8b6 <unknown>
+#6 0x6066426ae203 <unknown>
+#7 0x60664267ccc0 <unknown>
+#8 0x60664267dc9e <unknown>
+#9 0x606642af2d0b <unknown>
+#10 0x606642af6c92 <unknown>
+#11 0x606642adfb3c <unknown>
+#12 0x606642af7807 <unknown>
+#13 0x606642ac50df <unknown>
+#14 0x606642b14578 <unknown>
+#15 0x606642b14740 <unknown>
+#16 0x606642b24196 <unknown>
+#17 0x7d57c1a8da94 <unknown>
+#18 0x7d57c1b1aa34 __clone
+
+Traceback (most recent call last):
+  File "/sources/apps/web_netkeiba_pagesources/models.py", line 285, in extract_html_from_driver
+    self.__extract_html_from_driver(driver)
+  File "/sources/apps/web_netkeiba_pagesources/models.py", line 294, in __extract_html_from_driver
+    trs = tc.do(driver.find_elements, "xpath", ".//table[@class='CP_Setting']/tbody/tr")
+  File "/sources/apps/web_controller/models.py", line 27, in do
+    result = func(*args, **kwargs)
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 792, in find_elements
+    return self.execute(Command.FIND_ELEMENTS, {"using": by, "value": value})["value"] or []
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 384, in execute
+    self.error_handler.check_response(response)
+  File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/remote/errorhandler.py", line 232, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.WebDriverException: Message: disconnected: not connected to DevTools
+  (failed to check if window was closed: disconnected: not connected to DevTools)
+  (Session info: chrome=131.0.6778.85)
+Stacktrace:
+#0 0x606642b2531a <unknown>
+#1 0x60664263b6e0 <unknown>
+#2 0x606642622435 <unknown>
+#3 0x606642622313 <unknown>
+#4 0x60664263da02 <unknown>
+#5 0x6066426cc8b6 <unknown>
+#6 0x6066426ae203 <unknown>
+#7 0x60664267ccc0 <unknown>
+#8 0x60664267dc9e <unknown>
+#9 0x606642af2d0b <unknown>
+#10 0x606642af6c92 <unknown>
+#11 0x606642adfb3c <unknown>
+#12 0x606642af7807 <unknown>
+#13 0x606642ac50df <unknown>
+#14 0x606642b14578 <unknown>
+#15 0x606642b14740 <unknown>
+#16 0x606642b24196 <unknown>
+#17 0x7d57c1a8da94 <unknown>
+#18 0x7d57c1b1aa34 __clone
+
