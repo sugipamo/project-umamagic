@@ -175,7 +175,7 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: mysql
+    app: django
   ports:
     - protocol: TCP
       port: 8000
