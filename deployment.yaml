@@ -166,3 +166,17 @@ spec:
     port: 8000       # Djangoコンテナ内でリッスンするポート
     targetPort: 8000 # Deployment内のコンテナポート
     nodePort: 30080  # クラスター外部からアクセスするポート（30000-32767の範囲で指定）
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+spec:
+  type: ClusterIP
+  selector:
+    app: mysql
+  ports:
+    - protocol: TCP
+      port: 3306        # MySQLのデフォルトポート
+      targetPort: 3306  # MySQLコンテナのポート
