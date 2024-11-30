@@ -179,3 +179,21 @@ Stacktrace:
 #17 0x7d57c1a8da94 <unknown>
 #18 0x7d57c1b1aa34 __clone
 
+タイムアウトしました。
+Traceback (most recent call last):
+  File "/sources/apps/web_netkeiba_pagesources/models.py", line 295, in __extract_html_from_driver
+    trs = tc.do(driver.find_elements, "xpath", ".//table[@class='CP_Setting']/tbody/tr")
+  File "/sources/apps/web_controller/models.py", line 31, in do
+    raise Exception("タイムアウトしました。")
+Exception: タイムアウトしました。
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/sources/apps/web_netkeiba_pagesources/models.py", line 286, in extract_html_from_driver
+    self.__extract_html_from_driver(driver)
+  File "/sources/apps/web_netkeiba_pagesources/models.py", line 294, in __extract_html_from_driver
+    with TimeCounter() as tc:
+  File "/sources/apps/web_controller/models.py", line 18, in __exit__
+    raise Exception("タイムアウトしました。")
+Exception: タイムアウトしました。

@@ -15,7 +15,7 @@ def login(self, **kwargs):
         driver.find_element("name", "pswd").send_keys(environs["NETKEIBA_PASSWORD"])
         driver.find_element("xpath", ".//div[@class='loginBtn__wrap']/input").click()
         if driver.find_elements("name", "login_id"):
-            return False
+            raise ValueError("Failed to login")
     return True
 
 def update_logined(self):
