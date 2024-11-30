@@ -145,14 +145,13 @@ class BasePage(models.Model):
         if not driver.current_url.startswith(self.url):
             driver.get(self.url)
         elif self.need_login:
-            driver.refresh()
+            driver.get(self.url)
 
         if "premium_new" in driver.current_url:
             login, _ = LoginForScraping.objects.get_or_create(domain=NETKEIBA_DOMAIN)
             login.loggined = False
             login.save()
-            login.login()
-            driver.get(self.url)
+            return
         
         self.extract_html_from_driver(driver=driver)
         self.need_update = False
@@ -285,8 +284,9 @@ class PageYosoCp(Page, BasePage):
         try:
             self.__extract_html_from_driver(driver)
         except Exception as e:
-            with open("error.log", "a") as f:
-                f.write(f"{str(e)}\n{traceback.format_exc()}")
+            pass
+            # with open("error.log", "a") as f:
+            #     f.write(f"{str(e)}\n{traceback.format_exc()}")
 
     def __extract_html_from_driver(self, driver):
         htmls = [self.html_rising, self.html_precede, self.html_spurt, self.html_jockey, self.html_trainer, self.html_pedigree]
