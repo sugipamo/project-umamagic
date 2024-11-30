@@ -152,6 +152,7 @@ class BasePage(models.Model):
             login.loggined = False
             login.save()
             login.login()
+            driver.get(self.url)
         
         self.extract_html_from_driver(driver=driver)
         self.need_update = False
