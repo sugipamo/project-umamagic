@@ -181,6 +181,19 @@ spec:
       port: 8000
       targetPort: 8000
 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: selenium
+spec:
+  type: ClusterIP
+  selector:
+    app: selenium
+  ports:
+    - protocol: TCP
+      port: 4444
+      targetPort: 4444
 
 ---
 apiVersion: v1
